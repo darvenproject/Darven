@@ -7,8 +7,9 @@ class LandingImageResponse(BaseModel):
     id: int
     category: str
     image_url: str
+    portrait_image_url: Optional[str] = None
     title: str
-    link: str
+    link: Optional[str] = None
     
     class Config:
         from_attributes = True
@@ -126,3 +127,49 @@ class RevenueResponse(BaseModel):
     pending_orders: int
     completed_orders: int
     total_orders: int
+
+# Size Charts
+class KameezSizeCreate(BaseModel):
+    size: str  # XS, S, M, L, XL
+    collar: float
+    shoulder: float
+    chest: float
+    sleeves: float
+    length: float
+
+class KameezSizeResponse(BaseModel):
+    id: int
+    size: str
+    collar: float
+    shoulder: float
+    chest: float
+    sleeves: float
+    length: float
+    
+    class Config:
+        from_attributes = True
+
+class ShalwarSizeCreate(BaseModel):
+    size: str  # XS, S, M, L, XL
+    length: float
+
+class ShalwarSizeResponse(BaseModel):
+    id: int
+    size: str
+    length: float
+    
+    class Config:
+        from_attributes = True
+
+class UserMeasurements(BaseModel):
+    collar: Optional[float] = None
+    shoulder: Optional[float] = None
+    chest: Optional[float] = None
+    sleeves: Optional[float] = None
+    length: Optional[float] = None
+
+class SizeRecommendation(BaseModel):
+    recommended_size: str
+    confidence: str  # "perfect", "good", "consider_custom"
+    measurements: dict
+    notes: List[str]

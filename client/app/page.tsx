@@ -34,7 +34,7 @@ export default function Home() {
   }
 
   return (
-    <div className="h-full">
+    <div className="min-h-screen">
       {isMobile ? <MobileLanding /> : <DesktopLanding />}
     </div>
   )

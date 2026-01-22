@@ -12,9 +12,9 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
 
   return (
     <ThemeProvider>
-      <div className={`bg-white dark:bg-dark-bg ${!isAdminPage && 'transition-colors duration-300'} ${isLandingPage ? 'flex flex-col h-screen overflow-hidden' : 'min-h-screen flex flex-col'}`}>
+      <div className={`bg-white dark:bg-dark-bg ${!isAdminPage && 'transition-colors duration-300'} min-h-screen flex flex-col`}>
         {!isAdminPage && <Header />}
-        <main className={isLandingPage ? 'flex-1 overflow-hidden' : 'flex-1'}>{children}</main>
+        <main className={`flex-1 ${!isAdminPage ? 'pt-20' : ''}`}>{children}</main>
         {!isLandingPage && !isAdminPage && <Footer />}
       </div>
     </ThemeProvider>

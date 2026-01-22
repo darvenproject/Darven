@@ -1,7 +1,6 @@
 from fastapi import APIRouter, Depends, File, UploadFile, Form, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
-import shutil
 import os
 import json
 from uuid import uuid4
@@ -10,6 +9,7 @@ from database import get_db
 from models import ReadyMadeProduct, Admin
 from schemas import ReadyMadeProductResponse
 from auth import get_current_admin
+from s3_utils import upload_file_to_s3, delete_multiple_files_from_s3
 
 router = APIRouter()
 
@@ -37,17 +37,13 @@ async def create_ready_made_product(
     admin: Admin = Depends(get_current_admin),
     db: Session = Depends(get_db)
 ):
-    # Save images
+    # Save images to S3
     image_urls = []
     for file in files:
         file_extension = os.path.splitext(file.filename)[1]
         filename = f"{uuid4()}{file_extension}"
-        file_path = f"uploads/ready-made/{filename}"
-        
-        with open(file_path, "wb") as buffer:
-            shutil.copyfileobj(file.file, buffer)
-        
-        image_urls.append(f"/uploads/ready-made/{filename}")
+        image_url = await upload_file_to_s3(file, "ready-made", filename)
+        image_urls.append(image_url)
     
     # Create product
     product = ReadyMadeProduct(
@@ -99,23 +95,16 @@ async def update_ready_made_product(
     
     # Update images if provided
     if files:
-        # Delete old images
-        for image_url in product.images:
-            image_path = image_url.replace("/uploads/", "uploads/")
-            if os.path.exists(image_path):
-                os.remove(image_path)
+        # Delete old images from S3
+        delete_multiple_files_from_s3(product.images)
         
-        # Save new images
+        # Save new images to S3
         image_urls = []
         for file in files:
             file_extension = os.path.splitext(file.filename)[1]
             filename = f"{uuid4()}{file_extension}"
-            file_path = f"uploads/ready-made/{filename}"
-            
-            with open(file_path, "wb") as buffer:
-                shutil.copyfileobj(file.file, buffer)
-            
-            image_urls.append(f"/uploads/ready-made/{filename}")
+            image_url = await upload_file_to_s3(file, "ready-made", filename)
+            image_urls.append(image_url)
         
         product.images = image_urls
     
@@ -134,11 +123,8 @@ async def delete_ready_made_product(
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
     
-    # Delete images
-    for image_url in product.images:
-        image_path = image_url.replace("/uploads/", "uploads/")
-        if os.path.exists(image_path):
-            os.remove(image_path)
+    # Delete images from S3
+    delete_multiple_files_from_s3(product.images)
     
     db.delete(product)
     db.commit()

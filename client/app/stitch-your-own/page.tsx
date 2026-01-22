@@ -15,15 +15,35 @@ interface CustomFabric {
   image_url: string
 }
 
+interface KameezSize {
+  id: number
+  size: string
+  collar: number
+  shoulder: number
+  chest: number
+  sleeves: number
+  length: number
+}
+
+interface ShalwarSize {
+  id: number
+  size: string
+  length: number
+}
+
 interface Measurements {
-  neck: string
-  shoulder: string
-  chest: string
-  sleeve: string
-  height: string
-  biceps: string
+  // Size selection
+  kameezSize: string  // XS, S, M, L, XL
+  shalwarSize: string  // XS, S, M, L, XL
+  
+  // Options
+  cuffs: 'yes' | 'no' | ''
+  collarType: 'sherwani' | 'shirt' | ''
+  bottomWear: 'pajama' | 'shalwar' | ''
+  
+  // Additional measurements for pajama
   waist: string
-  trouser_height: string
+  thigh: string
 }
 
 export default function StitchYourOwnPage() {
@@ -31,21 +51,25 @@ export default function StitchYourOwnPage() {
   const [fabrics, setFabrics] = useState<CustomFabric[]>([])
   const [selectedFabric, setSelectedFabric] = useState<CustomFabric | null>(null)
   const [quantity, setQuantity] = useState(1)
+  const [kameezSizes, setKameezSizes] = useState<KameezSize[]>([])
+  const [shalwarSizes, setShalwarSizes] = useState<ShalwarSize[]>([])
   const [measurements, setMeasurements] = useState<Measurements>({
-    neck: '',
-    shoulder: '',
-    chest: '',
-    sleeve: '',
-    height: '',
-    biceps: '',
+    kameezSize: '',
+    shalwarSize: '',
+    cuffs: '',
+    collarType: '',
+    bottomWear: '',
     waist: '',
-    trouser_height: '',
+    thigh: '',
   })
   const [loading, setLoading] = useState(true)
   const addItem = useCartStore((state) => state.addItem)
+  
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
 
   useEffect(() => {
     fetchCustomFabrics()
+    fetchSizes()
   }, [])
 
   const fetchCustomFabrics = async () => {
@@ -62,6 +86,21 @@ export default function StitchYourOwnPage() {
     }
   }
 
+  const fetchSizes = async () => {
+    try {
+      const [kameezRes, shalwarRes] = await Promise.all([
+        fetch(`${API_BASE_URL}/sizes/kameez`),
+        fetch(`${API_BASE_URL}/sizes/shalwar`)
+      ])
+      const kameezData = await kameezRes.json()
+      const shalwarData = await shalwarRes.json()
+      setKameezSizes(kameezData)
+      setShalwarSizes(shalwarData)
+    } catch (error) {
+      console.error('Error fetching sizes:', error)
+    }
+  }
+
   const handleMeasurementChange = (field: keyof Measurements, value: string) => {
     setMeasurements({ ...measurements, [field]: value })
   }
@@ -69,14 +108,33 @@ export default function StitchYourOwnPage() {
   const handleAddToCart = () => {
     if (!selectedFabric) return
 
-    // Validate measurements
-    const requiredFields = Object.entries(measurements)
-    const emptyFields = requiredFields.filter(([_, value]) => !value)
-    
-    if (emptyFields.length > 0) {
-      alert('Please fill in all measurement fields')
+    // Validate size selection
+    if (!measurements.kameezSize) {
+      alert('Please select a Kameez size')
       return
     }
+
+    if (!measurements.cuffs || !measurements.collarType || !measurements.bottomWear) {
+      alert('Please select all options (Cuffs, Collar Type, and Bottom Wear)')
+      return
+    }
+
+    // Validate bottom wear
+    if (measurements.bottomWear === 'shalwar' && !measurements.shalwarSize) {
+      alert('Please select a Shalwar size')
+      return
+    }
+    
+    if (measurements.bottomWear === 'pajama') {
+      if (!measurements.waist || !measurements.thigh) {
+        alert('Please fill in Pajama measurements (Waist and Thigh)')
+        return
+      }
+    }
+
+    // Get selected size details
+    const selectedKameezSize = kameezSizes.find(s => s.size === measurements.kameezSize)
+    const selectedShalwarSize = shalwarSizes.find(s => s.size === measurements.shalwarSize)
 
     addItem({
       id: `custom-${selectedFabric.id}-${Date.now()}`,
@@ -88,7 +146,17 @@ export default function StitchYourOwnPage() {
       details: {
         fabric: selectedFabric.name,
         material: selectedFabric.material,
-        measurements: measurements
+        measurements: {
+          kameezSize: measurements.kameezSize,
+          kameezMeasurements: selectedKameezSize,
+          shalwarSize: measurements.shalwarSize,
+          shalwarMeasurements: selectedShalwarSize,
+          cuffs: measurements.cuffs,
+          collarType: measurements.collarType,
+          bottomWear: measurements.bottomWear,
+          waist: measurements.waist,
+          thigh: measurements.thigh,
+        }
       }
     })
 
@@ -185,135 +253,178 @@ export default function StitchYourOwnPage() {
           </h2>
 
           <div className="space-y-6">
-            {/* Kameez/Kurta Measurements */}
+            {/* Kameez Size Selection */}
             <div>
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
-                Kameez/Kurta Measurements
+                Select Kameez Size
+              </h3>
+              
+              <div>
+                <label className="block text-sm text-gray-600 dark:text-gray-400 mb-2">
+                  Size <span className="text-red-500">*</span>
+                </label>
+                <select
+                  value={measurements.kameezSize}
+                  onChange={(e) => handleMeasurementChange('kameezSize', e.target.value)}
+                  className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-dark-surface text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white"
+                >
+                  <option value="">Select a size</option>
+                  {kameezSizes.map((size) => (
+                    <option key={size.id} value={size.size}>
+                      {size.size} - Collar: {size.collar}", Shoulder: {size.shoulder}", Chest: {size.chest}", Sleeves: {size.sleeves}", Length: {size.length}"
+                    </option>
+                  ))}
+                </select>
+                {measurements.kameezSize && (
+                  <div className="mt-2 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg text-sm">
+                    <p className="font-semibold text-gray-900 dark:text-white mb-1">Selected Size: {measurements.kameezSize}</p>
+                    {kameezSizes.find(s => s.size === measurements.kameezSize) && (
+                      <div className="text-gray-600 dark:text-gray-400">
+                        {(() => {
+                          const selected = kameezSizes.find(s => s.size === measurements.kameezSize)!
+                          return (
+                            <>
+                              <p>Collar: {selected.collar}" | Shoulder: {selected.shoulder}" | Chest: {selected.chest}"</p>
+                              <p>Sleeves: {selected.sleeves}" | Length: {selected.length}"</p>
+                            </>
+                          )
+                        })()}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Kurta Options */}
+            <div>
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+                Kurta Options
               </h3>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm text-gray-600 dark:text-gray-400 mb-2">
-                    Neck (inches)
+                    Cuffs
                   </label>
-                  <input
-                    type="number"
-                    step="0.5"
-                    value={measurements.neck}
-                    onChange={(e) => handleMeasurementChange('neck', e.target.value)}
+                  <select
+                    value={measurements.cuffs}
+                    onChange={(e) => handleMeasurementChange('cuffs', e.target.value)}
                     className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-dark-surface text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white"
-                    placeholder="e.g., 15"
-                  />
+                  >
+                    <option value="">Select option</option>
+                    <option value="yes">Yes</option>
+                    <option value="no">No</option>
+                  </select>
                 </div>
 
                 <div>
                   <label className="block text-sm text-gray-600 dark:text-gray-400 mb-2">
-                    Shoulder (inches)
+                    Collar Type
                   </label>
-                  <input
-                    type="number"
-                    step="0.5"
-                    value={measurements.shoulder}
-                    onChange={(e) => handleMeasurementChange('shoulder', e.target.value)}
+                  <select
+                    value={measurements.collarType}
+                    onChange={(e) => handleMeasurementChange('collarType', e.target.value)}
                     className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-dark-surface text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white"
-                    placeholder="e.g., 18"
-                  />
+                  >
+                    <option value="">Select collar type</option>
+                    <option value="sherwani">Sherwani Collar</option>
+                    <option value="shirt">Shirt Collar</option>
+                  </select>
                 </div>
 
-                <div>
+                <div className="md:col-span-2">
                   <label className="block text-sm text-gray-600 dark:text-gray-400 mb-2">
-                    Chest (inches)
+                    Bottom Wear
                   </label>
-                  <input
-                    type="number"
-                    step="0.5"
-                    value={measurements.chest}
-                    onChange={(e) => handleMeasurementChange('chest', e.target.value)}
+                  <select
+                    value={measurements.bottomWear}
+                    onChange={(e) => handleMeasurementChange('bottomWear', e.target.value)}
                     className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-dark-surface text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white"
-                    placeholder="e.g., 40"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm text-gray-600 dark:text-gray-400 mb-2">
-                    Sleeve (inches)
-                  </label>
-                  <input
-                    type="number"
-                    step="0.5"
-                    value={measurements.sleeve}
-                    onChange={(e) => handleMeasurementChange('sleeve', e.target.value)}
-                    className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-dark-surface text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white"
-                    placeholder="e.g., 24"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm text-gray-600 dark:text-gray-400 mb-2">
-                    Height (inches)
-                  </label>
-                  <input
-                    type="number"
-                    step="0.5"
-                    value={measurements.height}
-                    onChange={(e) => handleMeasurementChange('height', e.target.value)}
-                    className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-dark-surface text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white"
-                    placeholder="e.g., 42"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm text-gray-600 dark:text-gray-400 mb-2">
-                    Biceps (inches)
-                  </label>
-                  <input
-                    type="number"
-                    step="0.5"
-                    value={measurements.biceps}
-                    onChange={(e) => handleMeasurementChange('biceps', e.target.value)}
-                    className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-dark-surface text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white"
-                    placeholder="e.g., 14"
-                  />
+                  >
+                    <option value="">Select bottom wear</option>
+                    <option value="pajama">Pajama</option>
+                    <option value="shalwar">Shalwar</option>
+                  </select>
                 </div>
               </div>
             </div>
 
-            {/* Trouser Measurements */}
-            <div>
-              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
-                Trouser Measurements
-              </h3>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Shalwar Size Selection - Conditional */}
+            {measurements.bottomWear === 'shalwar' && (
+              <div>
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+                  Select Shalwar Size
+                </h3>
+                
                 <div>
                   <label className="block text-sm text-gray-600 dark:text-gray-400 mb-2">
-                    Waist (inches)
+                    Size <span className="text-red-500">*</span>
                   </label>
-                  <input
-                    type="number"
-                    step="0.5"
-                    value={measurements.waist}
-                    onChange={(e) => handleMeasurementChange('waist', e.target.value)}
+                  <select
+                    value={measurements.shalwarSize}
+                    onChange={(e) => handleMeasurementChange('shalwarSize', e.target.value)}
                     className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-dark-surface text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white"
-                    placeholder="e.g., 32"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm text-gray-600 dark:text-gray-400 mb-2">
-                    Trouser Height (inches)
-                  </label>
-                  <input
-                    type="number"
-                    step="0.5"
-                    value={measurements.trouser_height}
-                    onChange={(e) => handleMeasurementChange('trouser_height', e.target.value)}
-                    className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-dark-surface text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white"
-                    placeholder="e.g., 42"
-                  />
+                  >
+                    <option value="">Select a size</option>
+                    {shalwarSizes.map((size) => (
+                      <option key={size.id} value={size.size}>
+                        {size.size} - Length: {size.length}"
+                      </option>
+                    ))}
+                  </select>
+                  {measurements.shalwarSize && (
+                    <div className="mt-2 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg text-sm">
+                      <p className="font-semibold text-gray-900 dark:text-white mb-1">Selected Size: {measurements.shalwarSize}</p>
+                      {shalwarSizes.find(s => s.size === measurements.shalwarSize) && (
+                        <div className="text-gray-600 dark:text-gray-400">
+                          <p>Length: {shalwarSizes.find(s => s.size === measurements.shalwarSize)!.length}"</p>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
-            </div>
+            )}
+
+            {/* Pajama Measurements - Conditional */}
+            {measurements.bottomWear === 'pajama' && (
+              <div>
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+                  Pajama Measurements
+                </h3>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm text-gray-600 dark:text-gray-400 mb-2">
+                      Waist (inches) <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="number"
+                      step="0.5"
+                      value={measurements.waist}
+                      onChange={(e) => handleMeasurementChange('waist', e.target.value)}
+                      className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-dark-surface text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white"
+                      placeholder="e.g., 32"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm text-gray-600 dark:text-gray-400 mb-2">
+                      Thigh (inches) <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="number"
+                      step="0.5"
+                      value={measurements.thigh}
+                      onChange={(e) => handleMeasurementChange('thigh', e.target.value)}
+                      className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-dark-surface text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white"
+                      placeholder="e.g., 24"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Total Price */}
             {selectedFabric && (
@@ -341,6 +452,7 @@ export default function StitchYourOwnPage() {
           </div>
         </div>
       </div>
+
     </div>
-  )
+  );
 }

@@ -27,6 +27,8 @@ export default function FabricPage() {
   const fetchFabrics = async () => {
     try {
       const response = await apiClient.getFabrics()
+      console.log('Fabrics response:', response.data)
+      console.log('First fabric image:', response.data[0]?.images)
       setFabrics(response.data)
     } catch (error) {
       console.error('Error fetching fabrics:', error)
@@ -75,7 +77,7 @@ export default function FabricPage() {
                       fill
                       sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
                       className="object-cover group-hover:scale-110 transition-transform duration-500"
-                      loading="lazy"
+                      priority={index < 4}
                       onError={(e) => {
                         e.currentTarget.src = '/placeholder.jpg'
                       }}

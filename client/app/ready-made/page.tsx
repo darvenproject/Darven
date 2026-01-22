@@ -28,6 +28,8 @@ export default function ReadyMadePage() {
   const fetchProducts = async () => {
     try {
       const response = await apiClient.getReadyMadeProducts()
+      console.log('Ready-made products response:', response.data)
+      console.log('First product image:', response.data[0]?.images)
       setProducts(response.data)
     } catch (error) {
       console.error('Error fetching products:', error)
@@ -76,7 +78,7 @@ export default function ReadyMadePage() {
                       fill
                       sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
                       className="object-contain bg-gray-50 dark:bg-gray-900 group-hover:scale-105 transition-transform duration-500"
-                      loading="lazy"
+                      priority={index < 4}
                       onError={(e) => {
                         e.currentTarget.src = '/placeholder.jpg'
                       }}

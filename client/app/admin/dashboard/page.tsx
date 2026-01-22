@@ -213,6 +213,19 @@ export default function AdminDashboard() {
             </Link>
           </nav>
 
+          <nav className="mt-6 space-y-1">
+            <h3 className="px-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
+              Size Management
+            </h3>
+            <Link
+              href="/admin/sizes"
+              className="flex items-center gap-3 px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg"
+            >
+              <FiPackage className="w-5 h-5" />
+              <span className="font-medium">Size Charts</span>
+            </Link>
+          </nav>
+
           {/* Sidebar Footer */}
           <div className="p-4 border-t border-gray-200 dark:border-gray-700">
             <button

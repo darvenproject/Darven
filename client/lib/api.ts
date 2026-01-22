@@ -48,6 +48,11 @@ export const apiClient = {
     api.post(`/landing-images/${category}`, formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
     }),
+  updateLandingPortraitImage: (category: string, imageId: number, formData: FormData) =>
+    api.post(`/landing-images/${category}/portrait/${imageId}`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    }),
+  deleteLandingImage: (imageId: number) => api.delete(`/landing-images/${imageId}`),
 
   // Ready Made Products
   getReadyMadeProducts: () => api.get('/ready-made'),

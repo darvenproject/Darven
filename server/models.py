@@ -12,10 +12,11 @@ class LandingImage(Base):
     __tablename__ = "landing_images"
     
     id = Column(Integer, primary_key=True, index=True)
-    category = Column(String, unique=True, index=True)  # ready-made, stitch-your-own, fabric
+    category = Column(String, index=True)  # ready-made, stitch-your-own, fabric, hero (hero can have multiple)
     image_url = Column(String)
+    portrait_image_url = Column(String, nullable=True)  # For mobile view
     title = Column(String)
-    link = Column(String)
+    link = Column(String, nullable=True)  # Nullable for hero section
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
@@ -84,3 +85,32 @@ class Admin(Base):
     username = Column(String, unique=True, index=True)
     hashed_password = Column(String)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+class SizeType(enum.Enum):
+    XS = "XS"
+    S = "S"
+    M = "M"
+    L = "L"
+    XL = "XL"
+
+class KameezSize(Base):
+    __tablename__ = "kameez_sizes"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    size = Column(SQLEnum(SizeType), unique=True, index=True)
+    collar = Column(Float)  # inches
+    shoulder = Column(Float)  # inches
+    chest = Column(Float)  # inches
+    sleeves = Column(Float)  # inches
+    length = Column(Float)  # inches
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+
+class ShalwarSize(Base):
+    __tablename__ = "shalwar_sizes"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    size = Column(SQLEnum(SizeType), unique=True, index=True)
+    length = Column(Float)  # inches
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
