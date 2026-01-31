@@ -250,8 +250,8 @@ export default function StitchYourOwnPage() {
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
                 Kameez Measurements
               </h3>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm text-gray-600 dark:text-gray-400 mb-2">
                       Collar (inches) <span className="text-red-500">*</span>
@@ -320,7 +320,6 @@ export default function StitchYourOwnPage() {
                       className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-dark-surface text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white"
                       placeholder="e.g., 40"
                     />
-                  </div>
                 </div>
               </div>
             </div>
