@@ -32,7 +32,13 @@ os.makedirs(os.path.join(uploads_directory, "fabrics"), exist_ok=True)
 os.makedirs(os.path.join(uploads_directory, "custom-fabrics"), exist_ok=True)
 
 # Mount static files
+# Mount at both /uploads and /static/uploads for compatibility
 app.mount("/uploads", StaticFiles(directory=uploads_directory), name="uploads")
+# Also mount at /static/uploads for production nginx setup
+try:
+    app.mount("/static/uploads", StaticFiles(directory=uploads_directory), name="static_uploads")
+except Exception:
+    pass  # If already mounted, skip
 
 # Include routers
 app.include_router(admin.router, prefix="/admin", tags=["admin"])
