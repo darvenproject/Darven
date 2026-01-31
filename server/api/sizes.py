@@ -2,10 +2,11 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from database import get_db
-from models import KameezSize, ShalwarSize, Admin, SizeType
+from models import KameezSize, ShalwarSize, PajamaSize, Admin, SizeType
 from schemas import (
     KameezSizeCreate, KameezSizeResponse,
     ShalwarSizeCreate, ShalwarSizeResponse,
+    PajamaSizeCreate, PajamaSizeResponse,
     UserMeasurements, SizeRecommendation
 )
 from auth import get_current_admin
@@ -215,6 +216,108 @@ async def delete_shalwar_size(
         raise HTTPException(status_code=400, detail="Invalid size. Must be one of: XS, S, M, L, XL")
     
     existing = db.query(ShalwarSize).filter(ShalwarSize.size == size_enum).first()
+    if not existing:
+        raise HTTPException(status_code=404, detail="Size not found")
+    
+    db.delete(existing)
+    db.commit()
+    return {"message": "Size deleted successfully"}
+
+# Pajama Size Endpoints
+@router.get("/pajama", response_model=List[PajamaSizeResponse])
+async def get_pajama_sizes(db: Session = Depends(get_db)):
+    """Get all Pajama sizes"""
+    sizes = db.query(PajamaSize).order_by(PajamaSize.id).all()
+    return sizes
+
+@router.get("/pajama/{size}", response_model=PajamaSizeResponse)
+async def get_pajama_size(size: str, db: Session = Depends(get_db)):
+    """Get specific Pajama size by size code"""
+    try:
+        size_enum = SizeType[size.upper()]
+    except KeyError:
+        raise HTTPException(status_code=400, detail="Invalid size. Must be one of: XS, S, M, L, XL")
+    
+    size_data = db.query(PajamaSize).filter(PajamaSize.size == size_enum).first()
+    if not size_data:
+        raise HTTPException(status_code=404, detail="Size not found")
+    return size_data
+
+@router.post("/pajama", response_model=PajamaSizeResponse)
+async def create_pajama_size(
+    size_data: PajamaSizeCreate,
+    admin: Admin = Depends(get_current_admin),
+    db: Session = Depends(get_db)
+):
+    """Create new Pajama size (admin only)"""
+    try:
+        size_enum = SizeType[size_data.size.upper()]
+    except KeyError:
+        raise HTTPException(status_code=400, detail="Invalid size. Must be one of: XS, S, M, L, XL")
+    
+    # Check if size already exists
+    existing = db.query(PajamaSize).filter(PajamaSize.size == size_enum).first()
+    if existing:
+        raise HTTPException(status_code=400, detail="Size already exists")
+    
+    # Validate measurements are positive
+    if any(val <= 0 for val in [size_data.length, size_data.waist, size_data.hips]):
+        raise HTTPException(status_code=400, detail="All measurements must be positive numbers")
+    
+    new_size = PajamaSize(
+        size=size_enum,
+        length=size_data.length,
+        waist=size_data.waist,
+        hips=size_data.hips
+    )
+    
+    db.add(new_size)
+    db.commit()
+    db.refresh(new_size)
+    return new_size
+
+@router.put("/pajama/{size}", response_model=PajamaSizeResponse)
+async def update_pajama_size(
+    size: str,
+    size_data: PajamaSizeCreate,
+    admin: Admin = Depends(get_current_admin),
+    db: Session = Depends(get_db)
+):
+    """Update Pajama size (admin only)"""
+    try:
+        size_enum = SizeType[size.upper()]
+    except KeyError:
+        raise HTTPException(status_code=400, detail="Invalid size. Must be one of: XS, S, M, L, XL")
+    
+    existing = db.query(PajamaSize).filter(PajamaSize.size == size_enum).first()
+    if not existing:
+        raise HTTPException(status_code=404, detail="Size not found")
+    
+    # Validate measurements are positive
+    if any(val <= 0 for val in [size_data.length, size_data.waist, size_data.hips]):
+        raise HTTPException(status_code=400, detail="All measurements must be positive numbers")
+    
+    existing.length = size_data.length
+    existing.waist = size_data.waist
+    existing.hips = size_data.hips
+    
+    db.commit()
+    db.refresh(existing)
+    return existing
+
+@router.delete("/pajama/{size}")
+async def delete_pajama_size(
+    size: str,
+    admin: Admin = Depends(get_current_admin),
+    db: Session = Depends(get_db)
+):
+    """Delete Pajama size (admin only)"""
+    try:
+        size_enum = SizeType[size.upper()]
+    except KeyError:
+        raise HTTPException(status_code=400, detail="Invalid size. Must be one of: XS, S, M, L, XL")
+    
+    existing = db.query(PajamaSize).filter(PajamaSize.size == size_enum).first()
     if not existing:
         raise HTTPException(status_code=404, detail="Size not found")
     

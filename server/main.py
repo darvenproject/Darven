@@ -22,17 +22,17 @@ app.add_middleware(
     expose_headers=["*"],
 )
 
-# Note: For Lambda deployment, files are stored in S3, not local filesystem
-# The following code is only used for local development
-if os.getenv("AWS_EXECUTION_ENV") is None:  # Not running in Lambda
-    # Create uploads directory if it doesn't exist
-    os.makedirs("uploads", exist_ok=True)
-    os.makedirs("uploads/landing", exist_ok=True)
-    os.makedirs("uploads/ready-made", exist_ok=True)
-    os.makedirs("uploads/fabrics", exist_ok=True)
-    
-    # Mount static files
-    app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
+# Create uploads directory if it doesn't exist
+# Support both UPLOAD_DIR (production) and UPLOADS_DIR (local)
+uploads_directory = os.getenv("UPLOAD_DIR") or os.getenv("UPLOADS_DIR", "uploads")
+os.makedirs(uploads_directory, exist_ok=True)
+os.makedirs(os.path.join(uploads_directory, "landing"), exist_ok=True)
+os.makedirs(os.path.join(uploads_directory, "ready-made"), exist_ok=True)
+os.makedirs(os.path.join(uploads_directory, "fabrics"), exist_ok=True)
+os.makedirs(os.path.join(uploads_directory, "custom-fabrics"), exist_ok=True)
+
+# Mount static files
+app.mount("/uploads", StaticFiles(directory=uploads_directory), name="uploads")
 
 # Include routers
 app.include_router(admin.router, prefix="/admin", tags=["admin"])

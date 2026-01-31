@@ -12,38 +12,31 @@ interface CustomFabric {
   description: string
   price: number
   material: string
+  color?: string
   image_url: string
 }
 
-interface KameezSize {
-  id: number
-  size: string
-  collar: number
-  shoulder: number
-  chest: number
-  sleeves: number
-  length: number
-}
-
-interface ShalwarSize {
-  id: number
-  size: string
-  length: number
-}
-
 interface Measurements {
-  // Size selection
-  kameezSize: string  // XS, S, M, L, XL
-  shalwarSize: string  // XS, S, M, L, XL
+  // Custom Kameez measurements
+  customCollar: string
+  customShoulder: string
+  customChest: string
+  customSleeves: string
+  customKameezLength: string
   
   // Options
   cuffs: 'yes' | 'no' | ''
   collarType: 'sherwani' | 'shirt' | ''
   bottomWear: 'pajama' | 'shalwar' | ''
+  color: string
   
-  // Additional measurements for pajama
-  waist: string
-  thigh: string
+  // Custom Shalwar measurements
+  customShalwarLength: string
+  
+  // Custom Pajama measurements
+  customPajamaLength: string
+  customWaist: string
+  customThigh: string
 }
 
 export default function StitchYourOwnPage() {
@@ -51,25 +44,31 @@ export default function StitchYourOwnPage() {
   const [fabrics, setFabrics] = useState<CustomFabric[]>([])
   const [selectedFabric, setSelectedFabric] = useState<CustomFabric | null>(null)
   const [quantity, setQuantity] = useState(1)
-  const [kameezSizes, setKameezSizes] = useState<KameezSize[]>([])
-  const [shalwarSizes, setShalwarSizes] = useState<ShalwarSize[]>([])
   const [measurements, setMeasurements] = useState<Measurements>({
-    kameezSize: '',
-    shalwarSize: '',
+    customCollar: '',
+    customShoulder: '',
+    customChest: '',
+    customSleeves: '',
+    customKameezLength: '',
     cuffs: '',
     collarType: '',
     bottomWear: '',
-    waist: '',
-    thigh: '',
+    color: '',
+    customShalwarLength: '',
+    customPajamaLength: '',
+    customWaist: '',
+    customThigh: ''
   })
   const [loading, setLoading] = useState(true)
   const addItem = useCartStore((state) => state.addItem)
   
   const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
+  
+  // Available colors for all products
+  const availableColors = ['Jet Black', 'Navy Blue', 'Milky White', 'Grey', 'Dark Purple']
 
   useEffect(() => {
     fetchCustomFabrics()
-    fetchSizes()
   }, [])
 
   const fetchCustomFabrics = async () => {
@@ -86,20 +85,6 @@ export default function StitchYourOwnPage() {
     }
   }
 
-  const fetchSizes = async () => {
-    try {
-      const [kameezRes, shalwarRes] = await Promise.all([
-        fetch(`${API_BASE_URL}/sizes/kameez`),
-        fetch(`${API_BASE_URL}/sizes/shalwar`)
-      ])
-      const kameezData = await kameezRes.json()
-      const shalwarData = await shalwarRes.json()
-      setKameezSizes(kameezData)
-      setShalwarSizes(shalwarData)
-    } catch (error) {
-      console.error('Error fetching sizes:', error)
-    }
-  }
 
   const handleMeasurementChange = (field: keyof Measurements, value: string) => {
     setMeasurements({ ...measurements, [field]: value })
@@ -108,33 +93,50 @@ export default function StitchYourOwnPage() {
   const handleAddToCart = () => {
     if (!selectedFabric) return
 
-    // Validate size selection
-    if (!measurements.kameezSize) {
-      alert('Please select a Kameez size')
+    // Validate options
+    if (!measurements.cuffs || !measurements.collarType || !measurements.bottomWear || !measurements.color) {
+      alert('Please select all options (Cuffs, Collar Type, Bottom Wear, and Color)')
       return
     }
 
-    if (!measurements.cuffs || !measurements.collarType || !measurements.bottomWear) {
-      alert('Please select all options (Cuffs, Collar Type, and Bottom Wear)')
-      return
-    }
-
-    // Validate bottom wear
-    if (measurements.bottomWear === 'shalwar' && !measurements.shalwarSize) {
-      alert('Please select a Shalwar size')
+    // Validate custom measurements
+    if (!measurements.customCollar || !measurements.customShoulder || !measurements.customChest || 
+        !measurements.customSleeves || !measurements.customKameezLength) {
+      alert('Please fill in all Kameez measurements (Collar, Shoulder, Chest, Sleeves, Length)')
       return
     }
     
-    if (measurements.bottomWear === 'pajama') {
-      if (!measurements.waist || !measurements.thigh) {
-        alert('Please fill in Pajama measurements (Waist and Thigh)')
-        return
-      }
+    if (measurements.bottomWear === 'shalwar' && !measurements.customShalwarLength) {
+      alert('Please fill in Shalwar length')
+      return
+    }
+    
+    if (measurements.bottomWear === 'pajama' && (!measurements.customPajamaLength || !measurements.customWaist || !measurements.customThigh)) {
+      alert('Please fill in all Pajama measurements (Length, Waist, Thigh)')
+      return
     }
 
-    // Get selected size details
-    const selectedKameezSize = kameezSizes.find(s => s.size === measurements.kameezSize)
-    const selectedShalwarSize = shalwarSizes.find(s => s.size === measurements.shalwarSize)
+    // Build measurements object with custom measurements only
+    const measurementsData: any = {
+      measurementType: 'custom',
+      cuffs: measurements.cuffs,
+      collarType: measurements.collarType,
+      bottomWear: measurements.bottomWear,
+      color: measurements.color,
+      customCollar: measurements.customCollar,
+      customShoulder: measurements.customShoulder,
+      customChest: measurements.customChest,
+      customSleeves: measurements.customSleeves,
+      customKameezLength: measurements.customKameezLength,
+    }
+    
+    if (measurements.bottomWear === 'shalwar') {
+      measurementsData.customShalwarLength = measurements.customShalwarLength
+    } else if (measurements.bottomWear === 'pajama') {
+      measurementsData.customPajamaLength = measurements.customPajamaLength
+      measurementsData.customWaist = measurements.customWaist
+      measurementsData.customThigh = measurements.customThigh
+    }
 
     addItem({
       id: `custom-${selectedFabric.id}-${Date.now()}`,
@@ -146,17 +148,7 @@ export default function StitchYourOwnPage() {
       details: {
         fabric: selectedFabric.name,
         material: selectedFabric.material,
-        measurements: {
-          kameezSize: measurements.kameezSize,
-          kameezMeasurements: selectedKameezSize,
-          shalwarSize: measurements.shalwarSize,
-          shalwarMeasurements: selectedShalwarSize,
-          cuffs: measurements.cuffs,
-          collarType: measurements.collarType,
-          bottomWear: measurements.bottomWear,
-          waist: measurements.waist,
-          thigh: measurements.thigh,
-        }
+        measurements: measurementsData
       }
     })
 
@@ -172,7 +164,7 @@ export default function StitchYourOwnPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8" style={{ WebkitOverflowScrolling: 'touch', touchAction: 'pan-y pan-x' }}>
       <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-8">
         Stitch Your Own Suit
       </h1>
@@ -253,46 +245,83 @@ export default function StitchYourOwnPage() {
           </h2>
 
           <div className="space-y-6">
-            {/* Kameez Size Selection */}
+            {/* Kameez Measurements */}
             <div>
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
-                Select Kameez Size
+                Kameez Measurements
               </h3>
-              
-              <div>
-                <label className="block text-sm text-gray-600 dark:text-gray-400 mb-2">
-                  Size <span className="text-red-500">*</span>
-                </label>
-                <select
-                  value={measurements.kameezSize}
-                  onChange={(e) => handleMeasurementChange('kameezSize', e.target.value)}
-                  className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-dark-surface text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white"
-                >
-                  <option value="">Select a size</option>
-                  {kameezSizes.map((size) => (
-                    <option key={size.id} value={size.size}>
-                      {size.size} - Collar: {size.collar}", Shoulder: {size.shoulder}", Chest: {size.chest}", Sleeves: {size.sleeves}", Length: {size.length}"
-                    </option>
-                  ))}
-                </select>
-                {measurements.kameezSize && (
-                  <div className="mt-2 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg text-sm">
-                    <p className="font-semibold text-gray-900 dark:text-white mb-1">Selected Size: {measurements.kameezSize}</p>
-                    {kameezSizes.find(s => s.size === measurements.kameezSize) && (
-                      <div className="text-gray-600 dark:text-gray-400">
-                        {(() => {
-                          const selected = kameezSizes.find(s => s.size === measurements.kameezSize)!
-                          return (
-                            <>
-                              <p>Collar: {selected.collar}" | Shoulder: {selected.shoulder}" | Chest: {selected.chest}"</p>
-                              <p>Sleeves: {selected.sleeves}" | Length: {selected.length}"</p>
-                            </>
-                          )
-                        })()}
-                      </div>
-                    )}
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm text-gray-600 dark:text-gray-400 mb-2">
+                      Collar (inches) <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="number"
+                      step="0.5"
+                      value={measurements.customCollar}
+                      onChange={(e) => handleMeasurementChange('customCollar', e.target.value)}
+                      className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-dark-surface text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white"
+                      placeholder="e.g., 15"
+                    />
                   </div>
-                )}
+
+                  <div>
+                    <label className="block text-sm text-gray-600 dark:text-gray-400 mb-2">
+                      Shoulder (inches) <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="number"
+                      step="0.5"
+                      value={measurements.customShoulder}
+                      onChange={(e) => handleMeasurementChange('customShoulder', e.target.value)}
+                      className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-dark-surface text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white"
+                      placeholder="e.g., 17.5"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm text-gray-600 dark:text-gray-400 mb-2">
+                      Chest (inches) <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="number"
+                      step="0.5"
+                      value={measurements.customChest}
+                      onChange={(e) => handleMeasurementChange('customChest', e.target.value)}
+                      className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-dark-surface text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white"
+                      placeholder="e.g., 23"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm text-gray-600 dark:text-gray-400 mb-2">
+                      Sleeves (inches) <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="number"
+                      step="0.5"
+                      value={measurements.customSleeves}
+                      onChange={(e) => handleMeasurementChange('customSleeves', e.target.value)}
+                      className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-dark-surface text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white"
+                      placeholder="e.g., 23.5"
+                    />
+                  </div>
+
+                  <div className="md:col-span-2">
+                    <label className="block text-sm text-gray-600 dark:text-gray-400 mb-2">
+                      Length (inches) <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="number"
+                      step="0.5"
+                      value={measurements.customKameezLength}
+                      onChange={(e) => handleMeasurementChange('customKameezLength', e.target.value)}
+                      className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-dark-surface text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white"
+                      placeholder="e.g., 40"
+                    />
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -350,44 +379,54 @@ export default function StitchYourOwnPage() {
               </div>
             </div>
 
-            {/* Shalwar Size Selection - Conditional */}
+            {/* Color Selection */}
+            <div>
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+                Select Color <span className="text-red-500">*</span>
+              </h3>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {availableColors.map((color) => (
+                  <button
+                    key={color}
+                    type="button"
+                    onClick={() => handleMeasurementChange('color', color)}
+                    className={`py-3 px-4 rounded-lg border-2 font-medium transition-all text-left ${
+                      measurements.color === color
+                        ? 'border-gray-900 dark:border-white bg-gray-900 dark:bg-white text-white dark:text-gray-900'
+                        : 'border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white hover:border-gray-500 dark:hover:border-gray-500'
+                    }`}
+                  >
+                    {color}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Shalwar Measurements */}
             {measurements.bottomWear === 'shalwar' && (
               <div>
                 <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
-                  Select Shalwar Size
+                  Shalwar Measurements
                 </h3>
                 
                 <div>
                   <label className="block text-sm text-gray-600 dark:text-gray-400 mb-2">
-                    Size <span className="text-red-500">*</span>
+                    Length (inches) <span className="text-red-500">*</span>
                   </label>
-                  <select
-                    value={measurements.shalwarSize}
-                    onChange={(e) => handleMeasurementChange('shalwarSize', e.target.value)}
+                  <input
+                    type="number"
+                    step="0.5"
+                    value={measurements.customShalwarLength}
+                    onChange={(e) => handleMeasurementChange('customShalwarLength', e.target.value)}
                     className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-dark-surface text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white"
-                  >
-                    <option value="">Select a size</option>
-                    {shalwarSizes.map((size) => (
-                      <option key={size.id} value={size.size}>
-                        {size.size} - Length: {size.length}"
-                      </option>
-                    ))}
-                  </select>
-                  {measurements.shalwarSize && (
-                    <div className="mt-2 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg text-sm">
-                      <p className="font-semibold text-gray-900 dark:text-white mb-1">Selected Size: {measurements.shalwarSize}</p>
-                      {shalwarSizes.find(s => s.size === measurements.shalwarSize) && (
-                        <div className="text-gray-600 dark:text-gray-400">
-                          <p>Length: {shalwarSizes.find(s => s.size === measurements.shalwarSize)!.length}"</p>
-                        </div>
-                      )}
-                    </div>
-                  )}
+                    placeholder="e.g., 40"
+                  />
                 </div>
               </div>
             )}
 
-            {/* Pajama Measurements - Conditional */}
+            {/* Pajama Measurements */}
             {measurements.bottomWear === 'pajama' && (
               <div>
                 <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
@@ -397,13 +436,27 @@ export default function StitchYourOwnPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm text-gray-600 dark:text-gray-400 mb-2">
+                      Length (inches) <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="number"
+                      step="0.5"
+                      value={measurements.customPajamaLength}
+                      onChange={(e) => handleMeasurementChange('customPajamaLength', e.target.value)}
+                      className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-dark-surface text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white"
+                      placeholder="e.g., 40"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm text-gray-600 dark:text-gray-400 mb-2">
                       Waist (inches) <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="number"
                       step="0.5"
-                      value={measurements.waist}
-                      onChange={(e) => handleMeasurementChange('waist', e.target.value)}
+                      value={measurements.customWaist}
+                      onChange={(e) => handleMeasurementChange('customWaist', e.target.value)}
                       className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-dark-surface text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white"
                       placeholder="e.g., 32"
                     />
@@ -416,8 +469,8 @@ export default function StitchYourOwnPage() {
                     <input
                       type="number"
                       step="0.5"
-                      value={measurements.thigh}
-                      onChange={(e) => handleMeasurementChange('thigh', e.target.value)}
+                      value={measurements.customThigh}
+                      onChange={(e) => handleMeasurementChange('customThigh', e.target.value)}
                       className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-dark-surface text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white"
                       placeholder="e.g., 24"
                     />

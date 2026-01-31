@@ -8,7 +8,7 @@ from database import get_db
 from models import CustomFabric, Admin
 from schemas import CustomFabricResponse
 from auth import get_current_admin
-from s3_utils import upload_file_to_s3, delete_file_from_s3
+from file_utils import upload_file_local, delete_file_local
 
 router = APIRouter()
 
@@ -76,10 +76,10 @@ async def create_custom_fabric(
     admin: Admin = Depends(get_current_admin),
     db: Session = Depends(get_db)
 ):
-    # Save image to S3
+    # Save image to local storage
     file_extension = os.path.splitext(file.filename)[1]
     filename = f"{uuid4()}{file_extension}"
-    image_url = await upload_file_to_s3(file, "custom-fabrics", filename)
+    image_url = await upload_file_local(file, "custom-fabrics", filename)
     
     # Create custom fabric
     custom_fabric = CustomFabric(
@@ -123,14 +123,14 @@ async def update_custom_fabric(
     
     # Update image if provided
     if file:
-        # Delete old image from S3
+        # Delete old image from local storage
         if fabric.image_url:
-            delete_file_from_s3(fabric.image_url)
+            delete_file_local(fabric.image_url)
         
-        # Save new image to S3
+        # Save new image to local storage
         file_extension = os.path.splitext(file.filename)[1]
         filename = f"{uuid4()}{file_extension}"
-        image_url = await upload_file_to_s3(file, "custom-fabrics", filename)
+        image_url = await upload_file_local(file, "custom-fabrics", filename)
         fabric.image_url = image_url
     
     db.commit()
@@ -148,9 +148,9 @@ async def delete_custom_fabric(
     if not fabric:
         raise HTTPException(status_code=404, detail="Custom fabric not found")
     
-    # Delete image from S3
+    # Delete image from local storage
     if fabric.image_url:
-        delete_file_from_s3(fabric.image_url)
+        delete_file_local(fabric.image_url)
     
     db.delete(fabric)
     db.commit()

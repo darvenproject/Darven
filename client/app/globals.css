@@ -6,12 +6,16 @@
   box-sizing: border-box;
   padding: 0;
   margin: 0;
+  -webkit-tap-highlight-color: transparent; /* Remove tap highlight on mobile */
 }
 
 html,
 body {
   max-width: 100vw;
   overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+  touch-action: pan-y pan-x; /* Allow touch panning in all directions */
 }
 
 /* Base styles for light and dark themes */
@@ -256,5 +260,31 @@ button:active {
   .backdrop-blur {
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
+  }
+}
+
+/* Mobile scrolling improvements */
+@media (max-width: 768px) {
+  body {
+    position: relative;
+    overflow-y: scroll !important;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  input, select, textarea {
+    touch-action: manipulation;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+  }
+  
+  /* Prevent zoom on input focus on iOS */
+  input[type="text"],
+  input[type="number"],
+  input[type="email"],
+  input[type="tel"],
+  select,
+  textarea {
+    font-size: 16px !important;
   }
 }

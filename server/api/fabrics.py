@@ -8,7 +8,7 @@ from database import get_db
 from models import Fabric, Admin
 from schemas import FabricResponse
 from auth import get_current_admin
-from s3_utils import upload_file_to_s3, delete_multiple_files_from_s3
+from file_utils import upload_file_local, delete_multiple_files_local
 
 router = APIRouter()
 
@@ -35,12 +35,12 @@ async def create_fabric(
     admin: Admin = Depends(get_current_admin),
     db: Session = Depends(get_db)
 ):
-    # Save images to S3
+    # Save images to local storage
     image_urls = []
     for file in files:
         file_extension = os.path.splitext(file.filename)[1]
         filename = f"{uuid4()}{file_extension}"
-        image_url = await upload_file_to_s3(file, "fabrics", filename)
+        image_url = await upload_file_local(file, "fabrics", filename)
         image_urls.append(image_url)
     
     # Create fabric
@@ -89,15 +89,15 @@ async def update_fabric(
     
     # Update images if provided
     if files:
-        # Delete old images from S3
-        delete_multiple_files_from_s3(fabric.images)
+        # Delete old images from local storage
+        delete_multiple_files_local(fabric.images)
         
-        # Save new images to S3
+        # Save new images to local storage
         image_urls = []
         for file in files:
             file_extension = os.path.splitext(file.filename)[1]
             filename = f"{uuid4()}{file_extension}"
-            image_url = await upload_file_to_s3(file, "fabrics", filename)
+            image_url = await upload_file_local(file, "fabrics", filename)
             image_urls.append(image_url)
         
         fabric.images = image_urls
@@ -117,8 +117,8 @@ async def delete_fabric(
     if not fabric:
         raise HTTPException(status_code=404, detail="Fabric not found")
     
-    # Delete images from S3
-    delete_multiple_files_from_s3(fabric.images)
+    # Delete images from local storage
+    delete_multiple_files_local(fabric.images)
     
     db.delete(fabric)
     db.commit()

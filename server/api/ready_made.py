@@ -9,7 +9,7 @@ from database import get_db
 from models import ReadyMadeProduct, Admin
 from schemas import ReadyMadeProductResponse
 from auth import get_current_admin
-from s3_utils import upload_file_to_s3, delete_multiple_files_from_s3
+from file_utils import upload_file_local, delete_multiple_files_local
 
 router = APIRouter()
 
@@ -32,17 +32,18 @@ async def create_ready_made_product(
     price: float = Form(...),
     material: str = Form(...),
     size: str = Form(...),
+    color: str = Form(None),
     stock: int = Form(0),
     files: List[UploadFile] = File(...),
     admin: Admin = Depends(get_current_admin),
     db: Session = Depends(get_db)
 ):
-    # Save images to S3
+    # Save images to local storage
     image_urls = []
     for file in files:
         file_extension = os.path.splitext(file.filename)[1]
         filename = f"{uuid4()}{file_extension}"
-        image_url = await upload_file_to_s3(file, "ready-made", filename)
+        image_url = await upload_file_local(file, "ready-made", filename)
         image_urls.append(image_url)
     
     # Create product
@@ -52,6 +53,7 @@ async def create_ready_made_product(
         price=price,
         material=material,
         size=size,
+        color=color,
         stock=stock,
         images=image_urls
     )
@@ -70,6 +72,7 @@ async def update_ready_made_product(
     price: float = Form(None),
     material: str = Form(None),
     size: str = Form(None),
+    color: str = Form(None),
     stock: int = Form(None),
     files: List[UploadFile] = File(None),
     admin: Admin = Depends(get_current_admin),
@@ -90,20 +93,22 @@ async def update_ready_made_product(
         product.material = material
     if size is not None:
         product.size = size
+    if color is not None:
+        product.color = color
     if stock is not None:
         product.stock = stock
     
     # Update images if provided
     if files:
-        # Delete old images from S3
-        delete_multiple_files_from_s3(product.images)
+        # Delete old images from local storage
+        delete_multiple_files_local(product.images)
         
-        # Save new images to S3
+        # Save new images to local storage
         image_urls = []
         for file in files:
             file_extension = os.path.splitext(file.filename)[1]
             filename = f"{uuid4()}{file_extension}"
-            image_url = await upload_file_to_s3(file, "ready-made", filename)
+            image_url = await upload_file_local(file, "ready-made", filename)
             image_urls.append(image_url)
         
         product.images = image_urls
@@ -123,8 +128,8 @@ async def delete_ready_made_product(
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
     
-    # Delete images from S3
-    delete_multiple_files_from_s3(product.images)
+    # Delete images from local storage
+    delete_multiple_files_local(product.images)
     
     db.delete(product)
     db.commit()

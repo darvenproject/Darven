@@ -15,6 +15,7 @@ interface Product {
   price: number
   material: string
   size: string
+  color?: string
   images: string[]
   stock: number
 }
@@ -27,7 +28,15 @@ export default function ProductDetailPage() {
   const [loading, setLoading] = useState(true)
   const [selectedImage, setSelectedImage] = useState(0)
   const [quantity, setQuantity] = useState(1)
+  const [selectedSize, setSelectedSize] = useState('')
+  const [selectedColor, setSelectedColor] = useState('')
   const addItem = useCartStore((state) => state.addItem)
+  
+  // Available colors for all products
+  const availableColors = ['Jet Black', 'Navy Blue', 'Milky White', 'Grey', 'Dark Purple']
+  
+  // Available sizes for ready-made products
+  const availableSizes = ['XS', 'S', 'M', 'L', 'XL']
 
   useEffect(() => {
     fetchProduct()
@@ -58,8 +67,18 @@ export default function ProductDetailPage() {
   const handleAddToCart = () => {
     if (!product) return
     
+    // Validate selections
+    if (!selectedSize) {
+      alert('Please select a size')
+      return
+    }
+    if (!selectedColor) {
+      alert('Please select a color')
+      return
+    }
+    
     addItem({
-      id: `ready-made-${product.id}`,
+      id: `ready-made-${product.id}-${selectedSize}-${selectedColor}-${Date.now()}`,
       type: 'ready-made',
       name: product.name,
       price: product.price,
@@ -67,7 +86,8 @@ export default function ProductDetailPage() {
       image: product.images[0],
       details: {
         material: product.material,
-        size: product.size
+        size: selectedSize,
+        color: selectedColor
       }
     })
     
@@ -164,15 +184,54 @@ export default function ProductDetailPage() {
             </div>
             
             <div className="flex items-center gap-3 sm:gap-4 text-sm sm:text-base">
-              <span className="text-gray-600 dark:text-gray-400 w-20 sm:w-24">Size:</span>
-              <span className="text-gray-900 dark:text-white font-medium">{product.size}</span>
-            </div>
-            
-            <div className="flex items-center gap-3 sm:gap-4 text-sm sm:text-base">
               <span className="text-gray-600 dark:text-gray-400 w-20 sm:w-24">Stock:</span>
               <span className={`font-medium ${product.stock > 0 ? 'text-green-600' : 'text-red-600'}`}>
                 {product.stock > 0 ? `${product.stock} available` : 'Out of stock'}
               </span>
+            </div>
+          </div>
+
+          {/* Size Selection */}
+          <div className="mb-6">
+            <label className="block text-gray-700 dark:text-gray-300 font-semibold mb-3">
+              Select Size <span className="text-red-500">*</span>
+            </label>
+            <div className="grid grid-cols-5 gap-2">
+              {availableSizes.map((size) => (
+                <button
+                  key={size}
+                  onClick={() => setSelectedSize(size)}
+                  className={`py-2 px-3 rounded-lg border-2 font-medium transition-all ${
+                    selectedSize === size
+                      ? 'border-gray-900 dark:border-white bg-gray-900 dark:bg-white text-white dark:text-gray-900'
+                      : 'border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white hover:border-gray-500 dark:hover:border-gray-500'
+                  }`}
+                >
+                  {size}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Color Selection */}
+          <div className="mb-6">
+            <label className="block text-gray-700 dark:text-gray-300 font-semibold mb-3">
+              Select Color <span className="text-red-500">*</span>
+            </label>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              {availableColors.map((color) => (
+                <button
+                  key={color}
+                  onClick={() => setSelectedColor(color)}
+                  className={`py-3 px-4 rounded-lg border-2 font-medium transition-all text-left ${
+                    selectedColor === color
+                      ? 'border-gray-900 dark:border-white bg-gray-900 dark:bg-white text-white dark:text-gray-900'
+                      : 'border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white hover:border-gray-500 dark:hover:border-gray-500'
+                  }`}
+                >
+                  {color}
+                </button>
+              ))}
             </div>
           </div>
           

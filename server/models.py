@@ -29,6 +29,7 @@ class ReadyMadeProduct(Base):
     price = Column(Float)
     material = Column(String)
     size = Column(String)
+    color = Column(String, nullable=True)  # Available colors
     images = Column(JSON)  # List of image URLs
     stock = Column(Integer, default=0)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
@@ -55,6 +56,7 @@ class CustomFabric(Base):
     description = Column(Text)
     price = Column(Float)
     material = Column(String)
+    color = Column(String, nullable=True)  # Available colors
     image_url = Column(String)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
@@ -112,5 +114,16 @@ class ShalwarSize(Base):
     id = Column(Integer, primary_key=True, index=True)
     size = Column(SQLEnum(SizeType), unique=True, index=True)
     length = Column(Float)  # inches
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+
+class PajamaSize(Base):
+    __tablename__ = "pajama_sizes"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    size = Column(SQLEnum(SizeType), unique=True, index=True)
+    length = Column(Float)  # inches
+    waist = Column(Float)  # inches
+    hips = Column(Float)  # inches
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())

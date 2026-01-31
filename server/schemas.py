@@ -21,6 +21,7 @@ class ReadyMadeProductCreate(BaseModel):
     price: float
     material: str
     size: str
+    color: Optional[str] = None
     stock: int = 0
 
 class ReadyMadeProductResponse(BaseModel):
@@ -30,6 +31,7 @@ class ReadyMadeProductResponse(BaseModel):
     price: float
     material: str
     size: str
+    color: Optional[str] = None
     images: List[str]
     stock: int
     created_at: datetime
@@ -65,6 +67,7 @@ class CustomFabricResponse(BaseModel):
     description: str
     price: float
     material: str
+    color: Optional[str] = None
     image_url: str
     
     class Config:
@@ -161,12 +164,37 @@ class ShalwarSizeResponse(BaseModel):
     class Config:
         from_attributes = True
 
+class PajamaSizeCreate(BaseModel):
+    size: str  # XS, S, M, L, XL
+    length: float
+    waist: float
+    hips: float
+
+class PajamaSizeResponse(BaseModel):
+    id: int
+    size: str
+    length: float
+    waist: float
+    hips: float
+    
+    class Config:
+        from_attributes = True
+
 class UserMeasurements(BaseModel):
+    # Kameez measurements
     collar: Optional[float] = None
     shoulder: Optional[float] = None
     chest: Optional[float] = None
     sleeves: Optional[float] = None
-    length: Optional[float] = None
+    kameez_length: Optional[float] = None
+    
+    # Shalwar measurements
+    shalwar_length: Optional[float] = None
+    
+    # Pajama measurements
+    pajama_length: Optional[float] = None
+    waist: Optional[float] = None
+    thigh: Optional[float] = None
 
 class SizeRecommendation(BaseModel):
     recommended_size: str

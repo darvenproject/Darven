@@ -97,17 +97,72 @@ export default function CartPage() {
                         <p>Material: {item.details?.material}</p>
                         <details className="mt-2">
                           <summary className="cursor-pointer hover:text-gray-900 dark:hover:text-white">
-                            View Measurements
+                            View Measurements & Details
                           </summary>
-                          <div className="mt-2 pl-4">
-                            <p>Neck: {item.details?.measurements?.neck}"</p>
-                            <p>Shoulder: {item.details?.measurements?.shoulder}"</p>
-                            <p>Chest: {item.details?.measurements?.chest}"</p>
-                            <p>Sleeve: {item.details?.measurements?.sleeve}"</p>
-                            <p>Height: {item.details?.measurements?.height}"</p>
-                            <p>Biceps: {item.details?.measurements?.biceps}"</p>
-                            <p>Waist: {item.details?.measurements?.waist}"</p>
-                            <p>Trouser Height: {item.details?.measurements?.trouser_height}"</p>
+                          <div className="mt-2 pl-4 space-y-2">
+                            {/* Measurement Type */}
+                            <p className="font-semibold">Type: {item.details?.measurements?.measurementType === 'predefined' ? 'Predefined Size' : 'Custom Measurements'}</p>
+                            
+                            {/* Options */}
+                            <div>
+                              <p className="font-semibold mt-2">Options:</p>
+                              <p>Cuffs: {item.details?.measurements?.cuffs === 'yes' ? 'Yes' : 'No'}</p>
+                              <p>Collar: {item.details?.measurements?.collarType === 'sherwani' ? 'Sherwani Collar' : 'Shirt Collar'}</p>
+                              <p>Bottom Wear: {item.details?.measurements?.bottomWear === 'pajama' ? 'Pajama' : 'Shalwar'}</p>
+                            </div>
+
+                            {/* Kameez Measurements */}
+                            {item.details?.measurements?.measurementType === 'predefined' ? (
+                              <div>
+                                <p className="font-semibold mt-2">Kameez Size: {item.details?.measurements?.kameezSize}</p>
+                                {item.details?.measurements?.kameezMeasurements && (
+                                  <>
+                                    <p>Collar: {item.details?.measurements?.kameezMeasurements?.collar}"</p>
+                                    <p>Shoulder: {item.details?.measurements?.kameezMeasurements?.shoulder}"</p>
+                                    <p>Chest: {item.details?.measurements?.kameezMeasurements?.chest}"</p>
+                                    <p>Sleeves: {item.details?.measurements?.kameezMeasurements?.sleeves}"</p>
+                                    <p>Length: {item.details?.measurements?.kameezMeasurements?.length}"</p>
+                                  </>
+                                )}
+                              </div>
+                            ) : (
+                              <div>
+                                <p className="font-semibold mt-2">Custom Kameez Measurements:</p>
+                                <p>Collar: {item.details?.measurements?.customCollar}"</p>
+                                <p>Shoulder: {item.details?.measurements?.customShoulder}"</p>
+                                <p>Chest: {item.details?.measurements?.customChest}"</p>
+                                <p>Sleeves: {item.details?.measurements?.customSleeves}"</p>
+                                <p>Length: {item.details?.measurements?.customKameezLength}"</p>
+                              </div>
+                            )}
+
+                            {/* Bottom Wear Measurements */}
+                            {item.details?.measurements?.bottomWear === 'shalwar' && (
+                              <div>
+                                {item.details?.measurements?.measurementType === 'predefined' ? (
+                                  <>
+                                    <p className="font-semibold mt-2">Shalwar Size: {item.details?.measurements?.shalwarSize}</p>
+                                    {item.details?.measurements?.shalwarMeasurements && (
+                                      <p>Length: {item.details?.measurements?.shalwarMeasurements?.length}"</p>
+                                    )}
+                                  </>
+                                ) : (
+                                  <>
+                                    <p className="font-semibold mt-2">Custom Shalwar Measurements:</p>
+                                    <p>Length: {item.details?.measurements?.customShalwarLength}"</p>
+                                  </>
+                                )}
+                              </div>
+                            )}
+
+                            {item.details?.measurements?.bottomWear === 'pajama' && item.details?.measurements?.measurementType === 'custom' && (
+                              <div>
+                                <p className="font-semibold mt-2">Custom Pajama Measurements:</p>
+                                <p>Length: {item.details?.measurements?.customPajamaLength}"</p>
+                                <p>Waist: {item.details?.measurements?.customWaist}"</p>
+                                <p>Thigh: {item.details?.measurements?.customThigh}"</p>
+                              </div>
+                            )}
                           </div>
                         </details>
                       </div>

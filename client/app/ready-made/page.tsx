@@ -13,6 +13,7 @@ interface Product {
   price: number
   material: string
   size: string
+  color?: string
   images: string[]
   stock: number
 }

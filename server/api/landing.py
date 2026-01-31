@@ -8,7 +8,7 @@ from database import get_db
 from models import LandingImage, Admin
 from schemas import LandingImageResponse
 from auth import get_current_admin
-from s3_utils import upload_file_to_s3, delete_file_from_s3
+from file_utils import upload_file_local, delete_file_local
 
 router = APIRouter()
 
@@ -41,7 +41,7 @@ async def update_landing_image(
     # Save file to S3
     file_extension = os.path.splitext(file.filename)[1]
     filename = f"{category}-{uuid4()}{file_extension}"
-    image_url = await upload_file_to_s3(file, "landing", filename)
+    image_url = await upload_file_local(file, "landing", filename)
     
     title_map = {
         "ready-made": "Ready Made",
@@ -73,7 +73,7 @@ async def update_landing_image(
         if landing_image:
             # Delete old image from S3 if exists
             if landing_image.image_url:
-                delete_file_from_s3(landing_image.image_url)
+                delete_file_local(landing_image.image_url)
             
             landing_image.image_url = image_url
         else:
@@ -106,7 +106,7 @@ async def update_landing_portrait_image(
     # Save file to S3
     file_extension = os.path.splitext(file.filename)[1]
     filename = f"{category}-portrait-{uuid4()}{file_extension}"
-    portrait_image_url = await upload_file_to_s3(file, "landing", filename)
+    portrait_image_url = await upload_file_local(file, "landing", filename)
     
     # Update specific landing image by ID
     landing_image = db.query(LandingImage).filter(
@@ -117,9 +117,9 @@ async def update_landing_portrait_image(
     if not landing_image:
         raise HTTPException(status_code=404, detail="Landing image not found")
     
-    # Delete old portrait image from S3 if exists
+    # Delete old portrait image from local storage if exists
     if landing_image.portrait_image_url:
-        delete_file_from_s3(landing_image.portrait_image_url)
+        delete_file_local(landing_image.portrait_image_url)
     
     landing_image.portrait_image_url = portrait_image_url
     
@@ -139,11 +139,11 @@ async def delete_landing_image(
     if not landing_image:
         raise HTTPException(status_code=404, detail="Landing image not found")
     
-    # Delete image files from S3
+    # Delete image files from local storage
     if landing_image.image_url:
-        delete_file_from_s3(landing_image.image_url)
+        delete_file_local(landing_image.image_url)
     if landing_image.portrait_image_url:
-        delete_file_from_s3(landing_image.portrait_image_url)
+        delete_file_local(landing_image.portrait_image_url)
     
     db.delete(landing_image)
     db.commit()
