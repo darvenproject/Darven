@@ -2,6 +2,19 @@
 const nextConfig = {
   images: {
     remotePatterns: [
+      // Production - backend uploads
+      {
+        protocol: 'https',
+        hostname: 'api.shopdarven.pk',
+        pathname: '/uploads/**',
+      },
+      // Production - frontend placeholders
+      {
+        protocol: 'https',
+        hostname: 'shopdarven.pk',
+        pathname: '/**',
+      },
+      // Local development
       {
         protocol: 'http',
         hostname: 'localhost',
