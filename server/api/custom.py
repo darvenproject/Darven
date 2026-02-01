@@ -12,7 +12,6 @@ from file_utils import upload_file_local, delete_file_local
 
 router = APIRouter()
 
-# Placeholder images live on Netlify (your frontend)
 FRONTEND_URL = os.getenv("FRONTEND_URL", "https://shopdarven.pk").rstrip("/")
 
 
@@ -80,9 +79,6 @@ async def create_custom_fabric(
 ):
     file_extension = os.path.splitext(file.filename)[1]
     filename = f"{uuid4()}{file_extension}"
-
-    # upload_file_local already returns a full URL via get_file_url()
-    # e.g. https://api.shopdarven.pk/uploads/custom-fabrics/uuid.jpg
     image_url = await upload_file_local(file, "custom-fabrics", filename)
 
     custom_fabric = CustomFabric(
@@ -125,7 +121,6 @@ async def update_custom_fabric(
         fabric.material = material
 
     if file:
-        # delete_file_local already handles full URLs correctly
         if fabric.image_url:
             delete_file_local(fabric.image_url)
 
@@ -149,7 +144,6 @@ async def delete_custom_fabric(
     if not fabric:
         raise HTTPException(status_code=404, detail="Custom fabric not found")
 
-    # Only delete the file if it's a backend-hosted upload, not a Netlify placeholder
     if fabric.image_url and fabric.image_url.startswith("https://api.shopdarven.pk"):
         delete_file_local(fabric.image_url)
 
