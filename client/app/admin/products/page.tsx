@@ -14,6 +14,7 @@ interface Product {
   price: number
   material: string
   size: string
+  color?: string
   images: string[]
   stock: number
 }
@@ -30,6 +31,7 @@ export default function AdminProductsPage() {
     price: '',
     material: '',
     size: '',
+    color: '',
     stock: ''
   })
   const [files, setFiles] = useState<FileList | null>(null)
@@ -69,6 +71,9 @@ export default function AdminProductsPage() {
       data.append('price', formData.price)
       data.append('material', formData.material)
       data.append('size', formData.size)
+      if (formData.color) {
+        data.append('color', formData.color)
+      }
       data.append('stock', formData.stock)
 
       if (files) {
@@ -85,7 +90,7 @@ export default function AdminProductsPage() {
 
       setShowForm(false)
       setEditingProduct(null)
-      setFormData({ name: '', description: '', price: '', material: '', size: '', stock: '' })
+      setFormData({ name: '', description: '', price: '', material: '', size: '', color: '', stock: '' })
       setFiles(null)
       fetchProducts()
     } catch (error) {
@@ -104,6 +109,7 @@ export default function AdminProductsPage() {
       price: product.price.toString(),
       material: product.material,
       size: product.size,
+      color: product.color || '',
       stock: product.stock.toString()
     })
     setShowForm(true)
@@ -215,7 +221,7 @@ export default function AdminProductsPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-3 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Material *
@@ -240,6 +246,19 @@ export default function AdminProductsPage() {
                     onChange={(e) => setFormData({ ...formData, size: e.target.value })}
                     className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-dark-bg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white"
                     placeholder="e.g., M, L, XL"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Color
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.color}
+                    onChange={(e) => setFormData({ ...formData, color: e.target.value })}
+                    className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-dark-bg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white"
+                    placeholder="e.g., Black, Navy"
                   />
                 </div>
               </div>
@@ -271,7 +290,7 @@ export default function AdminProductsPage() {
                   onClick={() => {
                     setShowForm(false)
                     setEditingProduct(null)
-                    setFormData({ name: '', description: '', price: '', material: '', size: '', stock: '' })
+                    setFormData({ name: '', description: '', price: '', material: '', size: '', color: '', stock: '' })
                     setFiles(null)
                   }}
                   className="px-6 py-3 border border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white rounded-lg hover:bg-gray-100 dark:hover:bg-dark-bg transition-colors"
@@ -308,7 +327,7 @@ export default function AdminProductsPage() {
                   <p className="text-sm text-gray-600 dark:text-gray-400 mb-3 line-clamp-2">
                     {product.description}
                   </p>
-                  <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center justify-between mb-2">
                     <span className="text-xl font-bold text-gray-900 dark:text-white">
                       Rs {product.price.toLocaleString()}
                     </span>
@@ -316,7 +335,12 @@ export default function AdminProductsPage() {
                       Stock: {product.stock}
                     </span>
                   </div>
-                  <div className="flex gap-2">
+                  {product.color && (
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                      Color: {product.color}
+                    </p>
+                  )}
+                  <div className="flex gap-2 mt-4">
                     <button
                       onClick={() => handleEdit(product)}
                       className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
