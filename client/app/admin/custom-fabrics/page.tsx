@@ -102,14 +102,27 @@ export default function AdminCustomFabricsPage() {
         console.log(key, ':', value)
       })
 
+      let response
       if (editingFabric) {
         console.log('Updating fabric ID:', editingFabric.id)
-        const response = await apiClient.api.put(`/custom-fabrics/${editingFabric.id}`, data)
-        console.log('Update response:', response.data)
+        try {
+          response = await apiClient.api.put(`/custom-fabrics/${editingFabric.id}`, data)
+          console.log('Update response:', response.data)
+        } catch (error: any) {
+          console.error('Update failed:', error)
+          console.error('Error response:', error.response?.data)
+          throw error
+        }
       } else {
         console.log('Creating new fabric')
-        const response = await apiClient.api.post('/custom-fabrics', data)
-        console.log('Create response:', response.data)
+        try {
+          response = await apiClient.api.post('/custom-fabrics', data)
+          console.log('Create response:', response.data)
+        } catch (error: any) {
+          console.error('Create failed:', error)
+          console.error('Error response:', error.response?.data)
+          throw error
+        }
       }
 
       setShowForm(false)

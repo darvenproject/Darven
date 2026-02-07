@@ -137,14 +137,26 @@ async def update_custom_fabric(
     colors: str = Form(None),  # JSON string of color array
     file: UploadFile = File(None)
 ):
-    print(f"📝 Updating custom fabric ID: {fabric_id}")
-    print(f"Colors received (raw): {colors}")
+    print(f"\n{'='*60}")
+    print(f"📝 UPDATE REQUEST for fabric ID: {fabric_id}")
+    print(f"{'='*60}")
+    print(f"Received parameters:")
+    print(f"  name: {name}")
+    print(f"  description: {description}")
+    print(f"  price: {price}")
+    print(f"  material: {material}")
+    print(f"  colors (raw): {colors}")
+    print(f"  file: {file.filename if file else 'None'}")
     
     fabric = db.query(CustomFabric).filter(CustomFabric.id == fabric_id).first()
     if not fabric:
+        print(f"❌ ERROR: Fabric {fabric_id} not found!")
         raise HTTPException(status_code=404, detail="Custom fabric not found")
     
-    print(f"Current fabric colors: {fabric.colors}")
+    print(f"\nCurrent fabric state:")
+    print(f"  Name: {fabric.name}")
+    print(f"  Colors: {fabric.colors}")
+    print(f"  Image: {fabric.image_url}")
 
     if name is not None:
         fabric.name = name

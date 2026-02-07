@@ -12,9 +12,6 @@ export const getImageUrl = (imagePath: string): string => {
 
 export const api = axios.create({
   baseURL: API_BASE_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
 })
 
 // Add auth token to requests if available
@@ -26,6 +23,14 @@ api.interceptors.request.use((config) => {
       console.log('Request with token to:', config.url)
     }
   }
+  
+  // Set Content-Type based on data type
+  // If it's FormData, let axios set the boundary automatically
+  // Otherwise, use application/json
+  if (!(config.data instanceof FormData)) {
+    config.headers['Content-Type'] = 'application/json'
+  }
+  
   return config
 }, (error) => {
   return Promise.reject(error)
