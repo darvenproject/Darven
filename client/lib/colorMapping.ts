@@ -8,7 +8,7 @@ export const colorToHex: Record<string, string> = {
   
   // II. Pale Tints
   "Dark Cream": "#F3E5AB",
-  "Ice Green": "#D0F2E8",
+  "Ice Green": "#87D8C3",
   "Pista Green": "#B9D9B2",
   "Spring Wood": "#F1EBD9",
   "Westar": "#E0DED7",
@@ -21,7 +21,7 @@ export const colorToHex: Record<string, string> = {
   "Biscotti": "#E3DAC9",
   
   // IV. The Biscuits
-  "Beige": "#F5F5DC",
+  "Beige": "#FFFACD",
   "Warm Biscuit": "#E1C699",
   "Fawn": "#E5AA70",
   "Desert Biscuit": "#D2B48C",
@@ -49,7 +49,7 @@ export const colorToHex: Record<string, string> = {
   
   // VIII. Muted Earth
   "Light Mehandi": "#8B864E",
-  "Pesto": "#7C7631",
+  "Pesto": "#798230",
   "Metallic Bronze": "#49371B",
   "Ironstone": "#86483C",
   
@@ -77,7 +77,7 @@ export const colorToHex: Record<string, string> = {
   "Rangitoto": "#2E3222",
   "Timber Green": "#163330",
   "Forest Green": "#228B22",
-  "Emerald Green": "#50C878",
+  "Emerald Green": "#046307",
   
   // XIII. The Regals
   "Maroon": "#800000",
@@ -99,7 +99,7 @@ export const colorToHex: Record<string, string> = {
   // XVI. Midnight
   "Heavy Metal": "#2B3228",
   "Congo Purple": "#28212C",
-  "Firefly": "#0E2021",
+  "Firefly": "#0E2A30",
   "Pearl Black": "#1C1C1C",
   
   // XVII. Absolute
