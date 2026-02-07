@@ -111,9 +111,12 @@ async def create_custom_fabric(
         image_url=image_url
     )
 
+    print(f"About to commit. Fabric colors before commit: {custom_fabric.colors}")
     db.add(custom_fabric)
     db.commit()
+    print(f"Committed to database")
     db.refresh(custom_fabric)
+    print(f"After refresh from DB. Fabric colors: {custom_fabric.colors}, type: {type(custom_fabric.colors)}")
     
     print(f"✅ Created fabric with colors: {custom_fabric.colors}")
 
@@ -154,8 +157,11 @@ async def update_custom_fabric(
     if colors is not None:
         import json
         try:
-            fabric.colors = json.loads(colors)
-            print(f"Colors updated to: {fabric.colors}")
+            colors_list = json.loads(colors)
+            print(f"Colors parsed: {colors_list}, type: {type(colors_list)}")
+            # Explicitly set as a Python list
+            fabric.colors = colors_list
+            print(f"Colors updated to: {fabric.colors}, type: {type(fabric.colors)}")
         except Exception as e:
             print(f"Failed to parse colors: {e}")
             pass
@@ -174,8 +180,11 @@ async def update_custom_fabric(
     else:
         print(f"No new file, keeping existing: {fabric.image_url}")
 
+    print(f"About to commit. Fabric colors before commit: {fabric.colors}")
     db.commit()
+    print(f"Committed to database")
     db.refresh(fabric)
+    print(f"After refresh from DB. Fabric colors: {fabric.colors}, type: {type(fabric.colors)}")
     
     print(f"✅ Updated fabric. Final colors: {fabric.colors}, Final image: {fabric.image_url}")
 
