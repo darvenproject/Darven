@@ -88,6 +88,10 @@ export default function StitchYourOwnPage() {
   const handleFabricSelect = (fabric: CustomFabric) => {
     setSelectedFabric(fabric)
     setSelectedColor('') // Reset color when changing fabric
+    // Auto-select first color if only one color is available
+    if (fabric.colors && fabric.colors.length === 1) {
+      setSelectedColor(fabric.colors[0])
+    }
   }
 
 
@@ -98,9 +102,9 @@ export default function StitchYourOwnPage() {
   const handleAddToCart = () => {
     if (!selectedFabric) return
 
-    // Validate color selection
-    if (!selectedColor) {
-      alert('Please select a color')
+    // Validate color selection if colors are available
+    if (selectedFabric.colors && selectedFabric.colors.length > 0 && !selectedColor) {
+      alert('Please select a color for your fabric')
       return
     }
 
@@ -128,12 +132,13 @@ export default function StitchYourOwnPage() {
     }
 
     // Build measurements object with custom measurements only
+    const finalColor = selectedColor || 'Standard'; // Use 'Standard' if no color selected/available
     const measurementsData: any = {
       measurementType: 'custom',
       cuffs: measurements.cuffs,
       collarType: measurements.collarType,
       bottomWear: measurements.bottomWear,
-      color: selectedColor,
+      color: finalColor,
       customCollar: measurements.customCollar,
       customShoulder: measurements.customShoulder,
       customChest: measurements.customChest,
@@ -149,17 +154,21 @@ export default function StitchYourOwnPage() {
       measurementsData.customThigh = measurements.customThigh
     }
 
+    const displayName = finalColor !== 'Standard' 
+      ? `Custom Suit - ${selectedFabric.name} (${finalColor})`
+      : `Custom Suit - ${selectedFabric.name}`;
+    
     addItem({
       id: `custom-${selectedFabric.id}-${Date.now()}`,
       type: 'custom',
-      name: `Custom Suit - ${selectedFabric.name} (${selectedColor})`,
+      name: displayName,
       price: selectedFabric.price,
       quantity: quantity,
       image: getImageUrl(selectedFabric.image_url),
       details: {
         fabric: selectedFabric.name,
         material: selectedFabric.material,
-        color: selectedColor,
+        color: finalColor,
         measurements: measurementsData
       }
     })

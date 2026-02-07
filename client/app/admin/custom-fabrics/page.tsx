@@ -13,6 +13,7 @@ interface CustomFabric {
   description: string
   price: number
   material: string
+  colors?: string[]
   image_url: string
 }
 
@@ -28,6 +29,8 @@ export default function AdminCustomFabricsPage() {
     price: '',
     material: ''
   })
+  const [colors, setColors] = useState<string[]>([])
+  const [colorInput, setColorInput] = useState('')
   const [file, setFile] = useState<File | null>(null)
   const [previewUrl, setPreviewUrl] = useState<string>('')
 
@@ -73,6 +76,11 @@ export default function AdminCustomFabricsPage() {
       data.append('description', formData.description)
       data.append('price', formData.price)
       data.append('material', formData.material)
+      
+      // Add colors as JSON string
+      if (colors.length > 0) {
+        data.append('colors', JSON.stringify(colors))
+      }
 
       if (file) {
         data.append('file', file)
@@ -91,9 +99,11 @@ export default function AdminCustomFabricsPage() {
       setShowForm(false)
       setEditingFabric(null)
       setFormData({ name: '', description: '', price: '', material: '' })
+      setColors([])
+      setColorInput('')
       setFile(null)
       setPreviewUrl('')
-      fetchFabrics()
+      await fetchFabrics()
     } catch (error) {
       console.error('Error saving custom fabric:', error)
       alert('Failed to save custom fabric')
@@ -110,6 +120,7 @@ export default function AdminCustomFabricsPage() {
       price: fabric.price.toString(),
       material: fabric.material
     })
+    setColors(fabric.colors || [])
     setPreviewUrl(getImageUrl(fabric.image_url))
     setShowForm(true)
   }
@@ -229,6 +240,64 @@ export default function AdminCustomFabricsPage() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Available Colors (Optional)
+                </label>
+                <div className="flex gap-2 mb-2">
+                  <input
+                    type="text"
+                    value={colorInput}
+                    onChange={(e) => setColorInput(e.target.value)}
+                    onKeyPress={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault()
+                        if (colorInput.trim() && !colors.includes(colorInput.trim())) {
+                          setColors([...colors, colorInput.trim()])
+                          setColorInput('')
+                        }
+                      }
+                    }}
+                    className="flex-1 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-dark-bg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white"
+                    placeholder="e.g., White, Black, Navy Blue (press Enter to add)"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (colorInput.trim() && !colors.includes(colorInput.trim())) {
+                        setColors([...colors, colorInput.trim()])
+                        setColorInput('')
+                      }
+                    }}
+                    className="px-4 py-2 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-lg hover:bg-gray-800 dark:hover:bg-gray-100 transition-colors"
+                  >
+                    Add
+                  </button>
+                </div>
+                {colors.length > 0 && (
+                  <div className="flex flex-wrap gap-2 p-3 bg-gray-50 dark:bg-dark-bg rounded-lg">
+                    {colors.map((color, index) => (
+                      <span
+                        key={index}
+                        className="inline-flex items-center gap-2 px-3 py-1 bg-white dark:bg-dark-surface border border-gray-300 dark:border-gray-700 rounded-lg text-sm text-gray-900 dark:text-white"
+                      >
+                        {color}
+                        <button
+                          type="button"
+                          onClick={() => setColors(colors.filter((_, i) => i !== index))}
+                          className="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 font-bold"
+                        >
+                          ×
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                )}
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  Add colors that customers can choose from when ordering this fabric
+                </p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Fabric Image * {editingFabric && '(Leave empty to keep existing image)'}
                 </label>
                 <input
@@ -264,6 +333,8 @@ export default function AdminCustomFabricsPage() {
                     setShowForm(false)
                     setEditingFabric(null)
                     setFormData({ name: '', description: '', price: '', material: '' })
+                    setColors([])
+                    setColorInput('')
                     setFile(null)
                     setPreviewUrl('')
                   }}
@@ -303,15 +374,39 @@ export default function AdminCustomFabricsPage() {
                     <p className="text-sm text-gray-600 dark:text-gray-400 mb-3 line-clamp-2">
                       {fabric.description}
                     </p>
-                    <div className="flex items-center justify-between mb-4">
-                      <div>
-                        <span className="text-xl font-bold text-gray-900 dark:text-white">
-                          Rs {fabric.price.toLocaleString()}
-                        </span>
-                        <p className="text-xs text-gray-500 dark:text-gray-400">
-                          {fabric.material}
-                        </p>
+                    <div className="mb-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <div>
+                          <span className="text-xl font-bold text-gray-900 dark:text-white">
+                            Rs {fabric.price.toLocaleString()}
+                          </span>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">
+                            {fabric.material}
+                          </p>
+                        </div>
                       </div>
+                      {fabric.colors && fabric.colors.length > 0 && (
+                        <div className="mt-2">
+                          <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">
+                            Available Colors ({fabric.colors.length}):
+                          </p>
+                          <div className="flex flex-wrap gap-1">
+                            {fabric.colors.slice(0, 5).map((color, idx) => (
+                              <span
+                                key={idx}
+                                className="text-xs px-2 py-1 bg-gray-100 dark:bg-dark-bg text-gray-700 dark:text-gray-300 rounded"
+                              >
+                                {color}
+                              </span>
+                            ))}
+                            {fabric.colors.length > 5 && (
+                              <span className="text-xs px-2 py-1 text-gray-500 dark:text-gray-400">
+                                +{fabric.colors.length - 5} more
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      )}
                     </div>
                     <div className="flex gap-2">
                       <button
