@@ -98,9 +98,9 @@ export default function AdminCustomFabricsPage() {
 
       // Log all FormData entries
       console.log('FormData contents:')
-      for (let pair of data.entries()) {
-        console.log(pair[0], ':', pair[1])
-      }
+      data.forEach((value, key) => {
+        console.log(key, ':', value)
+      })
 
       if (editingFabric) {
         console.log('Updating fabric ID:', editingFabric.id)
