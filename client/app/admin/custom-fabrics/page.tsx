@@ -104,15 +104,11 @@ export default function AdminCustomFabricsPage() {
 
       if (editingFabric) {
         console.log('Updating fabric ID:', editingFabric.id)
-        const response = await apiClient.api.put(`/custom-fabrics/${editingFabric.id}`, data, {
-          headers: { 'Content-Type': 'multipart/form-data' }
-        })
+        const response = await apiClient.api.put(`/custom-fabrics/${editingFabric.id}`, data)
         console.log('Update response:', response.data)
       } else {
         console.log('Creating new fabric')
-        const response = await apiClient.api.post('/custom-fabrics', data, {
-          headers: { 'Content-Type': 'multipart/form-data' }
-        })
+        const response = await apiClient.api.post('/custom-fabrics', data)
         console.log('Create response:', response.data)
       }
 

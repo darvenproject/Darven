@@ -123,14 +123,14 @@ async def create_custom_fabric(
 @router.put("/{fabric_id}", response_model=CustomFabricResponse)
 async def update_custom_fabric(
     fabric_id: int,
+    admin: Admin = Depends(get_current_admin),
+    db: Session = Depends(get_db),
     name: str = Form(None),
     description: str = Form(None),
     price: float = Form(None),
     material: str = Form(None),
     colors: str = Form(None),  # JSON string of color array
-    file: UploadFile = File(None),
-    admin: Admin = Depends(get_current_admin),
-    db: Session = Depends(get_db)
+    file: UploadFile = File(None)
 ):
     print(f"📝 Updating custom fabric ID: {fabric_id}")
     print(f"Colors received (raw): {colors}")
