@@ -17,9 +17,10 @@ A full-stack e-commerce application for selling traditional Pakistani clothing i
 ✅ Progressive Web App (PWA) support
 
 **Documentation:**
-- [START_HERE.md](START_HERE.md) - Quick start guide
-- [SEO_QUICK_REFERENCE.md](SEO_QUICK_REFERENCE.md) - SEO features overview
-- [CLOUDFLARE_DEPLOYMENT.md](CLOUDFLARE_DEPLOYMENT.md) - Deployment guide
+- [DEPLOYMENT_QUICKSTART.md](DEPLOYMENT_QUICKSTART.md) - 📋 **Quick deployment settings**
+- [CLOUDFLARE_DEPLOYMENT.md](CLOUDFLARE_DEPLOYMENT.md) - Complete deployment guide
+- [CLOUDFLARE_FIX.md](CLOUDFLARE_FIX.md) - Deployment troubleshooting
+- [FAVICON_UPDATE.md](FAVICON_UPDATE.md) - Favicon integration details
 
 ## Tech Stack
 

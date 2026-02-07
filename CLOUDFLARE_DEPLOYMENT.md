@@ -24,9 +24,9 @@ In the Cloudflare Pages build configuration, use the following settings:
 - **Framework preset**: Next.js
 
 ### Build settings
-- **Build command**: `cd client && npm install && npm run build`
-- **Build output directory**: `client/.next`
-- **Root directory**: `/` (leave as repository root)
+- **Build command**: `npm install && npm run build`
+- **Build output directory**: `.next`
+- **Root directory**: `client` (IMPORTANT: Set this to client folder!)
 
 ### Environment Variables
 
@@ -102,7 +102,20 @@ NEXT_PUBLIC_API_URL=http://localhost:8000
 NEXT_PUBLIC_API_URL=https://api.shopdarven.pk
 ```
 
+## ⚠️ Important: Deployment Configuration Fixed
+
+**Note:** The initial `wrangler.toml` file has been removed as it was for Cloudflare Workers, not Pages.
+
+**Use these exact settings** (see [DEPLOYMENT_QUICKSTART.md](DEPLOYMENT_QUICKSTART.md) for quick reference):
+- **Root directory:** `client` (not `/` or blank)
+- **Build command:** `npm install && npm run build` (not `cd client && ...`)
+- **Build output:** `.next` (not `client/.next`)
+
 ## Troubleshooting
+
+### Issue: Build Fails with "Workers-specific command" Error
+
+**Solution**: Make sure you deleted `wrangler.toml` and are using the correct settings above. See [CLOUDFLARE_FIX.md](CLOUDFLARE_FIX.md) for details.
 
 ### Issue: CORS Errors
 
