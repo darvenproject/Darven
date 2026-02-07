@@ -73,8 +73,10 @@ export default function StitchYourOwnPage() {
   const fetchCustomFabrics = async () => {
     try {
       const response = await apiClient.getCustomFabrics()
+      console.log('Fetched custom fabrics for stitch-your-own:', response.data)
       setFabrics(response.data)
       if (response.data.length > 0) {
+        console.log('First fabric colors:', response.data[0].colors)
         setSelectedFabric(response.data[0])
         setSelectedColor('') // Reset color when fabric changes
       }
@@ -86,6 +88,8 @@ export default function StitchYourOwnPage() {
   }
 
   const handleFabricSelect = (fabric: CustomFabric) => {
+    console.log('Selected fabric:', fabric)
+    console.log('Available colors:', fabric.colors)
     setSelectedFabric(fabric)
     setSelectedColor('') // Reset color when changing fabric
     // Auto-select first color if only one color is available

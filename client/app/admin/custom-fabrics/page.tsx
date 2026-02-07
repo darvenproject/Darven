@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import Image from 'next/image'
 import { FiPlus, FiEdit2, FiTrash2, FiArrowLeft } from 'react-icons/fi'
 import { apiClient, getImageUrl } from '@/lib/api'
 import Link from 'next/link'
@@ -50,6 +49,7 @@ export default function AdminCustomFabricsPage() {
   const fetchFabrics = async () => {
     try {
       const response = await apiClient.getCustomFabrics()
+      console.log('Fetched custom fabrics:', response.data)
       setFabrics(response.data)
     } catch (error) {
       console.error('Error fetching custom fabrics:', error)
@@ -78,22 +78,42 @@ export default function AdminCustomFabricsPage() {
       data.append('material', formData.material)
       
       // Add colors as JSON string
+      console.log('Submitting colors:', colors)
       if (colors.length > 0) {
-        data.append('colors', JSON.stringify(colors))
+        const colorsJson = JSON.stringify(colors)
+        console.log('Colors JSON string:', colorsJson)
+        data.append('colors', colorsJson)
+      } else {
+        console.log('No colors to submit')
+        // Send empty array to clear colors if editing
+        data.append('colors', JSON.stringify([]))
       }
 
       if (file) {
+        console.log('Uploading new file:', file.name)
         data.append('file', file)
+      } else {
+        console.log('No new file selected')
+      }
+
+      // Log all FormData entries
+      console.log('FormData contents:')
+      for (let pair of data.entries()) {
+        console.log(pair[0], ':', pair[1])
       }
 
       if (editingFabric) {
-        await apiClient.api.put(`/custom-fabrics/${editingFabric.id}`, data, {
+        console.log('Updating fabric ID:', editingFabric.id)
+        const response = await apiClient.api.put(`/custom-fabrics/${editingFabric.id}`, data, {
           headers: { 'Content-Type': 'multipart/form-data' }
         })
+        console.log('Update response:', response.data)
       } else {
-        await apiClient.api.post('/custom-fabrics', data, {
+        console.log('Creating new fabric')
+        const response = await apiClient.api.post('/custom-fabrics', data, {
           headers: { 'Content-Type': 'multipart/form-data' }
         })
+        console.log('Create response:', response.data)
       }
 
       setShowForm(false)
@@ -113,6 +133,9 @@ export default function AdminCustomFabricsPage() {
   }
 
   const handleEdit = (fabric: CustomFabric) => {
+    console.log('Editing fabric:', fabric)
+    console.log('Fabric colors:', fabric.colors)
+    console.log('Fabric image_url:', fabric.image_url)
     setEditingFabric(fabric)
     setFormData({
       name: fabric.name,
@@ -121,7 +144,9 @@ export default function AdminCustomFabricsPage() {
       material: fabric.material
     })
     setColors(fabric.colors || [])
-    setPreviewUrl(getImageUrl(fabric.image_url))
+    const imageUrl = getImageUrl(fabric.image_url)
+    console.log('Setting preview URL to:', imageUrl)
+    setPreviewUrl(imageUrl)
     setShowForm(true)
   }
 
@@ -308,12 +333,15 @@ export default function AdminCustomFabricsPage() {
                   className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-dark-bg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white"
                 />
                 {previewUrl && (
-                  <div className="mt-4 relative h-48 w-full rounded-lg overflow-hidden">
-                    <Image
+                  <div className="mt-4 relative h-48 w-full rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800">
+                    <img
                       src={previewUrl}
                       alt="Preview"
-                      fill
-                      className="object-cover"
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        console.error('Failed to load preview image:', previewUrl)
+                        e.currentTarget.src = '/placeholder.jpg'
+                      }}
                     />
                   </div>
                 )}
@@ -356,13 +384,13 @@ export default function AdminCustomFabricsPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {fabrics.map((fabric) => (
                 <div key={fabric.id} className="bg-white dark:bg-dark-surface rounded-lg shadow-md overflow-hidden">
-                  <div className="relative h-48">
-                    <Image
+                  <div className="relative h-48 bg-gray-100 dark:bg-gray-800">
+                    <img
                       src={getImageUrl(fabric.image_url)}
                       alt={fabric.name}
-                      fill
-                      className="object-cover"
+                      className="w-full h-full object-cover"
                       onError={(e) => {
+                        console.error('Failed to load fabric image:', getImageUrl(fabric.image_url))
                         e.currentTarget.src = '/placeholder.jpg'
                       }}
                     />

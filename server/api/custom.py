@@ -18,6 +18,9 @@ FRONTEND_URL = os.getenv("FRONTEND_URL", "https://shopdarven.pk").rstrip("/")
 @router.get("", response_model=List[CustomFabricResponse])
 async def get_custom_fabrics(db: Session = Depends(get_db)):
     fabrics = db.query(CustomFabric).all()
+    print(f"📋 Fetching {len(fabrics)} custom fabrics")
+    for fabric in fabrics:
+        print(f"  - {fabric.name}: colors={fabric.colors}, image={fabric.image_url}")
 
     if not fabrics:
         default_fabrics = [
@@ -78,9 +81,13 @@ async def create_custom_fabric(
     admin: Admin = Depends(get_current_admin),
     db: Session = Depends(get_db)
 ):
+    print(f"📝 Creating custom fabric: {name}")
+    print(f"Colors received (raw): {colors}")
+    
     file_extension = os.path.splitext(file.filename)[1]
     filename = f"{uuid4()}{file_extension}"
     image_url = await upload_file_local(file, "custom-fabrics", filename)
+    print(f"Image uploaded to: {image_url}")
 
     # Parse colors from JSON string
     colors_list = None
@@ -88,8 +95,12 @@ async def create_custom_fabric(
         import json
         try:
             colors_list = json.loads(colors)
-        except:
+            print(f"Colors parsed successfully: {colors_list}")
+        except Exception as e:
+            print(f"Failed to parse colors: {e}")
             colors_list = None
+    else:
+        print("No colors provided")
 
     custom_fabric = CustomFabric(
         name=name,
@@ -103,6 +114,8 @@ async def create_custom_fabric(
     db.add(custom_fabric)
     db.commit()
     db.refresh(custom_fabric)
+    
+    print(f"✅ Created fabric with colors: {custom_fabric.colors}")
 
     return custom_fabric
 
@@ -119,9 +132,14 @@ async def update_custom_fabric(
     admin: Admin = Depends(get_current_admin),
     db: Session = Depends(get_db)
 ):
+    print(f"📝 Updating custom fabric ID: {fabric_id}")
+    print(f"Colors received (raw): {colors}")
+    
     fabric = db.query(CustomFabric).filter(CustomFabric.id == fabric_id).first()
     if not fabric:
         raise HTTPException(status_code=404, detail="Custom fabric not found")
+    
+    print(f"Current fabric colors: {fabric.colors}")
 
     if name is not None:
         fabric.name = name
@@ -137,19 +155,29 @@ async def update_custom_fabric(
         import json
         try:
             fabric.colors = json.loads(colors)
-        except:
+            print(f"Colors updated to: {fabric.colors}")
+        except Exception as e:
+            print(f"Failed to parse colors: {e}")
             pass
+    else:
+        print("No colors in update request")
 
     if file:
+        print(f"Uploading new file: {file.filename}")
         if fabric.image_url:
             delete_file_local(fabric.image_url)
 
         file_extension = os.path.splitext(file.filename)[1]
         filename = f"{uuid4()}{file_extension}"
         fabric.image_url = await upload_file_local(file, "custom-fabrics", filename)
+        print(f"New image URL: {fabric.image_url}")
+    else:
+        print(f"No new file, keeping existing: {fabric.image_url}")
 
     db.commit()
     db.refresh(fabric)
+    
+    print(f"✅ Updated fabric. Final colors: {fabric.colors}, Final image: {fabric.image_url}")
 
     return fabric
 
