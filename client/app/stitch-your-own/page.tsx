@@ -283,7 +283,7 @@ export default function StitchYourOwnPage() {
                   Select Color <span className="text-red-500">*</span>
                 </h3>
                 
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-2">
                   {selectedFabric.colors.map((color) => {
                     const colorHex = getColorHex(color);
                     const textColor = getTextColorForBackground(colorHex);
@@ -296,11 +296,11 @@ export default function StitchYourOwnPage() {
                         onClick={() => setSelectedColor(color)}
                         className={`group relative rounded-lg border-2 font-medium transition-all overflow-hidden ${
                           isSelected
-                            ? 'border-gray-900 dark:border-white shadow-xl scale-105 ring-2 ring-gray-900 dark:ring-white ring-offset-2'
-                            : 'border-gray-300 dark:border-gray-600 hover:border-gray-500 dark:hover:border-gray-400 hover:shadow-lg hover:scale-102'
+                            ? 'border-gray-900 dark:border-white shadow-lg scale-105 ring-2 ring-gray-900 dark:ring-white ring-offset-1'
+                            : 'border-gray-300 dark:border-gray-600 hover:border-gray-500 dark:hover:border-gray-400 hover:shadow-md hover:scale-102'
                         }`}
                         style={{
-                          minHeight: '80px'
+                          minHeight: '60px'
                         }}
                       >
                         {/* Color Swatch */}
@@ -313,14 +313,14 @@ export default function StitchYourOwnPage() {
                         />
                         
                         {/* Color Circle Indicator */}
-                        <div className="relative z-10 p-3 flex flex-col items-center justify-center gap-2">
+                        <div className="relative z-10 p-2 flex flex-col items-center justify-center gap-1">
                           <div 
-                            className={`w-8 h-8 rounded-full border-2 ${isSelected ? 'border-gray-900 dark:border-white' : 'border-gray-400 dark:border-gray-500'} shadow-md flex items-center justify-center`}
+                            className={`w-6 h-6 rounded-full border-2 ${isSelected ? 'border-gray-900 dark:border-white' : 'border-gray-400 dark:border-gray-500'} shadow-md flex items-center justify-center`}
                             style={{ backgroundColor: colorHex }}
                           >
                             {isSelected && (
                               <FiCheck 
-                                className="w-5 h-5" 
+                                className="w-4 h-4" 
                                 style={{ color: textColor }}
                               />
                             )}

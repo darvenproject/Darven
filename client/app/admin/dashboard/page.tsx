@@ -579,6 +579,9 @@ export default function AdminDashboard() {
                           <div className="mt-2 text-sm text-gray-600 dark:text-gray-400">
                             <p>Fabric: {item.details.fabric}</p>
                             <p>Material: {item.details.material}</p>
+                            {item.details.color && (
+                              <p className="font-medium">Color: <span className="text-gray-900 dark:text-white">{item.details.color}</span></p>
+                            )}
                             {item.details.measurements && (
                               <details className="mt-2 cursor-pointer">
                                 <summary className="font-medium hover:text-gray-900 dark:hover:text-white">

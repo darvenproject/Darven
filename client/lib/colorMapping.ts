@@ -118,6 +118,10 @@ export const colorToHex: Record<string, string> = {
   
   // Giza Moon Cotton - The Olive Series
   "Pesto": "#7C7631",
+  
+  // Additional Colors
+  "Toffee": "#6F4E37",
+  "Premium Black": "#0A0A0A",
 }
 
 // Function to get hex color or return a default color
