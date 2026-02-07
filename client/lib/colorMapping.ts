@@ -9,7 +9,7 @@ export const colorToHex: Record<string, string> = {
   "Westar": "#E0DED7",                   // Mist-touched white
   
   // 7-10: Pale & Light Greens/Greys
-  "Ice Green": "#D0F2E8",                // Delicate mint frost (corrected)
+  "Ice Green": "#87D8C3",                // Delicate mint frost (corrected)
   "Pista Green": "#B9D9B2",              // Soft pistachio husk
   "Silver Sand": "#BFC1C2",              // Refined light silver
   "Silver Grey": "#C0C0C0",              // Traditional metallic grey
