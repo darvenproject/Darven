@@ -1,127 +1,103 @@
 // Color name to hex code mapping for visual swatches
 export const colorToHex: Record<string, string> = {
-  // Wash n Wear - The Neutrals
-  "White": "#FFFFFF",
-  "Westar": "#DCD9D2",
-  "Silver Sand": "#BFC1C2",
-  "Cement": "#8D7F6D",
-  "Zinc": "#A8A9AD",
-  "Iron Gray": "#52595D",
-  "Heavy Metal": "#2C3539",
-  "Black": "#000000",
-  
-  // Wash n Wear - The Earth Tones
-  "Spring Wood": "#F8F6F1",
-  "Dune": "#383332",
-  "Mirage": "#161928",
-  "Dune Brown": "#2E2A27",
-  "Paco Brown": "#411F10",
-  "Dark Olive": "#556052",
-  "Rangitoto": "#2E3D2C",
-  "Timber Green": "#1D2E28",
-  "Firefly": "#0E2A2B",
-  
-  // Wash n Wear - The Blues & Purples
-  "Navy": "#000080",
-  "Navy Blue": "#000080",
-  "Orient": "#015E7C",
-  "Congo Purple": "#663399",
-  
-  // Blended - The Whites & Greys
-  "Paper White": "#F7F5FA",
-  "Off White": "#FAF9F6",
-  "Coconut White": "#F5F5DC",
-  "Silver Grey": "#C0C0C0",
-  "Ash Grey": "#B2BEB5",
-  "Grey": "#808080",
-  "Royal Grey": "#6B7B8C",
-  
-  // Blended - The Soft Tones
-  "Light Sand": "#E2D9C6",
-  "Biscotti": "#E5C9A4",
-  "Beige": "#F5F5DC",
-  "Warm Biscuit": "#D4A574",
-  "Fawn": "#E5AA70",
-  "Desert Biscuit": "#C8A882",
-  "Light Brown": "#B5651D",
-  
-  // Blended - The Pastels
-  "Dark Cream": "#F5DEB3",
-  "Ice Green": "#D4F1F4",
-  "Pista Green": "#93C572",
-  "Light Mehandi": "#8FBC8F",
-  "Lilac": "#C8A2C8",
-  "Light Onion": "#FFF8E7",
-  
-  // Blended - The Darks
-  "Dark Teal": "#014D4E",
-  "Emerald Green": "#046307",
-  
-  // Boski - The Classics
+  // White Tones
+  "Paper White": "#F2F2F2",
   "Off-White": "#FAF9F6",
+  "Coconut White": "#F9F1E2",
   "Cream": "#FFFDD0",
   
-  // Boski - The Midnight Series
-  "Dark Grey": "#4A4A4A",
-  "Charcoal Grey": "#36454F",
-  "Pearl Black": "#1C1C1C",
+  // Pale Tint
+  "Spring Wood": "#F1EBD9",
+  "Westar": "#E0DED7",
   
-  // Boski - The Heritage Browns
-  "Cedar Brown": "#4E3B31",
-  "Peanut Brown": "#7A4419",
+  // Pastel
+  "Dark Cream": "#F3E5AB",
+  "Ice Green": "#DADBD3",
+  "Pista Green": "#93C572",
+  "Mint Green": "#98FF98",
+  "Lilac": "#C8A2C8",
+  "Light Onion": "#E0B0FF",
   
-  // Boski - The Royal Collection
-  "Royal Blue": "#4169E1",
-  "Indigo Blue": "#4B0082",
-  "Dark Plum": "#3E2A3F",
-  "Imperial Maroon": "#5C0120",
-  "Dark Rust": "#8B4513",
-  "Forest Green": "#228B22",
+  // Light Grey
+  "Silver Sand": "#BFC1C2",
+  "Silver Grey": "#C0C0C0",
+  "Ash Grey": "#B2BEB5",
   
-  // Boski - The Signature Accents
-  "Desert Gold": "#C5B358",
-  "Mint green": "#98FF98",
+  // Beige/Sand
+  "Biscotti": "#E3DAC9",
+  "Light Sand": "#D8D1C5",
+  "Beige": "#F5F5DC",
+  "Warm Biscuit": "#E1C699",
+  "Fawn": "#E5AA70",
+  "Desert Biscuit": "#D2B48C",
   
-  // Soft Cotton - The Desert Tones
-  "Lisbon Brown": "#4E4D3C",
-  "Cedar": "#3C1414",
-  "Cocoa Bean": "#3D2B1F",
-  "Paco": "#411F10",
+  // Mid-Neutral
+  "Cement": "#8B8C8B",
+  "Zinc": "#7D7F7D",
+  "Dune": "#A39689",
+  "Birch": "#918476",
+  "Grey": "#808080",
+  "Mirage": "#5C5D66",
+  "Iron Gray": "#52595D",
   
-  // Soft Cotton - Metallic Earth
-  "Ironstone": "#86483C",
-  "Metallic Bronze": "#CD7F32",
-  "Metallic Brown": "#9C6B4E",
-  
-  // Soft Cotton - The Neutrals
-  "Birch": "#3D3530",
-  
-  // Soft Cotton - The Blues
-  "Navy Tuna": "#2E3842",
-  "Charade": "#292A2E",
-  
-  // Soft Cotton - The Greens
-  
-  // Soft Cotton - The Warmth
-  "Spicy Mix": "#885342",
-  
-  // Giza Moon Cotton - The Sunset Shades
-  "Coral Reef": "#FD7C6E",
-  "Coral Tree": "#A76E6E",
-  "Dark Yellow": "#FFD700",
-  
-  // Giza Moon Cotton - The Regal Deep
-  "Maroon": "#800000",
-  
-  // Giza Moon Cotton - The Ocean Cool
-  "Ship Cove": "#788BBA",
-  
-  // Giza Moon Cotton - The Olive Series
+  // Earth
+  "Desert Gold": "#EDC9AF",
+  "Coral Reef": "#F27E63",
+  "Coral Tree": "#A86B6B",
+  "Dark Yellow": "#9B870C",
+  "Light Mehandi": "#8B864E",
   "Pesto": "#7C7631",
+  "Metallic Bronze": "#49371B",
+  "Ironstone": "#86483C",
+  "Spicy Mix": "#8B5F4D",
   
-  // Additional Colors
-  "Toffee": "#6F4E37",
-  "Premium Black": "#0A0A0A",
+  // Brown
+  "Peanut Brown": "#795C34",
+  "Dune Brown": "#7B6652",
+  "Lisbon Brown": "#5D4B41",
+  "Cedar": "#4B3A26",
+  
+  // Deep Natural
+  "Dark Olive": "#556B2F",
+  "Paco Brown": "#463D3E",
+  "Cocoa Bean": "#48211A",
+  "Cedar Brown": "#3B1E1E",
+  
+  // Royal Tone
+  "Royal Grey": "#5D5E60",
+  "Ship Cove": "#788BBA",
+  "Royal Blue": "#4169E1",
+  "Dark Rust": "#8B0200",
+  "Dark Plum": "#674172",
+  
+  // Forest Deep
+  "Rangitoto": "#2E3222",
+  "Timber Green": "#163330",
+  "Forest Green": "#228B22",
+  "Emerald Green": "#50C878",
+  
+  // Regal
+  "Maroon": "#800000",
+  "Imperial Maroon": "#560319",
+  "Indigo Blue": "#00416A",
+  "Dark Teal": "#003333",
+  
+  // Navy
+  "Orient": "#253455",
+  "Navy Blue": "#000080",
+  "Navy": "#000033",
+  "Navy Tuna": "#353545",
+  
+  // Charcoal
+  "Dark Grey": "#363636",
+  "Charcoal Grey": "#333333",
+  "Charade": "#2C2D3C",
+  
+  // Midnight
+  "Heavy Metal": "#2B3228",
+  "Congo Purple": "#28212C",
+  "Firefly": "#0E2021",
+  "Pearl Black": "#1C1C1C",
 }
 
 // Function to get hex color or return a default color
