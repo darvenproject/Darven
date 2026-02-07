@@ -12,18 +12,23 @@ Base.metadata.create_all(bind=engine)
 app = FastAPI(title="Darven API", version="1.0.0")
 
 # CORS middleware
-# Default origins include localhost for development and Cloudflare Pages for production
+# Default origins include localhost for development and production domains
 allowed_origins = os.getenv(
     "ALLOWED_ORIGINS", 
-    "http://localhost:3000,http://localhost:3001,http://127.0.0.1:3000,https://shopdarven.pages.dev,https://shopdarven.pk"
+    "http://localhost:3000,http://localhost:3001,http://127.0.0.1:3000,https://shopdarven.pages.dev,https://shopdarven.pk,https://www.shopdarven.pk"
 )
+
+# Parse origins and strip whitespace
+origins_list = [origin.strip() for origin in allowed_origins.split(",")]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=allowed_origins.split(","),
+    allow_origins=origins_list,
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allow_headers=["*"],
     expose_headers=["*"],
+    max_age=3600,  # Cache preflight requests for 1 hour
 )
 
 # Create uploads directory if it doesn't exist
@@ -60,3 +65,8 @@ async def root():
 @app.get("/health")
 async def health():
     return {"status": "healthy"}
+
+@app.options("/{full_path:path}")
+async def options_handler(full_path: str):
+    """Handle OPTIONS requests for CORS preflight"""
+    return {"message": "OK"}
