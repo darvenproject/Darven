@@ -283,7 +283,7 @@ export default function StitchYourOwnPage() {
                   Select Color <span className="text-red-500">*</span>
                 </h3>
                 
-                <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-2">
+                <div className="grid grid-cols-4 sm:grid-cols-5 lg:grid-cols-8 gap-1.5">
                   {selectedFabric.colors.map((color) => {
                     const colorHex = getColorHex(color);
                     const textColor = getTextColorForBackground(colorHex);
@@ -294,13 +294,13 @@ export default function StitchYourOwnPage() {
                         key={color}
                         type="button"
                         onClick={() => setSelectedColor(color)}
-                        className={`group relative rounded-lg border-2 font-medium transition-all overflow-hidden ${
+                        className={`group relative rounded-md border-2 font-medium transition-all overflow-hidden ${
                           isSelected
-                            ? 'border-gray-900 dark:border-white shadow-lg scale-105 ring-2 ring-gray-900 dark:ring-white ring-offset-1'
-                            : 'border-gray-300 dark:border-gray-600 hover:border-gray-500 dark:hover:border-gray-400 hover:shadow-md hover:scale-102'
+                            ? 'border-gray-900 dark:border-white shadow-md scale-105 ring-1 ring-gray-900 dark:ring-white ring-offset-1'
+                            : 'border-gray-300 dark:border-gray-600 hover:border-gray-500 dark:hover:border-gray-400 hover:shadow-sm hover:scale-102'
                         }`}
                         style={{
-                          minHeight: '60px'
+                          minHeight: '50px'
                         }}
                       >
                         {/* Color Swatch */}
@@ -313,19 +313,19 @@ export default function StitchYourOwnPage() {
                         />
                         
                         {/* Color Circle Indicator */}
-                        <div className="relative z-10 p-2 flex flex-col items-center justify-center gap-1">
+                        <div className="relative z-10 p-1.5 flex flex-col items-center justify-center gap-0.5">
                           <div 
-                            className={`w-6 h-6 rounded-full border-2 ${isSelected ? 'border-gray-900 dark:border-white' : 'border-gray-400 dark:border-gray-500'} shadow-md flex items-center justify-center`}
+                            className={`w-5 h-5 rounded-full border ${isSelected ? 'border-gray-900 dark:border-white' : 'border-gray-400 dark:border-gray-500'} shadow-sm flex items-center justify-center`}
                             style={{ backgroundColor: colorHex }}
                           >
                             {isSelected && (
                               <FiCheck 
-                                className="w-4 h-4" 
+                                className="w-3 h-3" 
                                 style={{ color: textColor }}
                               />
                             )}
                           </div>
-                          <span className={`text-xs font-semibold text-center ${isSelected ? 'text-gray-900 dark:text-white' : 'text-gray-700 dark:text-gray-300'}`}>
+                          <span className={`text-[10px] font-semibold text-center leading-tight ${isSelected ? 'text-gray-900 dark:text-white' : 'text-gray-700 dark:text-gray-300'}`}>
                             {color}
                           </span>
                         </div>
