@@ -1,5 +1,7 @@
 from fastapi import APIRouter, Depends, File, UploadFile, Form, HTTPException
 from sqlalchemy.orm import Session
+from sqlalchemy.orm.attributes import flag_modified
+import json
 from typing import List
 import os
 from uuid import uuid4
@@ -161,6 +163,12 @@ async def update_custom_fabric(
             print(f"Colors parsed: {colors_list}, type: {type(colors_list)}")
             # Explicitly set as a Python list
             fabric.colors = colors_list
+            
+            # --- START OF FIX ---
+            # Tell SQLAlchemy that the JSON column 'colors' has been modified
+            flag_modified(fabric, "colors")
+            # --- END OF FIX ---
+            
             print(f"Colors updated to: {fabric.colors}, type: {type(fabric.colors)}")
         except Exception as e:
             print(f"Failed to parse colors: {e}")
