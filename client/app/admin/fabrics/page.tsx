@@ -13,6 +13,7 @@ interface Fabric {
   description: string
   price_per_meter: number
   material: string
+  fabric_category?: string
   images: string[]
   stock_meters: number
 }
@@ -28,8 +29,11 @@ export default function AdminFabricsPage() {
     description: '',
     price_per_meter: '',
     material: '',
+    fabric_category: '',
     stock_meters: ''
   })
+  
+  const fabricCategories = ['Wash n Wear', 'Blended', 'Boski', 'Soft Cotton', 'Giza Moon Cotton']
   const [files, setFiles] = useState<FileList | null>(null)
 
   useEffect(() => {
@@ -66,6 +70,9 @@ export default function AdminFabricsPage() {
       data.append('description', formData.description)
       data.append('price_per_meter', formData.price_per_meter)
       data.append('material', formData.material)
+      if (formData.fabric_category) {
+        data.append('fabric_category', formData.fabric_category)
+      }
       data.append('stock_meters', formData.stock_meters)
 
       if (files) {
@@ -82,7 +89,7 @@ export default function AdminFabricsPage() {
 
       setShowForm(false)
       setEditingFabric(null)
-      setFormData({ name: '', description: '', price_per_meter: '', material: '', stock_meters: '' })
+      setFormData({ name: '', description: '', price_per_meter: '', material: '', fabric_category: '', stock_meters: '' })
       setFiles(null)
       fetchFabrics()
     } catch (error) {
@@ -100,6 +107,7 @@ export default function AdminFabricsPage() {
       description: fabric.description,
       price_per_meter: fabric.price_per_meter.toString(),
       material: fabric.material,
+      fabric_category: fabric.fabric_category || '',
       stock_meters: fabric.stock_meters.toString()
     })
     setShowForm(true)
@@ -212,18 +220,38 @@ export default function AdminFabricsPage() {
                 </div>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Material *
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={formData.material}
-                  onChange={(e) => setFormData({ ...formData, material: e.target.value })}
-                  className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-dark-bg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white"
-                  placeholder="e.g., Cotton, Lawn, Khaddar"
-                />
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Material *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={formData.material}
+                    onChange={(e) => setFormData({ ...formData, material: e.target.value })}
+                    className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-dark-bg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white"
+                    placeholder="e.g., Cotton, Lawn, Khaddar"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Fabric Category
+                  </label>
+                  <select
+                    value={formData.fabric_category}
+                    onChange={(e) => setFormData({ ...formData, fabric_category: e.target.value })}
+                    className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-dark-bg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white"
+                  >
+                    <option value="">Select Category</option>
+                    {fabricCategories.map((category) => (
+                      <option key={category} value={category}>
+                        {category}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
 
               <div>
@@ -253,7 +281,7 @@ export default function AdminFabricsPage() {
                   onClick={() => {
                     setShowForm(false)
                     setEditingFabric(null)
-                    setFormData({ name: '', description: '', price_per_meter: '', material: '', stock_meters: '' })
+                    setFormData({ name: '', description: '', price_per_meter: '', material: '', fabric_category: '', stock_meters: '' })
                     setFiles(null)
                   }}
                   className="px-6 py-3 border border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white rounded-lg hover:bg-gray-100 dark:hover:bg-dark-bg transition-colors"

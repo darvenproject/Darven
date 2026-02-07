@@ -12,7 +12,11 @@ Base.metadata.create_all(bind=engine)
 app = FastAPI(title="Darven API", version="1.0.0")
 
 # CORS middleware
-allowed_origins = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000,http://localhost:3001,http://127.0.0.1:3000,https://shopdarven.netlify.app")
+# Default origins include localhost for development and Cloudflare Pages for production
+allowed_origins = os.getenv(
+    "ALLOWED_ORIGINS", 
+    "http://localhost:3000,http://localhost:3001,http://127.0.0.1:3000,https://shopdarven.pages.dev,https://shopdarven.pk"
+)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=allowed_origins.split(","),

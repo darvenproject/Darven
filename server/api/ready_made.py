@@ -31,6 +31,7 @@ async def create_ready_made_product(
     description: str = Form(...),
     price: float = Form(...),
     material: str = Form(...),
+    fabric_category: str = Form(None),
     size: str = Form(...),
     color: str = Form(None),
     stock: int = Form(0),
@@ -52,6 +53,7 @@ async def create_ready_made_product(
         description=description,
         price=price,
         material=material,
+        fabric_category=fabric_category,
         size=size,
         color=color,
         stock=stock,
@@ -71,6 +73,7 @@ async def update_ready_made_product(
     description: str = Form(None),
     price: float = Form(None),
     material: str = Form(None),
+    fabric_category: str = Form(None),
     size: str = Form(None),
     color: str = Form(None),
     stock: int = Form(None),
@@ -91,6 +94,8 @@ async def update_ready_made_product(
         product.price = price
     if material is not None:
         product.material = material
+    if fabric_category is not None:
+        product.fabric_category = fabric_category
     if size is not None:
         product.size = size
     if color is not None:

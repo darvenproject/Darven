@@ -9,7 +9,6 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@netlify/plugin-nextjs": "^5.15.7",
     "axios": "1.6.8",
     "framer-motion": "10.18.0",
     "lucide-react": "^0.562.0",

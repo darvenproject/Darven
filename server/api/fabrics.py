@@ -30,6 +30,7 @@ async def create_fabric(
     description: str = Form(...),
     price_per_meter: float = Form(...),
     material: str = Form(...),
+    fabric_category: str = Form(None),
     stock_meters: float = Form(0),
     files: List[UploadFile] = File(...),
     admin: Admin = Depends(get_current_admin),
@@ -49,6 +50,7 @@ async def create_fabric(
         description=description,
         price_per_meter=price_per_meter,
         material=material,
+        fabric_category=fabric_category,
         stock_meters=stock_meters,
         images=image_urls
     )
@@ -66,6 +68,7 @@ async def update_fabric(
     description: str = Form(None),
     price_per_meter: float = Form(None),
     material: str = Form(None),
+    fabric_category: str = Form(None),
     stock_meters: float = Form(None),
     files: List[UploadFile] = File(None),
     admin: Admin = Depends(get_current_admin),
@@ -84,6 +87,8 @@ async def update_fabric(
         fabric.price_per_meter = price_per_meter
     if material is not None:
         fabric.material = material
+    if fabric_category is not None:
+        fabric.fabric_category = fabric_category
     if stock_meters is not None:
         fabric.stock_meters = stock_meters
     

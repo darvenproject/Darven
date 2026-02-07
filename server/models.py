@@ -28,6 +28,7 @@ class ReadyMadeProduct(Base):
     description = Column(Text)
     price = Column(Float)
     material = Column(String)
+    fabric_category = Column(String, nullable=True, index=True)  # Wash n Wear, Blended, Boski, Soft Cotton, Giza Moon Cotton
     size = Column(String)
     color = Column(String, nullable=True)  # Available colors
     images = Column(JSON)  # List of image URLs
@@ -43,6 +44,7 @@ class Fabric(Base):
     description = Column(Text)
     price_per_meter = Column(Float)
     material = Column(String)
+    fabric_category = Column(String, nullable=True, index=True)  # Wash n Wear, Blended, Boski, Soft Cotton, Giza Moon Cotton
     images = Column(JSON)  # List of image URLs
     stock_meters = Column(Float, default=0)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
@@ -56,7 +58,7 @@ class CustomFabric(Base):
     description = Column(Text)
     price = Column(Float)
     material = Column(String)
-    color = Column(String, nullable=True)  # Available colors
+    colors = Column(JSON, nullable=True)  # Array of available colors
     image_url = Column(String)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())

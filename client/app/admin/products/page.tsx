@@ -13,6 +13,7 @@ interface Product {
   description: string
   price: number
   material: string
+  fabric_category?: string
   size: string
   color?: string
   images: string[]
@@ -30,10 +31,13 @@ export default function AdminProductsPage() {
     description: '',
     price: '',
     material: '',
+    fabric_category: '',
     size: '',
     color: '',
     stock: ''
   })
+  
+  const fabricCategories = ['Wash n Wear', 'Blended', 'Boski', 'Soft Cotton', 'Giza Moon Cotton']
   const [files, setFiles] = useState<FileList | null>(null)
 
   useEffect(() => {
@@ -70,6 +74,9 @@ export default function AdminProductsPage() {
       data.append('description', formData.description)
       data.append('price', formData.price)
       data.append('material', formData.material)
+      if (formData.fabric_category) {
+        data.append('fabric_category', formData.fabric_category)
+      }
       data.append('size', formData.size)
       if (formData.color) {
         data.append('color', formData.color)
@@ -90,7 +97,7 @@ export default function AdminProductsPage() {
 
       setShowForm(false)
       setEditingProduct(null)
-      setFormData({ name: '', description: '', price: '', material: '', size: '', color: '', stock: '' })
+      setFormData({ name: '', description: '', price: '', material: '', fabric_category: '', size: '', color: '', stock: '' })
       setFiles(null)
       fetchProducts()
     } catch (error) {
@@ -108,6 +115,7 @@ export default function AdminProductsPage() {
       description: product.description,
       price: product.price.toString(),
       material: product.material,
+      fabric_category: product.fabric_category || '',
       size: product.size,
       color: product.color || '',
       stock: product.stock.toString()
@@ -221,7 +229,7 @@ export default function AdminProductsPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Material *
@@ -235,6 +243,26 @@ export default function AdminProductsPage() {
                   />
                 </div>
 
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Fabric Category
+                  </label>
+                  <select
+                    value={formData.fabric_category}
+                    onChange={(e) => setFormData({ ...formData, fabric_category: e.target.value })}
+                    className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-dark-bg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white"
+                  >
+                    <option value="">Select Category</option>
+                    {fabricCategories.map((category) => (
+                      <option key={category} value={category}>
+                        {category}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Size *
@@ -290,7 +318,7 @@ export default function AdminProductsPage() {
                   onClick={() => {
                     setShowForm(false)
                     setEditingProduct(null)
-                    setFormData({ name: '', description: '', price: '', material: '', size: '', color: '', stock: '' })
+                    setFormData({ name: '', description: '', price: '', material: '', fabric_category: '', size: '', color: '', stock: '' })
                     setFiles(null)
                   }}
                   className="px-6 py-3 border border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white rounded-lg hover:bg-gray-100 dark:hover:bg-dark-bg transition-colors"

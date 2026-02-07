@@ -2,6 +2,25 @@
 
 A full-stack e-commerce application for selling traditional Pakistani clothing including ready-made products and custom stitching services.
 
+## 🚀 New! SEO Optimized & Cloudflare Ready
+
+**Just updated with comprehensive SEO optimization and Cloudflare Pages support!**
+
+👉 **[START HERE - Quick Setup Guide](START_HERE.md)** 👈
+
+### What's New:
+✅ Favicon/browser tab icon with Darven logo
+✅ Complete SEO optimization for Google & search engines
+✅ Social media sharing previews (Open Graph, Twitter Cards)
+✅ Automatic sitemap generation
+✅ Migrated from Netlify to Cloudflare Pages
+✅ Progressive Web App (PWA) support
+
+**Documentation:**
+- [START_HERE.md](START_HERE.md) - Quick start guide
+- [SEO_QUICK_REFERENCE.md](SEO_QUICK_REFERENCE.md) - SEO features overview
+- [CLOUDFLARE_DEPLOYMENT.md](CLOUDFLARE_DEPLOYMENT.md) - Deployment guide
+
 ## Tech Stack
 
 ### Backend
@@ -16,6 +35,7 @@ A full-stack e-commerce application for selling traditional Pakistani clothing i
 - **TypeScript** - Type safety
 - **Tailwind CSS** - Styling
 - **Zustand** - State management
+- **Cloudflare Pages** - Hosting and deployment
 
 ## Getting Started
 
@@ -117,6 +137,26 @@ The frontend will be available at `http://localhost:3000`
 ## API Documentation
 
 Once the backend is running, visit `http://localhost:8000/docs` for interactive API documentation (Swagger UI).
+
+## Deployment
+
+### Frontend (Cloudflare Pages)
+
+See [CLOUDFLARE_DEPLOYMENT.md](CLOUDFLARE_DEPLOYMENT.md) for detailed deployment instructions.
+
+Quick start:
+1. Remove Netlify dependencies: `cd client && npm install`
+2. Push changes to your Git repository
+3. Connect repository to Cloudflare Pages
+4. Configure build settings and environment variables
+5. Deploy
+
+### Backend
+
+Deploy your FastAPI backend to your preferred hosting service and ensure:
+- CORS is configured to allow your Cloudflare Pages domain
+- Environment variables are properly set
+- Database is accessible
 
 ## License
 

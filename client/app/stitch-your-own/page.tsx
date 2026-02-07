@@ -2,9 +2,10 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { FiShoppingCart, FiMinus, FiPlus } from 'react-icons/fi'
+import { FiShoppingCart, FiMinus, FiPlus, FiCheck } from 'react-icons/fi'
 import { apiClient, getImageUrl } from '@/lib/api'
 import { useCartStore } from '@/store/cartStore'
+import { getColorHex, getTextColorForBackground } from '@/lib/colorMapping'
 
 interface CustomFabric {
   id: number
@@ -12,7 +13,7 @@ interface CustomFabric {
   description: string
   price: number
   material: string
-  color?: string
+  colors?: string[]
   image_url: string
 }
 
@@ -43,6 +44,7 @@ export default function StitchYourOwnPage() {
   const router = useRouter()
   const [fabrics, setFabrics] = useState<CustomFabric[]>([])
   const [selectedFabric, setSelectedFabric] = useState<CustomFabric | null>(null)
+  const [selectedColor, setSelectedColor] = useState<string>('')
   const [quantity, setQuantity] = useState(1)
   const [measurements, setMeasurements] = useState<Measurements>({
     customCollar: '',
@@ -63,9 +65,6 @@ export default function StitchYourOwnPage() {
   const addItem = useCartStore((state) => state.addItem)
   
   const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
-  
-  // Available colors for all products
-  const availableColors = ['Jet Black', 'Navy Blue', 'Milky White', 'Grey', 'Dark Purple']
 
   useEffect(() => {
     fetchCustomFabrics()
@@ -77,12 +76,18 @@ export default function StitchYourOwnPage() {
       setFabrics(response.data)
       if (response.data.length > 0) {
         setSelectedFabric(response.data[0])
+        setSelectedColor('') // Reset color when fabric changes
       }
     } catch (error) {
       console.error('Error fetching custom fabrics:', error)
     } finally {
       setLoading(false)
     }
+  }
+
+  const handleFabricSelect = (fabric: CustomFabric) => {
+    setSelectedFabric(fabric)
+    setSelectedColor('') // Reset color when changing fabric
   }
 
 
@@ -93,9 +98,15 @@ export default function StitchYourOwnPage() {
   const handleAddToCart = () => {
     if (!selectedFabric) return
 
+    // Validate color selection
+    if (!selectedColor) {
+      alert('Please select a color')
+      return
+    }
+
     // Validate options
-    if (!measurements.cuffs || !measurements.collarType || !measurements.bottomWear || !measurements.color) {
-      alert('Please select all options (Cuffs, Collar Type, Bottom Wear, and Color)')
+    if (!measurements.cuffs || !measurements.collarType || !measurements.bottomWear) {
+      alert('Please select all options (Cuffs, Collar Type, Bottom Wear)')
       return
     }
 
@@ -122,7 +133,7 @@ export default function StitchYourOwnPage() {
       cuffs: measurements.cuffs,
       collarType: measurements.collarType,
       bottomWear: measurements.bottomWear,
-      color: measurements.color,
+      color: selectedColor,
       customCollar: measurements.customCollar,
       customShoulder: measurements.customShoulder,
       customChest: measurements.customChest,
@@ -141,13 +152,14 @@ export default function StitchYourOwnPage() {
     addItem({
       id: `custom-${selectedFabric.id}-${Date.now()}`,
       type: 'custom',
-      name: `Custom Suit - ${selectedFabric.name}`,
+      name: `Custom Suit - ${selectedFabric.name} (${selectedColor})`,
       price: selectedFabric.price,
       quantity: quantity,
       image: getImageUrl(selectedFabric.image_url),
       details: {
         fabric: selectedFabric.name,
         material: selectedFabric.material,
+        color: selectedColor,
         measurements: measurementsData
       }
     })
@@ -180,7 +192,7 @@ export default function StitchYourOwnPage() {
             {fabrics.map((fabric) => (
               <button
                 key={fabric.id}
-                onClick={() => setSelectedFabric(fabric)}
+                onClick={() => handleFabricSelect(fabric)}
                 className={`w-full p-4 rounded-lg border-2 transition-all ${
                   selectedFabric?.id === fabric.id
                     ? 'border-gray-900 dark:border-white bg-gray-100 dark:bg-dark-surface'
@@ -205,6 +217,11 @@ export default function StitchYourOwnPage() {
                     <p className="text-xl font-bold text-gray-900 dark:text-white">
                       Rs {fabric.price.toLocaleString()}
                     </p>
+                    {fabric.colors && fabric.colors.length > 0 && (
+                      <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
+                        {fabric.colors.length} colors available
+                      </p>
+                    )}
                   </div>
                 </div>
               </button>
@@ -241,13 +258,88 @@ export default function StitchYourOwnPage() {
         {/* Measurements Form */}
         <div>
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-            Enter Your Measurements
+            Customize Your Order
           </h2>
 
           <div className="space-y-6">
+            {/* Color Selection - First Step */}
+            {selectedFabric && selectedFabric.colors && selectedFabric.colors.length > 0 && (
+              <div className="p-6 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 rounded-xl border border-gray-200 dark:border-gray-700">
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                  <span className="w-8 h-8 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-full flex items-center justify-center text-sm font-bold">1</span>
+                  Select Color <span className="text-red-500">*</span>
+                </h3>
+                
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                  {selectedFabric.colors.map((color) => {
+                    const colorHex = getColorHex(color);
+                    const textColor = getTextColorForBackground(colorHex);
+                    const isSelected = selectedColor === color;
+                    
+                    return (
+                      <button
+                        key={color}
+                        type="button"
+                        onClick={() => setSelectedColor(color)}
+                        className={`group relative rounded-lg border-2 font-medium transition-all overflow-hidden ${
+                          isSelected
+                            ? 'border-gray-900 dark:border-white shadow-xl scale-105 ring-2 ring-gray-900 dark:ring-white ring-offset-2'
+                            : 'border-gray-300 dark:border-gray-600 hover:border-gray-500 dark:hover:border-gray-400 hover:shadow-lg hover:scale-102'
+                        }`}
+                        style={{
+                          minHeight: '80px'
+                        }}
+                      >
+                        {/* Color Swatch */}
+                        <div 
+                          className="absolute inset-0 transition-opacity"
+                          style={{ 
+                            backgroundColor: colorHex,
+                            opacity: isSelected ? 0.3 : 0.15
+                          }}
+                        />
+                        
+                        {/* Color Circle Indicator */}
+                        <div className="relative z-10 p-3 flex flex-col items-center justify-center gap-2">
+                          <div 
+                            className={`w-8 h-8 rounded-full border-2 ${isSelected ? 'border-gray-900 dark:border-white' : 'border-gray-400 dark:border-gray-500'} shadow-md flex items-center justify-center`}
+                            style={{ backgroundColor: colorHex }}
+                          >
+                            {isSelected && (
+                              <FiCheck 
+                                className="w-5 h-5" 
+                                style={{ color: textColor }}
+                              />
+                            )}
+                          </div>
+                          <span className={`text-xs font-semibold text-center ${isSelected ? 'text-gray-900 dark:text-white' : 'text-gray-700 dark:text-gray-300'}`}>
+                            {color}
+                          </span>
+                        </div>
+                        
+                        {/* Shimmer effect on selection */}
+                        {isSelected && (
+                          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer"></div>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+                
+                {selectedColor && (
+                  <div className="mt-4 p-3 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      Selected: <span className="font-semibold text-gray-900 dark:text-white">{selectedColor}</span>
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* Kameez Measurements */}
             <div>
-              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                <span className="w-8 h-8 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-full flex items-center justify-center text-sm font-bold">2</span>
                 Kameez Measurements
               </h3>
               
@@ -326,7 +418,8 @@ export default function StitchYourOwnPage() {
 
             {/* Kurta Options */}
             <div>
-              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                <span className="w-8 h-8 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-full flex items-center justify-center text-sm font-bold">3</span>
                 Kurta Options
               </h3>
               
@@ -378,34 +471,11 @@ export default function StitchYourOwnPage() {
               </div>
             </div>
 
-            {/* Color Selection */}
-            <div>
-              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
-                Select Color <span className="text-red-500">*</span>
-              </h3>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {availableColors.map((color) => (
-                  <button
-                    key={color}
-                    type="button"
-                    onClick={() => handleMeasurementChange('color', color)}
-                    className={`py-3 px-4 rounded-lg border-2 font-medium transition-all text-left ${
-                      measurements.color === color
-                        ? 'border-gray-900 dark:border-white bg-gray-900 dark:bg-white text-white dark:text-gray-900'
-                        : 'border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white hover:border-gray-500 dark:hover:border-gray-500'
-                    }`}
-                  >
-                    {color}
-                  </button>
-                ))}
-              </div>
-            </div>
-
             {/* Shalwar Measurements */}
             {measurements.bottomWear === 'shalwar' && (
               <div>
-                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                  <span className="w-8 h-8 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-full flex items-center justify-center text-sm font-bold">4</span>
                   Shalwar Measurements
                 </h3>
                 
@@ -428,7 +498,8 @@ export default function StitchYourOwnPage() {
             {/* Pajama Measurements */}
             {measurements.bottomWear === 'pajama' && (
               <div>
-                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                  <span className="w-8 h-8 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-full flex items-center justify-center text-sm font-bold">4</span>
                   Pajama Measurements
                 </h3>
                 

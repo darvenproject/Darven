@@ -12,6 +12,7 @@ interface Product {
   description: string
   price: number
   material: string
+  fabric_category?: string
   size: string
   color?: string
   images: string[]
@@ -21,6 +22,9 @@ interface Product {
 export default function ReadyMadePage() {
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
+  const [selectedCategory, setSelectedCategory] = useState<string>('All')
+  
+  const fabricCategories = ['All', 'Wash n Wear', 'Blended', 'Boski', 'Soft Cotton', 'Giza Moon Cotton']
 
   useEffect(() => {
     fetchProducts()
@@ -39,7 +43,12 @@ export default function ReadyMadePage() {
     }
   }
 
-  const memoizedProducts = useMemo(() => products, [products])
+  const filteredProducts = useMemo(() => {
+    if (selectedCategory === 'All') {
+      return products
+    }
+    return products.filter(product => product.fabric_category === selectedCategory)
+  }, [products, selectedCategory])
 
   if (loading) {
     return (
@@ -51,19 +60,41 @@ export default function ReadyMadePage() {
 
   return (
     <div className="container mx-auto px-4 py-4 sm:py-8">
-      <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4 sm:mb-8">
+      <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4 sm:mb-6">
         Ready Made Collection
       </h1>
 
-      {products.length === 0 ? (
+      {/* Filter Tabs */}
+      <div className="mb-6 sm:mb-8 overflow-x-auto">
+        <div className="flex gap-2 sm:gap-3 pb-2">
+          {fabricCategories.map((category) => (
+            <button
+              key={category}
+              onClick={() => setSelectedCategory(category)}
+              className={`px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-medium whitespace-nowrap transition-all ${
+                selectedCategory === category
+                  ? 'bg-gray-900 dark:bg-white text-white dark:text-gray-900 shadow-lg scale-105'
+                  : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
+              }`}
+            >
+              {category}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {filteredProducts.length === 0 ? (
         <div className="text-center py-12 sm:py-20">
           <p className="text-gray-600 dark:text-gray-400 text-base sm:text-xl">
-            No products available at the moment
+            {selectedCategory === 'All' 
+              ? 'No products available at the moment'
+              : `No products available in ${selectedCategory} category`
+            }
           </p>
         </div>
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6">
-          {memoizedProducts.map((product, index) => (
+          {filteredProducts.map((product, index) => (
             <motion.div
               key={product.id}
               initial={{ opacity: 0, y: 20 }}

@@ -39,6 +39,8 @@ const nextConfig = {
     removeConsole: process.env.NODE_ENV === 'production',
   },
   poweredByHeader: false,
+  // Cloudflare Pages compatibility
+  output: 'standalone',
 }
 
 module.exports = nextConfig

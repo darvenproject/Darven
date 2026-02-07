@@ -73,6 +73,7 @@ async def create_custom_fabric(
     description: str = Form(...),
     price: float = Form(...),
     material: str = Form(...),
+    colors: str = Form(None),  # JSON string of color array
     file: UploadFile = File(...),
     admin: Admin = Depends(get_current_admin),
     db: Session = Depends(get_db)
@@ -81,11 +82,21 @@ async def create_custom_fabric(
     filename = f"{uuid4()}{file_extension}"
     image_url = await upload_file_local(file, "custom-fabrics", filename)
 
+    # Parse colors from JSON string
+    colors_list = None
+    if colors:
+        import json
+        try:
+            colors_list = json.loads(colors)
+        except:
+            colors_list = None
+
     custom_fabric = CustomFabric(
         name=name,
         description=description,
         price=price,
         material=material,
+        colors=colors_list,
         image_url=image_url
     )
 
@@ -103,6 +114,7 @@ async def update_custom_fabric(
     description: str = Form(None),
     price: float = Form(None),
     material: str = Form(None),
+    colors: str = Form(None),  # JSON string of color array
     file: UploadFile = File(None),
     admin: Admin = Depends(get_current_admin),
     db: Session = Depends(get_db)
@@ -119,6 +131,14 @@ async def update_custom_fabric(
         fabric.price = price
     if material is not None:
         fabric.material = material
+    
+    # Parse colors from JSON string
+    if colors is not None:
+        import json
+        try:
+            fabric.colors = json.loads(colors)
+        except:
+            pass
 
     if file:
         if fabric.image_url:
