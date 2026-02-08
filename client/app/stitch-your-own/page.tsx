@@ -18,23 +18,16 @@ interface CustomFabric {
 }
 
 interface Measurements {
-  // Custom Kameez measurements
   customCollar: string
   customShoulder: string
   customChest: string
   customSleeves: string
   customKameezLength: string
-  
-  // Options
   cuffs: 'yes' | 'no' | ''
   collarType: 'sherwani' | 'shirt' | ''
   bottomWear: 'pajama' | 'shalwar' | ''
   color: string
-  
-  // Custom Shalwar measurements
   customShalwarLength: string
-  
-  // Custom Pajama measurements
   customPajamaLength: string
   customWaist: string
   customThigh: string
@@ -63,8 +56,48 @@ export default function StitchYourOwnPage() {
   })
   const [loading, setLoading] = useState(true)
   const addItem = useCartStore((state) => state.addItem)
-  
-  const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
+
+  // Custom cursor tracking
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+
+    const cursor = document.createElement('div')
+    cursor.className = 'custom-cursor'
+    const follower = document.createElement('div')
+    follower.className = 'custom-cursor-follower'
+    
+    document.body.appendChild(cursor)
+    document.body.appendChild(follower)
+
+    let cursorX = 0
+    let cursorY = 0
+    let followerX = 0
+    let followerY = 0
+
+    const updateCursor = (e: MouseEvent) => {
+      cursorX = e.clientX
+      cursorY = e.clientY
+      cursor.style.left = `${cursorX}px`
+      cursor.style.top = `${cursorY}px`
+    }
+
+    const animateFollower = () => {
+      followerX += (cursorX - followerX) * 0.15
+      followerY += (cursorY - followerY) * 0.15
+      follower.style.left = `${followerX - 20}px`
+      follower.style.top = `${followerY - 20}px`
+      requestAnimationFrame(animateFollower)
+    }
+
+    document.addEventListener('mousemove', updateCursor)
+    animateFollower()
+
+    return () => {
+      document.removeEventListener('mousemove', updateCursor)
+      cursor.remove()
+      follower.remove()
+    }
+  }, [])
 
   useEffect(() => {
     fetchCustomFabrics()
@@ -73,12 +106,10 @@ export default function StitchYourOwnPage() {
   const fetchCustomFabrics = async () => {
     try {
       const response = await apiClient.getCustomFabrics()
-      console.log('Fetched custom fabrics for stitch-your-own:', response.data)
       setFabrics(response.data)
       if (response.data.length > 0) {
-        console.log('First fabric colors:', response.data[0].colors)
         setSelectedFabric(response.data[0])
-        setSelectedColor('') // Reset color when fabric changes
+        setSelectedColor('')
       }
     } catch (error) {
       console.error('Error fetching custom fabrics:', error)
@@ -88,16 +119,12 @@ export default function StitchYourOwnPage() {
   }
 
   const handleFabricSelect = (fabric: CustomFabric) => {
-    console.log('Selected fabric:', fabric)
-    console.log('Available colors:', fabric.colors)
     setSelectedFabric(fabric)
-    setSelectedColor('') // Reset color when changing fabric
-    // Auto-select first color if only one color is available
+    setSelectedColor('')
     if (fabric.colors && fabric.colors.length === 1) {
       setSelectedColor(fabric.colors[0])
     }
   }
-
 
   const handleMeasurementChange = (field: keyof Measurements, value: string) => {
     setMeasurements({ ...measurements, [field]: value })
@@ -106,22 +133,19 @@ export default function StitchYourOwnPage() {
   const handleAddToCart = () => {
     if (!selectedFabric) return
 
-    // Validate color selection if colors are available
     if (selectedFabric.colors && selectedFabric.colors.length > 0 && !selectedColor) {
       alert('Please select a color for your fabric')
       return
     }
 
-    // Validate options
     if (!measurements.cuffs || !measurements.collarType || !measurements.bottomWear) {
       alert('Please select all options (Cuffs, Collar Type, Bottom Wear)')
       return
     }
 
-    // Validate custom measurements
     if (!measurements.customCollar || !measurements.customShoulder || !measurements.customChest || 
         !measurements.customSleeves || !measurements.customKameezLength) {
-      alert('Please fill in all Kameez measurements (Collar, Shoulder, Chest, Sleeves, Length)')
+      alert('Please fill in all Kameez measurements')
       return
     }
     
@@ -131,12 +155,11 @@ export default function StitchYourOwnPage() {
     }
     
     if (measurements.bottomWear === 'pajama' && (!measurements.customPajamaLength || !measurements.customWaist || !measurements.customThigh)) {
-      alert('Please fill in all Pajama measurements (Length, Waist, Thigh)')
+      alert('Please fill in all Pajama measurements')
       return
     }
 
-    // Build measurements object with custom measurements only
-    const finalColor = selectedColor || 'Standard'; // Use 'Standard' if no color selected/available
+    const finalColor = selectedColor || 'Standard'
     const measurementsData: any = {
       measurementType: 'custom',
       cuffs: measurements.cuffs,
@@ -160,7 +183,7 @@ export default function StitchYourOwnPage() {
 
     const displayName = finalColor !== 'Standard' 
       ? `Custom Suit - ${selectedFabric.name} (${finalColor})`
-      : `Custom Suit - ${selectedFabric.name}`;
+      : `Custom Suit - ${selectedFabric.name}`
     
     addItem({
       id: `custom-${selectedFabric.id}-${Date.now()}`,
@@ -182,282 +205,316 @@ export default function StitchYourOwnPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 dark:border-white"></div>
+      <div className="min-h-screen flex items-center justify-center bg-white dark:bg-dark-bg">
+        <div className="animate-spin rounded-full h-16 w-16 border-4 border-gray-200 dark:border-gray-800 border-t-gray-900 dark:border-t-white"></div>
       </div>
     )
   }
 
   return (
-    <div className="container mx-auto px-4 py-8" style={{ WebkitOverflowScrolling: 'touch', touchAction: 'pan-y pan-x' }}>
-      <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-8">
-        Stitch Your Own Suit
-      </h1>
+    <div className="min-h-screen bg-white dark:bg-dark-bg">
+      {/* Custom Cursor Styles */}
+      <style jsx global>{`
+        /* Custom Cursor */
+        * {
+          cursor: none !important;
+        }
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+        @media (pointer: fine) {
+          .custom-cursor {
+            position: fixed;
+            width: 12px;
+            height: 12px;
+            background: #0f0f0f;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transition: transform 0.15s ease, opacity 0.15s ease;
+            mix-blend-mode: difference;
+          }
 
-        {/* LEFT COLUMN: Fabric & Quantity */}
-        <div className="space-y-8">
-          <div>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
-              Choose Your Fabric
+          .dark .custom-cursor {
+            background: #fafafa;
+          }
+
+          .custom-cursor-follower {
+            position: fixed;
+            width: 40px;
+            height: 40px;
+            border: 2px solid #0f0f0f;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9998;
+            transition: transform 0.3s ease, opacity 0.2s ease, width 0.3s ease, height 0.3s ease;
+            opacity: 0.5;
+            mix-blend-mode: difference;
+          }
+
+          .dark .custom-cursor-follower {
+            border-color: #fafafa;
+          }
+
+          /* Hover states */
+          button:hover ~ .custom-cursor,
+          a:hover ~ .custom-cursor,
+          input:hover ~ .custom-cursor,
+          select:hover ~ .custom-cursor {
+            transform: scale(1.5);
+          }
+
+          button:hover ~ .custom-cursor-follower,
+          a:hover ~ .custom-cursor-follower,
+          input:hover ~ .custom-cursor-follower,
+          select:hover ~ .custom-cursor-follower {
+            width: 60px;
+            height: 60px;
+            opacity: 0.3;
+          }
+
+          /* Active state */
+          button:active ~ .custom-cursor-follower,
+          a:active ~ .custom-cursor-follower {
+            width: 50px;
+            height: 50px;
+            opacity: 0.8;
+          }
+        }
+
+        @media (pointer: coarse) {
+          * {
+            cursor: auto !important;
+          }
+        }
+      `}</style>
+
+      {/* Hero Header */}
+      <div className="border-b border-gray-200 dark:border-gray-800">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-gray-900 dark:text-white mb-3 tracking-tight">
+            Stitch Your Own Suit
+          </h1>
+          <p className="text-base sm:text-lg text-gray-600 dark:text-gray-400 max-w-2xl">
+            Choose your premium fabric, select your perfect color, and provide custom measurements for a suit tailored exclusively for you.
+          </p>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16">
+          
+          {/* LEFT: Fabric Selection */}
+          <div className="space-y-8">
+            {/* Fabric Grid */}
+            <div>
+              <h2 className="text-2xl sm:text-3xl font-black text-gray-900 dark:text-white mb-6 tracking-tight">
+                Choose Your Fabric
+              </h2>
+
+              <div className="grid grid-cols-1 gap-4">
+                {fabrics.map((fabric) => (
+                  <button
+                    key={fabric.id}
+                    onClick={() => handleFabricSelect(fabric)}
+                    className={`group relative overflow-hidden rounded-2xl transition-all duration-500 hover:scale-[1.02] active:scale-[0.98]
+                      ${selectedFabric?.id === fabric.id
+                        ? 'ring-2 ring-gray-900 dark:ring-white shadow-2xl'
+                        : 'hover:shadow-xl hover:-translate-y-1'
+                      }`}
+                  >
+                    <div className="flex gap-5 p-5 bg-gray-50 dark:bg-dark-surface">
+                      {/* Image */}
+                      <div className="relative w-32 h-32 rounded-xl overflow-hidden flex-shrink-0 bg-gray-200 dark:bg-gray-800 transition-all duration-500 group-hover:shadow-lg">
+                        <img
+                          src={getImageUrl(fabric.image_url)}
+                          alt={fabric.name}
+                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                        />
+                        {/* Hover overlay */}
+                        <div className="absolute inset-0 bg-gradient-to-tr from-black/0 via-transparent to-white/0 opacity-0 group-hover:opacity-30 transition-opacity duration-500" />
+                        {selectedFabric?.id === fabric.id && (
+                          <div className="absolute top-2 right-2 w-8 h-8 bg-gray-900 dark:bg-white rounded-full flex items-center justify-center animate-in zoom-in duration-300">
+                            <FiCheck className="w-4 h-4 text-white dark:text-gray-900" />
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Content */}
+                      <div className="flex-1 text-left">
+                        <h3 className="text-xl font-black text-gray-900 dark:text-white mb-2">
+                          {fabric.name}
+                        </h3>
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-4 line-clamp-2">
+                          {fabric.description}
+                        </p>
+                        <div className="flex items-center justify-between">
+                          <span className="text-2xl font-black text-gray-900 dark:text-white">
+                            Rs {fabric.price.toLocaleString()}
+                          </span>
+                          <span className="text-xs px-3 py-1.5 bg-white dark:bg-gray-800 rounded-full font-bold text-gray-600 dark:text-gray-400">
+                            {fabric.colors?.length || 0} colors available
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Quantity */}
+            <div className="p-6 bg-gray-50 dark:bg-dark-surface rounded-2xl">
+              <label className="block text-sm font-black text-gray-900 dark:text-white mb-4 uppercase tracking-wider">
+                Quantity
+              </label>
+              <div className="flex items-center gap-4">
+                <button
+                  onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                  className="w-14 h-14 flex items-center justify-center bg-white dark:bg-gray-800 rounded-xl border-2 border-gray-200 dark:border-gray-700 hover:border-gray-900 dark:hover:border-white hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 active:scale-95"
+                >
+                  <FiMinus className="w-5 h-5 text-gray-900 dark:text-white" />
+                </button>
+
+                <span className="text-4xl font-black text-gray-900 dark:text-white min-w-[50px] text-center">
+                  {quantity}
+                </span>
+
+                <button
+                  onClick={() => setQuantity(quantity + 1)}
+                  className="w-14 h-14 flex items-center justify-center bg-white dark:bg-gray-800 rounded-xl border-2 border-gray-200 dark:border-gray-700 hover:border-gray-900 dark:hover:border-white hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 active:scale-95"
+                >
+                  <FiPlus className="w-5 h-5 text-gray-900 dark:text-white" />
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* RIGHT: Customization */}
+          <div className="space-y-6">
+            <h2 className="text-2xl sm:text-3xl font-black text-gray-900 dark:text-white tracking-tight">
+              Customize Your Order
             </h2>
 
-            {/* Fabric Grid - 2 Columns on Desktop */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {fabrics.map((fabric) => (
-                <button
-                  key={fabric.id}
-                  onClick={() => handleFabricSelect(fabric)}
-                  className={`group relative flex flex-col p-4 rounded-xl border-2 transition-all duration-300 ease-out
-                    
-                    /* Hover Effects: Lift, Shadow, and Background Shift */
-                    hover:-translate-y-1 hover:shadow-xl hover:bg-white dark:hover:bg-gray-800/40
-                    
-                    /* Selected State */
-                    ${selectedFabric?.id === fabric.id
-                      ? 'border-gray-900 dark:border-white bg-white dark:bg-dark-surface shadow-md z-10'
-                      : 'border-gray-200 dark:border-gray-800 hover:border-gray-400 dark:hover:border-gray-500 bg-gray-50/50 dark:bg-transparent'
-                    }`}
-                >
-                  {/* Image Container with Zoom Effect */}
-                  <div className="w-full h-36 relative rounded-lg overflow-hidden mb-4 shadow-sm">
-                    <img
-                      src={getImageUrl(fabric.image_url)}
-                      alt={fabric.name}
-                      className="w-full h-full object-cover transition-transform duration-700 ease-in-out group-hover:scale-110"
-                    />
-                    
-                    {/* Overlay Shimmer on Hover */}
-                    <div className="absolute inset-0 bg-gradient-to-tr from-black/20 via-transparent to-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                    
-                    {/* Selected Checkmark */}
-                    {selectedFabric?.id === fabric.id && (
-                      <div className="absolute top-2 right-2 bg-gray-900 dark:bg-white p-1.5 rounded-full shadow-lg animate-in fade-in zoom-in duration-300">
-                        <FiCheck className="w-3.5 h-3.5 text-white dark:text-gray-900" />
-                      </div>
-                    )}
+            {/* Step 1: Color Selection */}
+            {selectedFabric && selectedFabric.colors && selectedFabric.colors.length > 0 && (
+              <div className="p-6 bg-gray-50 dark:bg-dark-surface rounded-2xl space-y-6">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-full flex items-center justify-center text-lg font-black">
+                    1
                   </div>
+                  <h3 className="text-xl font-black text-gray-900 dark:text-white">
+                    Select Color <span className="text-red-500">*</span>
+                  </h3>
+                </div>
 
-                  {/* Text Content */}
-                  <div className="text-left flex flex-col flex-1">
-                    <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1 transition-colors group-hover:text-black dark:group-hover:text-white">
-                      {fabric.name}
-                    </h3>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-2 mb-4 leading-relaxed">
-                      {fabric.description}
-                    </p>
-                    
-                    <div className="mt-auto pt-3 border-t border-gray-100 dark:border-white/5 flex items-center justify-between">
-                      <span className="text-xl font-black text-gray-900 dark:text-white">
-                        Rs {fabric.price.toLocaleString()}
-                      </span>
-                      <span className="px-2 py-1 rounded-md bg-gray-100 dark:bg-white/5 text-[10px] uppercase tracking-tighter font-bold text-gray-500 dark:text-gray-400 group-hover:bg-gray-900 group-hover:text-white dark:group-hover:bg-white dark:group-hover:text-gray-900 transition-colors">
-                        {fabric.colors?.length || 0} Colors Available
-                      </span>
-                    </div>
-                  </div>
-                </button>
-              ))}
-            </div>
-          </div>
+                <div className="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-8 gap-3">
+                  {selectedFabric.colors.map((color) => {
+                    const colorHex = getColorHex(color)
+                    const textColor = getTextColorForBackground(colorHex)
+                    const isSelected = selectedColor === color
 
-          {/* Quantity - Matching the tactile feel */}
-          <div className="p-6 bg-gray-50 dark:bg-dark-bg/30 rounded-2xl border border-gray-200 dark:border-white/10 shadow-inner">
-            <label className="block text-xs font-black text-gray-400 dark:text-gray-500 mb-4 uppercase tracking-[0.1em]">
-              Quantity
-            </label>
-            <div className="flex items-center gap-6">
-              <button
-                onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                className="w-12 h-12 flex items-center justify-center bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-white/10 hover:border-gray-900 dark:hover:border-white hover:shadow-md transition-all active:scale-90"
-              >
-                <FiMinus className="w-5 h-5 text-gray-900 dark:text-white" />
-              </button>
-
-              <span className="text-3xl font-black text-gray-900 dark:text-white min-w-[40px] text-center">
-                {quantity}
-              </span>
-
-              <button
-                onClick={() => setQuantity(quantity + 1)}
-                className="w-12 h-12 flex items-center justify-center bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-white/10 hover:border-gray-900 dark:hover:border-white hover:shadow-md transition-all active:scale-90"
-              >
-                <FiPlus className="w-5 h-5 text-gray-900 dark:text-white" />
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Measurements Form */}
-        <div>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-            Customize Your Order
-          </h2>
-
-          <div className="space-y-6">
-{/* Color Selection - First Step */}
-{selectedFabric && selectedFabric.colors && selectedFabric.colors.length > 0 && (
-  <div className="p-6 bg-gray-50 dark:bg-dark-bg border-b border-gray-200 dark:border-white/10">
-    <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
-      <span className="w-8 h-8 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-full flex items-center justify-center text-sm font-bold">1</span>
-      Select Color <span className="text-red-500">*</span>
-    </h3>
-    
-    <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8 gap-3">
-      {selectedFabric.colors.map((color) => {
-        const colorHex = getColorHex(color);
-        const textColor = getTextColorForBackground(colorHex);
-        const isSelected = selectedColor === color;
-        
-        return (
-          <button
-            key={color}
-            type="button"
-            onClick={() => setSelectedColor(color)}
-            className={`group relative rounded-xl border-2 transition-all duration-300
-              ${isSelected
-                ? 'border-gray-900 dark:border-white shadow-lg scale-105 z-10 bg-white dark:bg-gray-800'
-                : 'border-gray-200 dark:border-gray-700 hover:border-gray-400 dark:hover:border-gray-500 bg-white/50 dark:bg-white/5'
-              }`}
-            style={{ minHeight: '70px' }}
-          >
-            {/* Background Color Tint */}
-            <div 
-              className={`absolute inset-0 rounded-[9px] transition-opacity duration-300 
-                ${isSelected ? 'opacity-20' : 'opacity-5 group-hover:opacity-10'}`}
-              style={{ backgroundColor: colorHex }}
-            />
-            
-            <div className="relative z-10 p-2 flex flex-col items-center justify-center gap-2">
-              {/* Color Circle */}
-              <div 
-                className="w-6 h-6 rounded-full border border-black/10 dark:border-white/20 shadow-sm flex items-center justify-center transition-transform group-hover:scale-110"
-                style={{ backgroundColor: colorHex }}
-              >
-                {isSelected && (
-                  <FiCheck 
-                    className="w-3.5 h-3.5" 
-                    style={{ color: textColor }}
-                  />
-                )}
+                    return (
+                      <button
+                        key={color}
+                        onClick={() => setSelectedColor(color)}
+                        className={`group relative rounded-xl transition-all duration-300 hover:scale-110 active:scale-95 ${
+                          isSelected
+                            ? 'ring-2 ring-gray-900 dark:ring-white scale-105 shadow-lg'
+                            : 'hover:shadow-md'
+                        }`}
+                        style={{ minHeight: '80px' }}
+                      >
+                        <div className="absolute inset-0 rounded-xl" style={{ backgroundColor: colorHex, opacity: 0.1 }} />
+                        <div className="relative p-3 flex flex-col items-center justify-center gap-2">
+                          <div
+                            className="w-8 h-8 rounded-full border-2 border-gray-200 dark:border-gray-700 flex items-center justify-center"
+                            style={{ backgroundColor: colorHex }}
+                          >
+                            {isSelected && (
+                              <FiCheck className="w-4 h-4" style={{ color: textColor }} />
+                            )}
+                          </div>
+                          <span className={`text-[9px] font-bold uppercase text-center leading-tight ${
+                            isSelected ? 'text-gray-900 dark:text-white' : 'text-gray-600 dark:text-gray-400'
+                          }`}>
+                            {color}
+                          </span>
+                        </div>
+                      </button>
+                    )
+                  })}
+                </div>
               </div>
-              <span className={`text-[10px] font-bold uppercase tracking-tight text-center leading-tight
-                ${isSelected ? 'text-gray-900 dark:text-white' : 'text-gray-500 dark:text-gray-400'}`}>
-                {color}
-              </span>
-            </div>
-          </button>
-        );
-      })}
-    </div>
-    
-    {selectedColor && (
-      <div className="mt-6 p-4 bg-white dark:bg-white/5 rounded-xl border border-gray-900/10 dark:border-white/10 animate-in fade-in slide-in-from-top-2">
-        <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
-          Tailoring in: <span className="font-bold text-gray-900 dark:text-white">{selectedColor}</span>
-        </p>
-      </div>
-    )}
-  </div>
-)}
+            )}
 
-            {/* Kameez Measurements */}
-            <div>
-              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                <span className="w-8 h-8 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-full flex items-center justify-center text-sm font-bold">2</span>
-                Kameez Measurements
-              </h3>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm text-gray-600 dark:text-gray-400 mb-2">
-                      Collar (inches) <span className="text-red-500">*</span>
+            {/* Step 2: Measurements */}
+            <div className="p-6 bg-gray-50 dark:bg-dark-surface rounded-2xl space-y-6">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-full flex items-center justify-center text-lg font-black">
+                  2
+                </div>
+                <h3 className="text-xl font-black text-gray-900 dark:text-white">
+                  Kameez Measurements
+                </h3>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                {[
+                  { field: 'customCollar', label: 'Collar', placeholder: '15' },
+                  { field: 'customShoulder', label: 'Shoulder', placeholder: '17.5' },
+                  { field: 'customChest', label: 'Chest', placeholder: '23' },
+                  { field: 'customSleeves', label: 'Sleeves', placeholder: '23.5' },
+                ].map(({ field, label, placeholder }) => (
+                  <div key={field}>
+                    <label className="block text-sm font-bold text-gray-600 dark:text-gray-400 mb-2">
+                      {label} (inches) <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="number"
                       step="0.5"
-                      value={measurements.customCollar}
-                      onChange={(e) => handleMeasurementChange('customCollar', e.target.value)}
-                      className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-dark-surface text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white"
-                      placeholder="e.g., 15"
+                      value={measurements[field as keyof Measurements]}
+                      onChange={(e) => handleMeasurementChange(field as keyof Measurements, e.target.value)}
+                      className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-bg text-gray-900 dark:text-white font-bold focus:outline-none focus:border-gray-900 dark:focus:border-white transition-colors"
+                      placeholder={placeholder}
                     />
                   </div>
-
-                  <div>
-                    <label className="block text-sm text-gray-600 dark:text-gray-400 mb-2">
-                      Shoulder (inches) <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="number"
-                      step="0.5"
-                      value={measurements.customShoulder}
-                      onChange={(e) => handleMeasurementChange('customShoulder', e.target.value)}
-                      className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-dark-surface text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white"
-                      placeholder="e.g., 17.5"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm text-gray-600 dark:text-gray-400 mb-2">
-                      Chest (inches) <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="number"
-                      step="0.5"
-                      value={measurements.customChest}
-                      onChange={(e) => handleMeasurementChange('customChest', e.target.value)}
-                      className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-dark-surface text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white"
-                      placeholder="e.g., 23"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm text-gray-600 dark:text-gray-400 mb-2">
-                      Sleeves (inches) <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="number"
-                      step="0.5"
-                      value={measurements.customSleeves}
-                      onChange={(e) => handleMeasurementChange('customSleeves', e.target.value)}
-                      className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-dark-surface text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white"
-                      placeholder="e.g., 23.5"
-                    />
-                  </div>
-
-                  <div className="md:col-span-2">
-                    <label className="block text-sm text-gray-600 dark:text-gray-400 mb-2">
-                      Length (inches) <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="number"
-                      step="0.5"
-                      value={measurements.customKameezLength}
-                      onChange={(e) => handleMeasurementChange('customKameezLength', e.target.value)}
-                      className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-dark-surface text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white"
-                      placeholder="e.g., 40"
-                    />
+                ))}
+                <div className="col-span-2">
+                  <label className="block text-sm font-bold text-gray-600 dark:text-gray-400 mb-2">
+                    Length (inches) <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="number"
+                    step="0.5"
+                    value={measurements.customKameezLength}
+                    onChange={(e) => handleMeasurementChange('customKameezLength', e.target.value)}
+                    className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-bg text-gray-900 dark:text-white font-bold focus:outline-none focus:border-gray-900 dark:focus:border-white transition-colors"
+                    placeholder="40"
+                  />
                 </div>
               </div>
             </div>
 
-            {/* Kurta Options */}
-            <div>
-              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                <span className="w-8 h-8 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-full flex items-center justify-center text-sm font-bold">3</span>
-                Kurta Options
-              </h3>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Step 3: Options */}
+            <div className="p-6 bg-gray-50 dark:bg-dark-surface rounded-2xl space-y-6">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-full flex items-center justify-center text-lg font-black">
+                  3
+                </div>
+                <h3 className="text-xl font-black text-gray-900 dark:text-white">
+                  Kurta Options
+                </h3>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm text-gray-600 dark:text-gray-400 mb-2">
+                  <label className="block text-sm font-bold text-gray-600 dark:text-gray-400 mb-2">
                     Cuffs
                   </label>
                   <select
                     value={measurements.cuffs}
                     onChange={(e) => handleMeasurementChange('cuffs', e.target.value)}
-                    className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-dark-surface text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white"
+                    className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-bg text-gray-900 dark:text-white font-bold focus:outline-none focus:border-gray-900 dark:focus:border-white transition-colors"
                   >
                     <option value="">Select option</option>
                     <option value="yes">Yes</option>
@@ -466,13 +523,13 @@ export default function StitchYourOwnPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm text-gray-600 dark:text-gray-400 mb-2">
+                  <label className="block text-sm font-bold text-gray-600 dark:text-gray-400 mb-2">
                     Collar Type
                   </label>
                   <select
                     value={measurements.collarType}
                     onChange={(e) => handleMeasurementChange('collarType', e.target.value)}
-                    className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-dark-surface text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white"
+                    className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-bg text-gray-900 dark:text-white font-bold focus:outline-none focus:border-gray-900 dark:focus:border-white transition-colors"
                   >
                     <option value="">Select collar type</option>
                     <option value="sherwani">Sherwani Collar</option>
@@ -480,14 +537,14 @@ export default function StitchYourOwnPage() {
                   </select>
                 </div>
 
-                <div className="md:col-span-2">
-                  <label className="block text-sm text-gray-600 dark:text-gray-400 mb-2">
+                <div className="col-span-2">
+                  <label className="block text-sm font-bold text-gray-600 dark:text-gray-400 mb-2">
                     Bottom Wear
                   </label>
                   <select
                     value={measurements.bottomWear}
                     onChange={(e) => handleMeasurementChange('bottomWear', e.target.value)}
-                    className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-dark-surface text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white"
+                    className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-bg text-gray-900 dark:text-white font-bold focus:outline-none focus:border-gray-900 dark:focus:border-white transition-colors"
                   >
                     <option value="">Select bottom wear</option>
                     <option value="pajama">Pajama</option>
@@ -497,16 +554,20 @@ export default function StitchYourOwnPage() {
               </div>
             </div>
 
-            {/* Shalwar Measurements */}
+            {/* Step 4: Bottom Wear Measurements */}
             {measurements.bottomWear === 'shalwar' && (
-              <div>
-                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                  <span className="w-8 h-8 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-full flex items-center justify-center text-sm font-bold">4</span>
-                  Shalwar Measurements
-                </h3>
-                
+              <div className="p-6 bg-gray-50 dark:bg-dark-surface rounded-2xl space-y-6">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-full flex items-center justify-center text-lg font-black">
+                    4
+                  </div>
+                  <h3 className="text-xl font-black text-gray-900 dark:text-white">
+                    Shalwar Measurements
+                  </h3>
+                </div>
+
                 <div>
-                  <label className="block text-sm text-gray-600 dark:text-gray-400 mb-2">
+                  <label className="block text-sm font-bold text-gray-600 dark:text-gray-400 mb-2">
                     Length (inches) <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -514,24 +575,27 @@ export default function StitchYourOwnPage() {
                     step="0.5"
                     value={measurements.customShalwarLength}
                     onChange={(e) => handleMeasurementChange('customShalwarLength', e.target.value)}
-                    className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-dark-surface text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white"
-                    placeholder="e.g., 40"
+                    className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-bg text-gray-900 dark:text-white font-bold focus:outline-none focus:border-gray-900 dark:focus:border-white transition-colors"
+                    placeholder="40"
                   />
                 </div>
               </div>
             )}
 
-            {/* Pajama Measurements */}
             {measurements.bottomWear === 'pajama' && (
-              <div>
-                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                  <span className="w-8 h-8 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-full flex items-center justify-center text-sm font-bold">4</span>
-                  Pajama Measurements
-                </h3>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm text-gray-600 dark:text-gray-400 mb-2">
+              <div className="p-6 bg-gray-50 dark:bg-dark-surface rounded-2xl space-y-6">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-full flex items-center justify-center text-lg font-black">
+                    4
+                  </div>
+                  <h3 className="text-xl font-black text-gray-900 dark:text-white">
+                    Pajama Measurements
+                  </h3>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="col-span-2">
+                    <label className="block text-sm font-bold text-gray-600 dark:text-gray-400 mb-2">
                       Length (inches) <span className="text-red-500">*</span>
                     </label>
                     <input
@@ -539,13 +603,13 @@ export default function StitchYourOwnPage() {
                       step="0.5"
                       value={measurements.customPajamaLength}
                       onChange={(e) => handleMeasurementChange('customPajamaLength', e.target.value)}
-                      className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-dark-surface text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white"
-                      placeholder="e.g., 40"
+                      className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-bg text-gray-900 dark:text-white font-bold focus:outline-none focus:border-gray-900 dark:focus:border-white transition-colors"
+                      placeholder="40"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm text-gray-600 dark:text-gray-400 mb-2">
+                    <label className="block text-sm font-bold text-gray-600 dark:text-gray-400 mb-2">
                       Waist (inches) <span className="text-red-500">*</span>
                     </label>
                     <input
@@ -553,13 +617,13 @@ export default function StitchYourOwnPage() {
                       step="0.5"
                       value={measurements.customWaist}
                       onChange={(e) => handleMeasurementChange('customWaist', e.target.value)}
-                      className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-dark-surface text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white"
-                      placeholder="e.g., 32"
+                      className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-bg text-gray-900 dark:text-white font-bold focus:outline-none focus:border-gray-900 dark:focus:border-white transition-colors"
+                      placeholder="32"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm text-gray-600 dark:text-gray-400 mb-2">
+                    <label className="block text-sm font-bold text-gray-600 dark:text-gray-400 mb-2">
                       Thigh (inches) <span className="text-red-500">*</span>
                     </label>
                     <input
@@ -567,59 +631,44 @@ export default function StitchYourOwnPage() {
                       step="0.5"
                       value={measurements.customThigh}
                       onChange={(e) => handleMeasurementChange('customThigh', e.target.value)}
-                      className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-dark-surface text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white"
-                      placeholder="e.g., 24"
+                      className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-bg text-gray-900 dark:text-white font-bold focus:outline-none focus:border-gray-900 dark:focus:border-white transition-colors"
+                      placeholder="24"
                     />
                   </div>
                 </div>
               </div>
             )}
 
-            {/* Total Price */}
+            {/* Total & Add to Cart */}
             {selectedFabric && (
-              <div className="p-4 bg-gray-100 dark:bg-dark-surface rounded-lg">
-                <div className="flex justify-between items-center">
-                  <span className="text-xl font-bold text-gray-900 dark:text-white">
+              <div className="sticky bottom-0 p-6 bg-white dark:bg-dark-bg border-2 border-gray-900 dark:border-white rounded-2xl space-y-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-xl font-black text-gray-600 dark:text-gray-400">
                     Total:
                   </span>
-                  <span className="text-2xl font-bold text-gray-900 dark:text-white">
+                  <span className="text-3xl font-black text-gray-900 dark:text-white">
                     Rs {(selectedFabric.price * quantity).toLocaleString()}
                   </span>
                 </div>
+
+                <button
+                  onClick={handleAddToCart}
+                  disabled={!selectedFabric || (selectedFabric.colors && selectedFabric.colors.length > 0 && !selectedColor)}
+                  className="group relative overflow-hidden w-full py-4 px-8 rounded-xl font-black text-lg bg-gray-900 dark:bg-white text-white dark:text-gray-900 hover:bg-black dark:hover:bg-gray-100 hover:shadow-2xl hover:scale-105 disabled:bg-gray-200 dark:disabled:bg-gray-800 disabled:text-gray-400 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:shadow-none transition-all duration-300 active:scale-95 flex items-center justify-center gap-3"
+                >
+                  {/* Shimmer effect on hover */}
+                  <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+                  
+                  <FiShoppingCart className="w-6 h-6 relative z-10 group-hover:rotate-12 transition-transform duration-300" />
+                  <span className="relative z-10">
+                    {!selectedFabric ? 'Select a Fabric' : (selectedFabric.colors && selectedFabric.colors.length > 0 && !selectedColor) ? 'Select a Color' : 'Add to Cart'}
+                  </span>
+                </button>
               </div>
             )}
-{/* Add to Cart Button Section */}
-            <div className="p-6 bg-white dark:bg-dark-bg border-t border-gray-100 dark:border-white/5">
-              <button
-                onClick={handleAddToCart}
-                disabled={!selectedFabric || !selectedColor}
-                className="group relative w-full overflow-hidden py-4 px-8 rounded-xl font-bold text-lg 
-                          transition-all duration-300 ease-out flex items-center justify-center gap-3
-                          /* Light Mode Styles */
-                          bg-gray-900 text-white hover:bg-black hover:shadow-xl hover:scale-[1.02]
-                          /* Dark Mode Styles */
-                          dark:bg-white dark:text-gray-900 dark:hover:bg-gray-50 
-                          dark:hover:shadow-[0_0_20px_rgba(255,255,255,0.1)]
-                          /* State Styles */
-                          active:scale-[0.98]
-                          disabled:opacity-20 disabled:bg-gray-200 dark:disabled:bg-gray-800 
-                          disabled:text-gray-500 disabled:cursor-not-allowed disabled:scale-100 disabled:shadow-none"
-              >
-                {/* Shimmer Effect - Only triggers when active */}
-                {!(!selectedFabric || !selectedColor) && (
-                  <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-shimmer pointer-events-none" />
-                )}
-
-                <FiShoppingCart className={`w-6 h-6 transition-transform duration-300 ${!selectedFabric || !selectedColor ? '' : 'group-hover:-translate-y-1 group-hover:translate-x-1'}`} />
-                
-                <span className="relative z-10">
-                  {!selectedFabric ? 'Select a Fabric' : !selectedColor ? 'Select a Color' : 'Add to Cart'}
-                </span>
-              </button>
-            </div>
-          </div> {/* End of customization container */}
-        </div> {/* End of grid column */}
-      </div> {/* End of main grid */}
-    </div> 
-  );
+          </div>
+        </div>
+      </div>
+    </div>
+  )
 }
