@@ -57,6 +57,7 @@ export default function AdminProductsPage() {
   const fetchProducts = async () => {
     try {
       const response = await apiClient.getReadyMadeProducts()
+      console.log('Admin products:', response.data)
       setProducts(response.data)
     } catch (error) {
       console.error('Error fetching products:', error)
@@ -382,16 +383,24 @@ export default function AdminProductsPage() {
             {products.map((product) => (
               <div key={product.id} className="bg-white dark:bg-dark-surface rounded-lg shadow-md overflow-hidden">
                 <div className="relative aspect-[3/4] bg-gray-50 dark:bg-gray-900">
-                  <Image
-                    src={getImageUrl(product.images[0])}
-                    alt={product.name}
-                    fill
-                    className="object-contain"
-                    onError={(e) => {
-                      e.currentTarget.src = '/placeholder.jpg'
-                    }}
-                  />
-                  {product.images.length > 1 && (
+                  {product.images && product.images.length > 0 ? (
+                    <Image
+                      src={getImageUrl(product.images[0])}
+                      alt={product.name}
+                      fill
+                      sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                      className="object-contain"
+                      onError={(e) => {
+                        console.error('Image load error for product:', product.id)
+                        e.currentTarget.src = '/placeholder.jpg'
+                      }}
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-gray-400">
+                      No Image
+                    </div>
+                  )}
+                  {product.images && product.images.length > 1 && (
                     <div className="absolute top-2 right-2 bg-black bg-opacity-70 text-white text-xs px-2 py-1 rounded">
                       +{product.images.length - 1} more
                     </div>

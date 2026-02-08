@@ -55,6 +55,7 @@ export default function AdminFabricsPage() {
   const fetchFabrics = async () => {
     try {
       const response = await apiClient.getFabrics()
+      console.log('Admin fabrics:', response.data)
       setFabrics(response.data)
     } catch (error) {
       console.error('Error fetching fabrics:', error)
@@ -371,8 +372,12 @@ export default function AdminFabricsPage() {
                       src={getImageUrl(fabric.images[0])}
                       alt={fabric.name}
                       fill
+                      sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                       className="object-cover"
-                      unoptimized
+                      onError={(e) => {
+                        console.error('Image load error for fabric:', fabric.id)
+                        e.currentTarget.src = '/placeholder.jpg'
+                      }}
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-gray-400">
@@ -456,4 +461,4 @@ export default function AdminFabricsPage() {
       </div>
     </div>
   )
-}
+} 
