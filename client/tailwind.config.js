@@ -9,9 +9,10 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        // Simple 2-color dark mode
         dark: {
-          bg: '#1A1A1A',
-          surface: '#2C2C2C',
+          bg: '#0f0f0f',      // Deep black background
+          surface: '#1f1f1f',  // Slightly lighter for cards/surfaces
         },
       },
       animation: {
