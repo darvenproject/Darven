@@ -103,6 +103,7 @@ export default function FabricDetailPage() {
               fill
               className="object-cover"
               onError={() => setImageError(true)}
+              unoptimized
               priority
             />
           </div>
@@ -128,6 +129,7 @@ export default function FabricDetailPage() {
                       const target = e.currentTarget as HTMLImageElement
                       target.style.display = 'none'
                     }}
+                    unoptimized
                   />
                 </button>
               ))}

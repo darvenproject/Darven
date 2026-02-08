@@ -375,6 +375,7 @@ export default function AdminFabricsPage() {
                       const target = e.currentTarget as HTMLImageElement
                       target.src = '/placeholder.jpg'
                     }}
+                    unoptimized
                   />
                 </div>
                 <div className="p-4">
