@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, File, UploadFile, Form, HTTPException
 from sqlalchemy.orm import Session
-from typing import List
+from typing import List, Optional
 import os
 import json
 from uuid import uuid4
@@ -33,7 +33,7 @@ async def create_ready_made_product(
     material: str = Form(...),
     fabric_category: str = Form(None),
     size: str = Form(...),
-    color: str = Form(None),
+    colors: Optional[str] = Form(None),
     stock: int = Form(0),
     files: List[UploadFile] = File(...),
     admin: Admin = Depends(get_current_admin),
@@ -47,6 +47,14 @@ async def create_ready_made_product(
         image_url = await upload_file_local(file, "ready-made", filename)
         image_urls.append(image_url)
     
+    # Parse colors JSON if provided
+    colors_list = None
+    if colors:
+        try:
+            colors_list = json.loads(colors)
+        except json.JSONDecodeError:
+            raise HTTPException(status_code=400, detail="Invalid colors JSON format")
+    
     # Create product
     product = ReadyMadeProduct(
         name=name,
@@ -55,7 +63,7 @@ async def create_ready_made_product(
         material=material,
         fabric_category=fabric_category,
         size=size,
-        color=color,
+        colors=colors_list,
         stock=stock,
         images=image_urls
     )
@@ -75,7 +83,7 @@ async def update_ready_made_product(
     material: str = Form(None),
     fabric_category: str = Form(None),
     size: str = Form(None),
-    color: str = Form(None),
+    colors: Optional[str] = Form(None),
     stock: int = Form(None),
     files: List[UploadFile] = File(None),
     admin: Admin = Depends(get_current_admin),
@@ -98,10 +106,15 @@ async def update_ready_made_product(
         product.fabric_category = fabric_category
     if size is not None:
         product.size = size
-    if color is not None:
-        product.color = color
     if stock is not None:
         product.stock = stock
+    
+    # Update colors if provided
+    if colors is not None:
+        try:
+            product.colors = json.loads(colors)
+        except json.JSONDecodeError:
+            raise HTTPException(status_code=400, detail="Invalid colors JSON format")
     
     # Update images if provided
     if files:

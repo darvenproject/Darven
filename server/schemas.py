@@ -32,7 +32,7 @@ class ReadyMadeProductResponse(BaseModel):
     material: str
     fabric_category: Optional[str] = None
     size: str
-    color: Optional[str] = None
+    colors: Optional[List[str]] = None
     images: List[str]
     stock: int
     created_at: datetime
@@ -55,6 +55,7 @@ class FabricResponse(BaseModel):
     price_per_meter: float
     material: str
     fabric_category: Optional[str] = None
+    colors: Optional[List[str]] = None
     images: List[str]
     stock_meters: float
     created_at: datetime

@@ -1,7 +1,8 @@
 from fastapi import APIRouter, Depends, File, UploadFile, Form, HTTPException
 from sqlalchemy.orm import Session
-from typing import List
+from typing import List, Optional
 import os
+import json
 from uuid import uuid4
 
 from database import get_db
@@ -32,6 +33,7 @@ async def create_fabric(
     material: str = Form(...),
     fabric_category: str = Form(None),
     stock_meters: float = Form(0),
+    colors: Optional[str] = Form(None),
     files: List[UploadFile] = File(...),
     admin: Admin = Depends(get_current_admin),
     db: Session = Depends(get_db)
@@ -44,6 +46,14 @@ async def create_fabric(
         image_url = await upload_file_local(file, "fabrics", filename)
         image_urls.append(image_url)
     
+    # Parse colors JSON if provided
+    colors_list = None
+    if colors:
+        try:
+            colors_list = json.loads(colors)
+        except json.JSONDecodeError:
+            raise HTTPException(status_code=400, detail="Invalid colors JSON format")
+    
     # Create fabric
     fabric = Fabric(
         name=name,
@@ -52,6 +62,7 @@ async def create_fabric(
         material=material,
         fabric_category=fabric_category,
         stock_meters=stock_meters,
+        colors=colors_list,
         images=image_urls
     )
     
@@ -70,6 +81,7 @@ async def update_fabric(
     material: str = Form(None),
     fabric_category: str = Form(None),
     stock_meters: float = Form(None),
+    colors: Optional[str] = Form(None),
     files: List[UploadFile] = File(None),
     admin: Admin = Depends(get_current_admin),
     db: Session = Depends(get_db)
@@ -91,6 +103,13 @@ async def update_fabric(
         fabric.fabric_category = fabric_category
     if stock_meters is not None:
         fabric.stock_meters = stock_meters
+    
+    # Update colors if provided
+    if colors is not None:
+        try:
+            fabric.colors = json.loads(colors)
+        except json.JSONDecodeError:
+            raise HTTPException(status_code=400, detail="Invalid colors JSON format")
     
     # Update images if provided
     if files:

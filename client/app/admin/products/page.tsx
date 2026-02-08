@@ -15,7 +15,7 @@ interface Product {
   material: string
   fabric_category?: string
   size: string
-  color?: string
+  colors?: string[]
   images: string[]
   stock: number
 }
@@ -33,9 +33,10 @@ export default function AdminProductsPage() {
     material: '',
     fabric_category: '',
     size: '',
-    color: '',
     stock: ''
   })
+  const [colors, setColors] = useState<string[]>([])
+  const [colorInput, setColorInput] = useState('')
   
   const fabricCategories = ['Wash n Wear', 'Blended', 'Boski', 'Soft Cotton', 'Giza Moon Cotton']
   const [files, setFiles] = useState<FileList | null>(null)
@@ -78,10 +79,14 @@ export default function AdminProductsPage() {
         data.append('fabric_category', formData.fabric_category)
       }
       data.append('size', formData.size)
-      if (formData.color) {
-        data.append('color', formData.color)
-      }
       data.append('stock', formData.stock)
+      
+      // Add colors as JSON string
+      if (colors.length > 0) {
+        data.append('colors', JSON.stringify(colors))
+      } else {
+        data.append('colors', JSON.stringify([]))
+      }
 
       if (files) {
         Array.from(files).forEach((file) => {
@@ -97,7 +102,9 @@ export default function AdminProductsPage() {
 
       setShowForm(false)
       setEditingProduct(null)
-      setFormData({ name: '', description: '', price: '', material: '', fabric_category: '', size: '', color: '', stock: '' })
+      setFormData({ name: '', description: '', price: '', material: '', fabric_category: '', size: '', stock: '' })
+      setColors([])
+      setColorInput('')
       setFiles(null)
       fetchProducts()
     } catch (error) {
@@ -117,9 +124,9 @@ export default function AdminProductsPage() {
       material: product.material,
       fabric_category: product.fabric_category || '',
       size: product.size,
-      color: product.color || '',
       stock: product.stock.toString()
     })
+    setColors(product.colors || [])
     setShowForm(true)
   }
 
@@ -262,33 +269,73 @@ export default function AdminProductsPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Size *
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={formData.size}
-                    onChange={(e) => setFormData({ ...formData, size: e.target.value })}
-                    className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-dark-bg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white"
-                    placeholder="e.g., M, L, XL"
-                  />
-                </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Size *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={formData.size}
+                  onChange={(e) => setFormData({ ...formData, size: e.target.value })}
+                  className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-dark-bg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white"
+                  placeholder="e.g., M, L, XL"
+                />
+              </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Color
-                  </label>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Available Colors (Optional)
+                </label>
+                <div className="flex gap-2 mb-2">
                   <input
                     type="text"
-                    value={formData.color}
-                    onChange={(e) => setFormData({ ...formData, color: e.target.value })}
-                    className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-dark-bg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white"
-                    placeholder="e.g., Black, Navy"
+                    value={colorInput}
+                    onChange={(e) => setColorInput(e.target.value)}
+                    onKeyPress={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault()
+                        if (colorInput.trim() && !colors.includes(colorInput.trim())) {
+                          setColors([...colors, colorInput.trim()])
+                          setColorInput('')
+                        }
+                      }
+                    }}
+                    className="flex-1 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-dark-bg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white"
+                    placeholder="e.g., White, Black, Navy Blue (press Enter to add)"
                   />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (colorInput.trim() && !colors.includes(colorInput.trim())) {
+                        setColors([...colors, colorInput.trim()])
+                        setColorInput('')
+                      }
+                    }}
+                    className="px-4 py-2 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-lg hover:bg-gray-800 dark:hover:bg-gray-100 transition-colors"
+                  >
+                    Add
+                  </button>
                 </div>
+                {colors.length > 0 && (
+                  <div className="flex flex-wrap gap-2 p-3 bg-gray-50 dark:bg-dark-bg rounded-lg">
+                    {colors.map((color, index) => (
+                      <span
+                        key={index}
+                        className="inline-flex items-center gap-2 px-3 py-1 bg-white dark:bg-dark-surface border border-gray-300 dark:border-gray-700 rounded-lg text-sm text-gray-900 dark:text-white"
+                      >
+                        {color}
+                        <button
+                          type="button"
+                          onClick={() => setColors(colors.filter((_, i) => i !== index))}
+                          className="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 font-bold"
+                        >
+                          ×
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
 
               <div>
@@ -318,7 +365,9 @@ export default function AdminProductsPage() {
                   onClick={() => {
                     setShowForm(false)
                     setEditingProduct(null)
-                    setFormData({ name: '', description: '', price: '', material: '', fabric_category: '', size: '', color: '', stock: '' })
+                    setFormData({ name: '', description: '', price: '', material: '', fabric_category: '', size: '', stock: '' })
+                    setColors([])
+                    setColorInput('')
                     setFiles(null)
                   }}
                   className="px-6 py-3 border border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white rounded-lg hover:bg-gray-100 dark:hover:bg-dark-bg transition-colors"
@@ -363,10 +412,27 @@ export default function AdminProductsPage() {
                       Stock: {product.stock}
                     </span>
                   </div>
-                  {product.color && (
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
-                      Color: {product.color}
-                    </p>
+                  {product.colors && product.colors.length > 0 && (
+                    <div className="mb-2">
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">
+                        Available Colors ({product.colors.length}):
+                      </p>
+                      <div className="flex flex-wrap gap-1">
+                        {product.colors.slice(0, 3).map((color, idx) => (
+                          <span
+                            key={idx}
+                            className="text-xs px-2 py-1 bg-gray-100 dark:bg-dark-bg text-gray-700 dark:text-gray-300 rounded"
+                          >
+                            {color}
+                          </span>
+                        ))}
+                        {product.colors.length > 3 && (
+                          <span className="text-xs px-2 py-1 text-gray-500 dark:text-gray-400">
+                            +{product.colors.length - 3} more
+                          </span>
+                        )}
+                      </div>
+                    </div>
                   )}
                   <div className="flex gap-2 mt-4">
                     <button
