@@ -1,9 +1,13 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useCartStore } from '@/store/cartStore'
 import { apiClient } from '@/lib/api'
+
+// Add these exports to prevent static generation issues
+export const dynamic = 'force-dynamic'
+export const runtime = 'edge'
 
 interface CustomerDetails {
   customer_name: string
@@ -17,6 +21,7 @@ interface CustomerDetails {
 
 export default function CheckoutPage() {
   const router = useRouter()
+  const [mounted, setMounted] = useState(false)
   const items = useCartStore((state) => state.items)
   const getTotalPrice = useCartStore((state) => state.getTotalPrice)
   const clearCart = useCartStore((state) => state.clearCart)
@@ -33,6 +38,18 @@ export default function CheckoutPage() {
 
   const [loading, setLoading] = useState(false)
   const [showSuccess, setShowSuccess] = useState(false)
+
+  // Ensure component only renders on client
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  // Handle empty cart redirect on client side only
+  useEffect(() => {
+    if (mounted && items.length === 0 && !showSuccess) {
+      router.push('/cart')
+    }
+  }, [mounted, items.length, showSuccess, router])
 
   const subtotal = getTotalPrice()
   const deliveryCharges = 200
@@ -80,11 +97,16 @@ export default function CheckoutPage() {
     }
   }
 
-  if (items.length === 0 && !showSuccess) {
-    router.push('/cart')
-    return null
+  // Show loading state while mounting
+  if (!mounted) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 dark:border-white"></div>
+      </div>
+    )
   }
 
+  // Show success message
   if (showSuccess) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -119,6 +141,11 @@ export default function CheckoutPage() {
         </div>
       </div>
     )
+  }
+
+  // Don't render form if cart is empty
+  if (items.length === 0) {
+    return null
   }
 
   return (
