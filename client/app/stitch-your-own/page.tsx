@@ -57,48 +57,6 @@ export default function StitchYourOwnPage() {
   const [loading, setLoading] = useState(true)
   const addItem = useCartStore((state) => state.addItem)
 
-  // Custom cursor tracking
-  useEffect(() => {
-    if (typeof window === 'undefined') return
-
-    const cursor = document.createElement('div')
-    cursor.className = 'custom-cursor'
-    const follower = document.createElement('div')
-    follower.className = 'custom-cursor-follower'
-    
-    document.body.appendChild(cursor)
-    document.body.appendChild(follower)
-
-    let cursorX = 0
-    let cursorY = 0
-    let followerX = 0
-    let followerY = 0
-
-    const updateCursor = (e: MouseEvent) => {
-      cursorX = e.clientX
-      cursorY = e.clientY
-      cursor.style.left = `${cursorX}px`
-      cursor.style.top = `${cursorY}px`
-    }
-
-    const animateFollower = () => {
-      followerX += (cursorX - followerX) * 0.15
-      followerY += (cursorY - followerY) * 0.15
-      follower.style.left = `${followerX - 20}px`
-      follower.style.top = `${followerY - 20}px`
-      requestAnimationFrame(animateFollower)
-    }
-
-    document.addEventListener('mousemove', updateCursor)
-    animateFollower()
-
-    return () => {
-      document.removeEventListener('mousemove', updateCursor)
-      cursor.remove()
-      follower.remove()
-    }
-  }, [])
-
   useEffect(() => {
     fetchCustomFabrics()
   }, [])
@@ -106,8 +64,10 @@ export default function StitchYourOwnPage() {
   const fetchCustomFabrics = async () => {
     try {
       const response = await apiClient.getCustomFabrics()
+      console.log('Fetched custom fabrics for stitch-your-own:', response.data)
       setFabrics(response.data)
       if (response.data.length > 0) {
+        console.log('First fabric colors:', response.data[0].colors)
         setSelectedFabric(response.data[0])
         setSelectedColor('')
       }
@@ -119,6 +79,8 @@ export default function StitchYourOwnPage() {
   }
 
   const handleFabricSelect = (fabric: CustomFabric) => {
+    console.log('Selected fabric:', fabric)
+    console.log('Available colors:', fabric.colors)
     setSelectedFabric(fabric)
     setSelectedColor('')
     if (fabric.colors && fabric.colors.length === 1) {
@@ -145,7 +107,7 @@ export default function StitchYourOwnPage() {
 
     if (!measurements.customCollar || !measurements.customShoulder || !measurements.customChest || 
         !measurements.customSleeves || !measurements.customKameezLength) {
-      alert('Please fill in all Kameez measurements')
+      alert('Please fill in all Kameez measurements (Collar, Shoulder, Chest, Sleeves, Length)')
       return
     }
     
@@ -155,7 +117,7 @@ export default function StitchYourOwnPage() {
     }
     
     if (measurements.bottomWear === 'pajama' && (!measurements.customPajamaLength || !measurements.customWaist || !measurements.customThigh)) {
-      alert('Please fill in all Pajama measurements')
+      alert('Please fill in all Pajama measurements (Length, Waist, Thigh)')
       return
     }
 
@@ -213,80 +175,6 @@ export default function StitchYourOwnPage() {
 
   return (
     <div className="min-h-screen bg-white dark:bg-dark-bg">
-      {/* Custom Cursor Styles */}
-      <style jsx global>{`
-        /* Custom Cursor */
-        * {
-          cursor: none !important;
-        }
-
-        @media (pointer: fine) {
-          .custom-cursor {
-            position: fixed;
-            width: 12px;
-            height: 12px;
-            background: #0f0f0f;
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 9999;
-            transition: transform 0.15s ease, opacity 0.15s ease;
-            mix-blend-mode: difference;
-          }
-
-          .dark .custom-cursor {
-            background: #fafafa;
-          }
-
-          .custom-cursor-follower {
-            position: fixed;
-            width: 40px;
-            height: 40px;
-            border: 2px solid #0f0f0f;
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 9998;
-            transition: transform 0.3s ease, opacity 0.2s ease, width 0.3s ease, height 0.3s ease;
-            opacity: 0.5;
-            mix-blend-mode: difference;
-          }
-
-          .dark .custom-cursor-follower {
-            border-color: #fafafa;
-          }
-
-          /* Hover states */
-          button:hover ~ .custom-cursor,
-          a:hover ~ .custom-cursor,
-          input:hover ~ .custom-cursor,
-          select:hover ~ .custom-cursor {
-            transform: scale(1.5);
-          }
-
-          button:hover ~ .custom-cursor-follower,
-          a:hover ~ .custom-cursor-follower,
-          input:hover ~ .custom-cursor-follower,
-          select:hover ~ .custom-cursor-follower {
-            width: 60px;
-            height: 60px;
-            opacity: 0.3;
-          }
-
-          /* Active state */
-          button:active ~ .custom-cursor-follower,
-          a:active ~ .custom-cursor-follower {
-            width: 50px;
-            height: 50px;
-            opacity: 0.8;
-          }
-        }
-
-        @media (pointer: coarse) {
-          * {
-            cursor: auto !important;
-          }
-        }
-      `}</style>
-
       {/* Hero Header */}
       <div className="border-b border-gray-200 dark:border-gray-800">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
@@ -316,24 +204,22 @@ export default function StitchYourOwnPage() {
                   <button
                     key={fabric.id}
                     onClick={() => handleFabricSelect(fabric)}
-                    className={`group relative overflow-hidden rounded-2xl transition-all duration-500 hover:scale-[1.02] active:scale-[0.98]
+                    className={`group relative overflow-hidden rounded-2xl transition-all duration-500
                       ${selectedFabric?.id === fabric.id
                         ? 'ring-2 ring-gray-900 dark:ring-white shadow-2xl'
-                        : 'hover:shadow-xl hover:-translate-y-1'
+                        : 'hover:shadow-xl'
                       }`}
                   >
                     <div className="flex gap-5 p-5 bg-gray-50 dark:bg-dark-surface">
                       {/* Image */}
-                      <div className="relative w-32 h-32 rounded-xl overflow-hidden flex-shrink-0 bg-gray-200 dark:bg-gray-800 transition-all duration-500 group-hover:shadow-lg">
+                      <div className="relative w-32 h-32 rounded-xl overflow-hidden flex-shrink-0 bg-gray-200 dark:bg-gray-800">
                         <img
                           src={getImageUrl(fabric.image_url)}
                           alt={fabric.name}
                           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                         />
-                        {/* Hover overlay */}
-                        <div className="absolute inset-0 bg-gradient-to-tr from-black/0 via-transparent to-white/0 opacity-0 group-hover:opacity-30 transition-opacity duration-500" />
                         {selectedFabric?.id === fabric.id && (
-                          <div className="absolute top-2 right-2 w-8 h-8 bg-gray-900 dark:bg-white rounded-full flex items-center justify-center animate-in zoom-in duration-300">
+                          <div className="absolute top-2 right-2 w-8 h-8 bg-gray-900 dark:bg-white rounded-full flex items-center justify-center">
                             <FiCheck className="w-4 h-4 text-white dark:text-gray-900" />
                           </div>
                         )}
@@ -370,7 +256,7 @@ export default function StitchYourOwnPage() {
               <div className="flex items-center gap-4">
                 <button
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                  className="w-14 h-14 flex items-center justify-center bg-white dark:bg-gray-800 rounded-xl border-2 border-gray-200 dark:border-gray-700 hover:border-gray-900 dark:hover:border-white hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 active:scale-95"
+                  className="w-14 h-14 flex items-center justify-center bg-white dark:bg-gray-800 rounded-xl border-2 border-gray-200 dark:border-gray-700 hover:border-gray-900 dark:hover:border-white transition-all active:scale-95"
                 >
                   <FiMinus className="w-5 h-5 text-gray-900 dark:text-white" />
                 </button>
@@ -381,7 +267,7 @@ export default function StitchYourOwnPage() {
 
                 <button
                   onClick={() => setQuantity(quantity + 1)}
-                  className="w-14 h-14 flex items-center justify-center bg-white dark:bg-gray-800 rounded-xl border-2 border-gray-200 dark:border-gray-700 hover:border-gray-900 dark:hover:border-white hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 active:scale-95"
+                  className="w-14 h-14 flex items-center justify-center bg-white dark:bg-gray-800 rounded-xl border-2 border-gray-200 dark:border-gray-700 hover:border-gray-900 dark:hover:border-white transition-all active:scale-95"
                 >
                   <FiPlus className="w-5 h-5 text-gray-900 dark:text-white" />
                 </button>
@@ -417,10 +303,10 @@ export default function StitchYourOwnPage() {
                       <button
                         key={color}
                         onClick={() => setSelectedColor(color)}
-                        className={`group relative rounded-xl transition-all duration-300 hover:scale-110 active:scale-95 ${
+                        className={`group relative rounded-xl transition-all duration-300 ${
                           isSelected
-                            ? 'ring-2 ring-gray-900 dark:ring-white scale-105 shadow-lg'
-                            : 'hover:shadow-md'
+                            ? 'ring-2 ring-gray-900 dark:ring-white scale-105'
+                            : 'hover:scale-105'
                         }`}
                         style={{ minHeight: '80px' }}
                       >
@@ -654,15 +540,10 @@ export default function StitchYourOwnPage() {
                 <button
                   onClick={handleAddToCart}
                   disabled={!selectedFabric || (selectedFabric.colors && selectedFabric.colors.length > 0 && !selectedColor)}
-                  className="group relative overflow-hidden w-full py-4 px-8 rounded-xl font-black text-lg bg-gray-900 dark:bg-white text-white dark:text-gray-900 hover:bg-black dark:hover:bg-gray-100 hover:shadow-2xl hover:scale-105 disabled:bg-gray-200 dark:disabled:bg-gray-800 disabled:text-gray-400 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:shadow-none transition-all duration-300 active:scale-95 flex items-center justify-center gap-3"
+                  className="w-full py-4 px-8 rounded-xl font-black text-lg bg-gray-900 dark:bg-white text-white dark:text-gray-900 hover:bg-black dark:hover:bg-gray-100 disabled:bg-gray-200 dark:disabled:bg-gray-800 disabled:text-gray-400 disabled:cursor-not-allowed transition-all active:scale-95 flex items-center justify-center gap-3"
                 >
-                  {/* Shimmer effect on hover */}
-                  <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/20 to-transparent" />
-                  
-                  <FiShoppingCart className="w-6 h-6 relative z-10 group-hover:rotate-12 transition-transform duration-300" />
-                  <span className="relative z-10">
-                    {!selectedFabric ? 'Select a Fabric' : (selectedFabric.colors && selectedFabric.colors.length > 0 && !selectedColor) ? 'Select a Color' : 'Add to Cart'}
-                  </span>
+                  <FiShoppingCart className="w-6 h-6" />
+                  {!selectedFabric ? 'Select a Fabric' : (selectedFabric.colors && selectedFabric.colors.length > 0 && !selectedColor) ? 'Select a Color' : 'Add to Cart'}
                 </button>
               </div>
             )}
