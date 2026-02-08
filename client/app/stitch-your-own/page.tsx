@@ -196,80 +196,92 @@ export default function StitchYourOwnPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
 
-        {/* Fabric Selection */}
-<div>
-  <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-    Choose Your Fabric
-  </h2>
+        {/* LEFT COLUMN: Fabric & Quantity */}
+        <div className="space-y-8">
+          <div>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+              Choose Your Fabric
+            </h2>
 
-  <div className="space-y-4 mb-8">
-    {fabrics.map((fabric) => (
-      <button
-        key={fabric.id}
-        onClick={() => handleFabricSelect(fabric)}
-        className={`w-full p-4 rounded-xl border-2 transition-all duration-200 ease-out
-          ${/* Desktop Hover & Mobile Active States */ ''}
-          hover:scale-[1.01] active:scale-[0.98] 
-          hover:shadow-lg hover:bg-gray-50 dark:hover:bg-dark-surface/50
-          
-          ${/* Selected vs Unselected Logic */ ''}
-          ${selectedFabric?.id === fabric.id
-            ? 'border-gray-900 dark:border-white bg-gray-100 dark:bg-dark-surface shadow-md'
-            : 'border-gray-200 dark:border-gray-800 hover:border-gray-400 dark:hover:border-gray-600'
-          }`}
-      >
-        <div className="flex items-center gap-4">
-          <div className="w-20 h-20 relative rounded-lg overflow-hidden flex-shrink-0 shadow-sm">
-            <img
-              src={getImageUrl(fabric.image_url)}
-              alt={fabric.name}
-              className="w-full h-full object-cover"
-            />
-          </div>
-          <div className="text-left flex-1">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-              {fabric.name}
-            </h3>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mb-1 leading-snug">
-              {fabric.description}
-            </p>
-            <div className="flex items-baseline justify-between">
-              <p className="text-xl font-bold text-gray-900 dark:text-white">
-                Rs {fabric.price.toLocaleString()}
-              </p>
-              {fabric.colors && fabric.colors.length > 0 && (
-                <span className="text-xs font-medium text-gray-500 dark:text-gray-500">
-                  {fabric.colors.length} colors available
-                </span>
-              )}
+            {/* Fabric Grid - 2 Columns on Desktop */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {fabrics.map((fabric) => (
+                <button
+                  key={fabric.id}
+                  onClick={() => handleFabricSelect(fabric)}
+                  className={`group relative flex flex-col p-4 rounded-xl border-2 transition-all duration-300 ease-out
+                    
+                    /* Hover Effects: Lift, Shadow, and Background Shift */
+                    hover:-translate-y-1 hover:shadow-xl hover:bg-white dark:hover:bg-gray-800/40
+                    
+                    /* Selected State */
+                    ${selectedFabric?.id === fabric.id
+                      ? 'border-gray-900 dark:border-white bg-white dark:bg-dark-surface shadow-md z-10'
+                      : 'border-gray-200 dark:border-gray-800 hover:border-gray-400 dark:hover:border-gray-500 bg-gray-50/50 dark:bg-transparent'
+                    }`}
+                >
+                  {/* Image Container with Zoom Effect */}
+                  <div className="w-full h-36 relative rounded-lg overflow-hidden mb-4 shadow-sm">
+                    <img
+                      src={getImageUrl(fabric.image_url)}
+                      alt={fabric.name}
+                      className="w-full h-full object-cover transition-transform duration-700 ease-in-out group-hover:scale-110"
+                    />
+                    
+                    {/* Overlay Shimmer on Hover */}
+                    <div className="absolute inset-0 bg-gradient-to-tr from-black/20 via-transparent to-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                    
+                    {/* Selected Checkmark */}
+                    {selectedFabric?.id === fabric.id && (
+                      <div className="absolute top-2 right-2 bg-gray-900 dark:bg-white p-1.5 rounded-full shadow-lg animate-in fade-in zoom-in duration-300">
+                        <FiCheck className="w-3.5 h-3.5 text-white dark:text-gray-900" />
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Text Content */}
+                  <div className="text-left flex flex-col flex-1">
+                    <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1 transition-colors group-hover:text-black dark:group-hover:text-white">
+                      {fabric.name}
+                    </h3>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-2 mb-4 leading-relaxed">
+                      {fabric.description}
+                    </p>
+                    
+                    <div className="mt-auto pt-3 border-t border-gray-100 dark:border-white/5 flex items-center justify-between">
+                      <span className="text-xl font-black text-gray-900 dark:text-white">
+                        Rs {fabric.price.toLocaleString()}
+                      </span>
+                      <span className="px-2 py-1 rounded-md bg-gray-100 dark:bg-white/5 text-[10px] uppercase tracking-tighter font-bold text-gray-500 dark:text-gray-400 group-hover:bg-gray-900 group-hover:text-white dark:group-hover:bg-white dark:group-hover:text-gray-900 transition-colors">
+                        {fabric.colors?.length || 0} Colors Available
+                      </span>
+                    </div>
+                  </div>
+                </button>
+              ))}
             </div>
           </div>
-        </div>
-      </button>
-    ))}
-  </div>
-</div>
 
-          {/* Quantity */}
-          <div>
-            <label className="block text-gray-600 dark:text-gray-400 mb-2">
+          {/* Quantity - Matching the tactile feel */}
+          <div className="p-6 bg-gray-50 dark:bg-dark-bg/30 rounded-2xl border border-gray-200 dark:border-white/10 shadow-inner">
+            <label className="block text-xs font-black text-gray-400 dark:text-gray-500 mb-4 uppercase tracking-[0.1em]">
               Quantity
             </label>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-6">
               <button
                 onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                className="p-2 bg-gray-200 dark:bg-dark-surface rounded-lg hover:bg-gray-300 dark:hover:bg-gray-700 transition-colors"
+                className="w-12 h-12 flex items-center justify-center bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-white/10 hover:border-gray-900 dark:hover:border-white hover:shadow-md transition-all active:scale-90"
               >
                 <FiMinus className="w-5 h-5 text-gray-900 dark:text-white" />
               </button>
 
-              <span className="text-2xl font-bold text-gray-900 dark:text-white w-12 text-center">
+              <span className="text-3xl font-black text-gray-900 dark:text-white min-w-[40px] text-center">
                 {quantity}
               </span>
 
               <button
                 onClick={() => setQuantity(quantity + 1)}
-                className="p-2 bg-gray-200 dark:bg-dark-surface rounded-lg hover:bg-gray-300 dark:hover:bg-gray-700 transition-colors"
+                className="w-12 h-12 flex items-center justify-center bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-white/10 hover:border-gray-900 dark:hover:border-white hover:shadow-md transition-all active:scale-90"
               >
                 <FiPlus className="w-5 h-5 text-gray-900 dark:text-white" />
               </button>
@@ -287,12 +299,12 @@ export default function StitchYourOwnPage() {
 {/* Color Selection - First Step */}
 {selectedFabric && selectedFabric.colors && selectedFabric.colors.length > 0 && (
   <div className="p-6 bg-gray-50 dark:bg-dark-bg border-b border-gray-200 dark:border-white/10">
-    <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+    <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
       <span className="w-8 h-8 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-full flex items-center justify-center text-sm font-bold">1</span>
       Select Color <span className="text-red-500">*</span>
     </h3>
     
-    <div className="grid grid-cols-4 sm:grid-cols-5 lg:grid-cols-8 gap-2">
+    <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8 gap-3">
       {selectedFabric.colors.map((color) => {
         const colorHex = getColorHex(color);
         const textColor = getTextColorForBackground(colorHex);
@@ -303,30 +315,24 @@ export default function StitchYourOwnPage() {
             key={color}
             type="button"
             onClick={() => setSelectedColor(color)}
-            className={`group relative rounded-lg border-2 font-medium transition-all duration-200
-              ${/* Feedback States */ ''}
-              hover:scale-110 active:scale-95 hover:z-20
-              
-              ${/* Selected State */ ''}
+            className={`group relative rounded-xl border-2 transition-all duration-300
               ${isSelected
-                ? 'border-gray-900 dark:border-white shadow-lg ring-1 ring-gray-900 dark:ring-white ring-offset-1 z-10'
-                : 'border-gray-200 dark:border-gray-800 hover:border-gray-400 dark:hover:border-gray-500 hover:shadow-md'
+                ? 'border-gray-900 dark:border-white shadow-lg scale-105 z-10 bg-white dark:bg-gray-800'
+                : 'border-gray-200 dark:border-gray-700 hover:border-gray-400 dark:hover:border-gray-500 bg-white/50 dark:bg-white/5'
               }`}
-            style={{ minHeight: '64px' }}
+            style={{ minHeight: '70px' }}
           >
-            {/* Background Tint - Higher opacity on hover */}
+            {/* Background Color Tint */}
             <div 
-              className={`absolute inset-0 transition-opacity duration-200 
-                ${isSelected ? 'opacity-30' : 'opacity-10 group-hover:opacity-20'}`}
+              className={`absolute inset-0 rounded-[9px] transition-opacity duration-300 
+                ${isSelected ? 'opacity-20' : 'opacity-5 group-hover:opacity-10'}`}
               style={{ backgroundColor: colorHex }}
             />
             
-            <div className="relative z-10 p-2 flex flex-col items-center justify-center gap-1.5">
-              {/* Color Circle - Grows on parent hover */}
+            <div className="relative z-10 p-2 flex flex-col items-center justify-center gap-2">
+              {/* Color Circle */}
               <div 
-                className={`w-6 h-6 rounded-full border transition-transform duration-200 group-hover:scale-110 
-                  ${isSelected ? 'border-gray-900 dark:border-white shadow-sm' : 'border-gray-300 dark:border-gray-600'} 
-                  flex items-center justify-center`}
+                className="w-6 h-6 rounded-full border border-black/10 dark:border-white/20 shadow-sm flex items-center justify-center transition-transform group-hover:scale-110"
                 style={{ backgroundColor: colorHex }}
               >
                 {isSelected && (
@@ -336,25 +342,20 @@ export default function StitchYourOwnPage() {
                   />
                 )}
               </div>
-              <span className={`text-[10px] font-bold text-center leading-tight transition-colors
-                ${isSelected ? 'text-gray-900 dark:text-white' : 'text-gray-600 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white'}`}>
+              <span className={`text-[10px] font-bold uppercase tracking-tight text-center leading-tight
+                ${isSelected ? 'text-gray-900 dark:text-white' : 'text-gray-500 dark:text-gray-400'}`}>
                 {color}
               </span>
             </div>
-            
-            {/* Selection Shimmer */}
-            {isSelected && (
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer pointer-events-none" />
-            )}
           </button>
         );
       })}
     </div>
     
     {selectedColor && (
-      <div className="mt-6 p-3 bg-white dark:bg-dark-surface rounded-xl border border-gray-200 dark:border-white/5 shadow-sm animate-fade-in">
-        <p className="text-sm text-gray-600 dark:text-gray-400">
-          Selected: <span className="font-bold text-gray-900 dark:text-white">{selectedColor}</span>
+      <div className="mt-6 p-4 bg-white dark:bg-white/5 rounded-xl border border-gray-900/10 dark:border-white/10 animate-in fade-in slide-in-from-top-2">
+        <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+          Tailoring in: <span className="font-bold text-gray-900 dark:text-white">{selectedColor}</span>
         </p>
       </div>
     )}
@@ -589,41 +590,28 @@ export default function StitchYourOwnPage() {
             )}
 
             {/* Add to Cart Button */}
-            <div className="p-6"> {/* Added padding wrapper for spacing */}
-              <button
-                onClick={handleAddToCart}
-                disabled={!selectedFabric || !selectedColor}
-                className="group relative w-full overflow-hidden py-4 px-8 rounded-xl font-bold text-lg 
-                          transition-all duration-300 ease-out
-                          
-                          /* Light Mode Colors & Hover */
-                          bg-gray-900 text-white hover:bg-black hover:shadow-xl hover:scale-[1.02]
-                          
-                          /* Dark Mode Colors & Hover */
-                          dark:bg-white dark:text-gray-900 dark:hover:bg-gray-50 dark:hover:shadow-[0_0_20px_rgba(255,255,255,0.15)]
-                          
-                          /* Mobile Active State */
-                          active:scale-[0.98]
-                          
-                          /* Disabled State */
-                          disabled:opacity-40 disabled:cursor-not-allowed disabled:scale-100 disabled:shadow-none
-                          
-                          /* Layout */
-                          flex items-center justify-center gap-3"
-              >
-                {/* Inner Shimmer Effect on Hover */}
-                <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite] pointer-events-none" />
-
-                <FiShoppingCart className="w-6 h-6 transition-transform duration-300 group-hover:-translate-y-1 group-hover:translate-x-1" />
-                
-                <span className="relative z-10">
-                  {!selectedFabric ? 'Select a Fabric' : !selectedColor ? 'Select a Color' : 'Add to Cart'}
-                </span>
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-  );
+            <div className="p-6">
+              <button
+                onClick={handleAddToCart}
+                disabled={!selectedFabric || !selectedColor}
+                className="group relative w-full overflow-hidden py-4 px-8 rounded-xl font-bold text-lg 
+                          transition-all duration-300 ease-out
+                          bg-gray-900 text-white hover:bg-black hover:shadow-xl hover:scale-[1.02]
+                          dark:bg-white dark:text-gray-900 dark:hover:bg-gray-50 dark:hover:shadow-[0_0_20px_rgba(255,255,255,0.15)]
+                          active:scale-[0.98]
+                          disabled:opacity-40 disabled:cursor-not-allowed disabled:scale-100 disabled:shadow-none
+                          flex items-center justify-center gap-3"
+              >
+                <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite] pointer-events-none" />
+                <FiShoppingCart className="w-6 h-6 transition-transform duration-300 group-hover:-translate-y-1 group-hover:translate-x-1" />
+                <span className="relative z-10">
+                  {!selectedFabric ? 'Select a Fabric' : !selectedColor ? 'Select a Color' : 'Add to Cart'}
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }
