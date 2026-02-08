@@ -96,14 +96,14 @@ export default function FabricDetailPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
         {/* Images */}
         <div>
-          <div className="relative h-[500px] mb-4 rounded-lg overflow-hidden">
+          <div className="relative h-[500px] mb-4 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800">
             <Image
               src={imageError ? '/placeholder.jpg' : getImageUrl(fabric.images[selectedImage])}
               alt={fabric.name}
               fill
               className="object-cover"
               onError={() => setImageError(true)}
-              unoptimized
+              priority
             />
           </div>
           
@@ -128,7 +128,6 @@ export default function FabricDetailPage() {
                       const target = e.currentTarget as HTMLImageElement
                       target.style.display = 'none'
                     }}
-                    unoptimized
                   />
                 </button>
               ))}

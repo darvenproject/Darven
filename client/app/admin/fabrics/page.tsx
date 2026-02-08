@@ -365,7 +365,7 @@ export default function AdminFabricsPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {fabrics.map((fabric) => (
               <div key={fabric.id} className="bg-white dark:bg-dark-surface rounded-lg shadow-md overflow-hidden">
-                <div className="relative h-48">
+                <div className="relative h-48 bg-gray-100 dark:bg-gray-800">
                   <Image
                     src={getImageUrl(fabric.images[0]) || '/placeholder.jpg'}
                     alt={fabric.name}
@@ -375,7 +375,6 @@ export default function AdminFabricsPage() {
                       const target = e.currentTarget as HTMLImageElement
                       target.src = '/placeholder.jpg'
                     }}
-                    unoptimized
                   />
                 </div>
                 <div className="p-4">

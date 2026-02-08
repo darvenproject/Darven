@@ -4,13 +4,26 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
 
 // Helper function to get full image URL
 export const getImageUrl = (imagePath: string): string => {
-  if (!imagePath) return '/placeholder.jpg'
+  if (!imagePath) {
+    console.warn('getImageUrl: No image path provided')
+    return '/placeholder.jpg'
+  }
+  
   // If already a full URL, return as-is
-  if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) return imagePath
+  if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
+    return imagePath
+  }
+  
   // If it's a relative path starting with /uploads
-  if (imagePath.startsWith('/uploads')) return `${API_BASE_URL}${imagePath}`
+  if (imagePath.startsWith('/uploads')) {
+    return `${API_BASE_URL}${imagePath}`
+  }
+  
   // If it's just the filename or relative path
-  if (!imagePath.startsWith('/')) return `${API_BASE_URL}/uploads/${imagePath}`
+  if (!imagePath.startsWith('/')) {
+    return `${API_BASE_URL}/uploads/${imagePath}`
+  }
+  
   return imagePath
 }
 

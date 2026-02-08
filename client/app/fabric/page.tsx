@@ -102,7 +102,7 @@ export default function FabricPage() {
             >
               <Link href={`/fabric/${fabric.id}`}>
                 <div className="bg-white dark:bg-dark-surface rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 group cursor-pointer">
-                  <div className="relative h-80 overflow-hidden">
+                  <div className="relative h-80 overflow-hidden bg-gray-100 dark:bg-gray-800">
                     <Image
                       src={getImageUrl(fabric.images[0]) || '/placeholder.jpg'}
                       alt={fabric.name}
@@ -114,7 +114,6 @@ export default function FabricPage() {
                         const target = e.currentTarget as HTMLImageElement
                         target.src = '/placeholder.jpg'
                       }}
-                      unoptimized
                     />
                     {fabric.stock_meters === 0 && (
                       <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
