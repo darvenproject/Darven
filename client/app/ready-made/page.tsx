@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useState, useMemo } from 'react'
-import Image from 'next/image'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { apiClient, getImageUrl } from '@/lib/api'
@@ -65,6 +64,8 @@ export default function ReadyMadePage() {
       ? getImageUrl(product.images[0]) 
       : null
     
+    console.log(`Product ${product.id} image URL:`, imageUrl)
+    
     return imageUrl || '/placeholder.jpg'
   }
 
@@ -124,15 +125,13 @@ export default function ReadyMadePage() {
               >
                 <Link href={`/ready-made/${product.id}`}>
                   <div className="bg-white dark:bg-dark-surface rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 group cursor-pointer">
-                    <div className="relative aspect-[3/4] overflow-hidden">
-                      <Image
-                        key={`${product.id}-${selectedCategory}`}
+                    <div className="relative aspect-[3/4] overflow-hidden bg-gray-50 dark:bg-gray-900">
+                      <img
                         src={imageSrc}
                         alt={product.name}
-                        fill
-                        sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                        className="object-contain bg-gray-50 dark:bg-gray-900 group-hover:scale-105 transition-transform duration-500"
+                        className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
                         onError={() => handleImageError(product.id)}
+                        loading={index < 8 ? "eager" : "lazy"}
                       />
                       {product.stock === 0 && (
                         <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">

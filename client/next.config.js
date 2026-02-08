@@ -8,9 +8,10 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   images: {
-    // CRITICAL: Disable image optimization for Cloudflare Pages
+    // Required for Cloudflare Pages
     unoptimized: true,
     
+    // Keep remote patterns so images can load from backend
     remotePatterns: [
       // Production - backend uploads
       {
@@ -38,6 +39,10 @@ const nextConfig = {
         pathname: '/uploads/**',
       },
     ],
+    // These are compatible with unoptimized: true
+    dangerouslyAllowSVG: true,
+    contentDispositionType: 'attachment',
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
   reactStrictMode: true,
   compiler: {
