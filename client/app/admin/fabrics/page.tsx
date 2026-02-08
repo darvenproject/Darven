@@ -367,13 +367,15 @@ export default function AdminFabricsPage() {
               <div key={fabric.id} className="bg-white dark:bg-dark-surface rounded-lg shadow-md overflow-hidden">
                 <div className="relative h-48">
                   <Image
-                    src={getImageUrl(fabric.images[0])}
+                    src={getImageUrl(fabric.images[0]) || '/placeholder.jpg'}
                     alt={fabric.name}
                     fill
                     className="object-cover"
                     onError={(e) => {
-                      e.currentTarget.src = '/placeholder.jpg'
+                      const target = e.currentTarget as HTMLImageElement
+                      target.src = '/placeholder.jpg'
                     }}
+                    unoptimized
                   />
                 </div>
                 <div className="p-4">

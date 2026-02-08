@@ -13,6 +13,7 @@ interface Fabric {
   price_per_meter: number
   material: string
   fabric_category?: string
+  colors?: string[]
   images: string[]
   stock_meters: number
 }
@@ -103,15 +104,17 @@ export default function FabricPage() {
                 <div className="bg-white dark:bg-dark-surface rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 group cursor-pointer">
                   <div className="relative h-80 overflow-hidden">
                     <Image
-                      src={getImageUrl(fabric.images[0])}
+                      src={getImageUrl(fabric.images[0]) || '/placeholder.jpg'}
                       alt={fabric.name}
                       fill
                       sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
                       className="object-cover group-hover:scale-110 transition-transform duration-500"
                       priority={index < 4}
                       onError={(e) => {
-                        e.currentTarget.src = '/placeholder.jpg'
+                        const target = e.currentTarget as HTMLImageElement
+                        target.src = '/placeholder.jpg'
                       }}
+                      unoptimized
                     />
                     {fabric.stock_meters === 0 && (
                       <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
@@ -128,6 +131,29 @@ export default function FabricPage() {
                     <p className="hidden sm:block text-gray-600 dark:text-gray-400 text-sm mb-3 line-clamp-2">
                       {fabric.description}
                     </p>
+                    
+                    {fabric.colors && fabric.colors.length > 0 && (
+                      <div className="mb-2 sm:mb-3">
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">
+                          Colors: {fabric.colors.length}
+                        </p>
+                        <div className="flex flex-wrap gap-1">
+                          {fabric.colors.slice(0, 3).map((color, idx) => (
+                            <span
+                              key={idx}
+                              className="text-xs px-2 py-0.5 bg-gray-100 dark:bg-dark-bg text-gray-700 dark:text-gray-300 rounded"
+                            >
+                              {color}
+                            </span>
+                          ))}
+                          {fabric.colors.length > 3 && (
+                            <span className="text-xs px-2 py-0.5 text-gray-500 dark:text-gray-400">
+                              +{fabric.colors.length - 3}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    )}
                     
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-0">
                       <span className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white">

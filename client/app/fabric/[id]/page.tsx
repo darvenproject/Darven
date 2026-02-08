@@ -14,6 +14,8 @@ interface Fabric {
   description: string
   price_per_meter: number
   material: string
+  fabric_category?: string
+  colors?: string[]
   images: string[]
   stock_meters: number
 }
@@ -26,6 +28,7 @@ export default function FabricDetailPage() {
   const [selectedImage, setSelectedImage] = useState(0)
   const [length, setLength] = useState(2.5) // Default 2.5 meters
   const [quantity, setQuantity] = useState(1)
+  const [imageError, setImageError] = useState(false)
   const addItem = useCartStore((state) => state.addItem)
 
   useEffect(() => {
@@ -95,13 +98,12 @@ export default function FabricDetailPage() {
         <div>
           <div className="relative h-[500px] mb-4 rounded-lg overflow-hidden">
             <Image
-              src={getImageUrl(fabric.images[selectedImage])}
+              src={imageError ? '/placeholder.jpg' : getImageUrl(fabric.images[selectedImage])}
               alt={fabric.name}
               fill
               className="object-cover"
-              onError={(e) => {
-                e.currentTarget.src = '/placeholder.jpg'
-              }}
+              onError={() => setImageError(true)}
+              unoptimized
             />
           </div>
           
@@ -122,6 +124,11 @@ export default function FabricDetailPage() {
                     alt={`${fabric.name} ${index + 1}`}
                     fill
                     className="object-cover"
+                    onError={(e) => {
+                      const target = e.currentTarget as HTMLImageElement
+                      target.style.display = 'none'
+                    }}
+                    unoptimized
                   />
                 </button>
               ))}
@@ -150,6 +157,29 @@ export default function FabricDetailPage() {
               <span className="text-gray-600 dark:text-gray-400 w-24">Material:</span>
               <span className="text-gray-900 dark:text-white font-medium">{fabric.material}</span>
             </div>
+            
+            {fabric.fabric_category && (
+              <div className="flex items-center gap-4">
+                <span className="text-gray-600 dark:text-gray-400 w-24">Category:</span>
+                <span className="text-gray-900 dark:text-white font-medium">{fabric.fabric_category}</span>
+              </div>
+            )}
+            
+            {fabric.colors && fabric.colors.length > 0 && (
+              <div className="flex items-center gap-4">
+                <span className="text-gray-600 dark:text-gray-400 w-24">Colors:</span>
+                <div className="flex flex-wrap gap-2">
+                  {fabric.colors.map((color, index) => (
+                    <span
+                      key={index}
+                      className="px-3 py-1 bg-gray-100 dark:bg-dark-surface border border-gray-300 dark:border-gray-700 rounded-lg text-sm text-gray-900 dark:text-white"
+                    >
+                      {color}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
             
             <div className="flex items-center gap-4">
               <span className="text-gray-600 dark:text-gray-400 w-24">Stock:</span>
