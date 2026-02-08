@@ -16,6 +16,8 @@ interface Product {
   material: string
   size: string
   color?: string
+  colors?: string[]  // Dynamic colors from API
+  sizes?: string[]   // Dynamic sizes from API
   images: string[]
   stock: number
 }
@@ -31,12 +33,6 @@ export default function ProductDetailPage() {
   const [selectedSize, setSelectedSize] = useState('')
   const [selectedColor, setSelectedColor] = useState('')
   const addItem = useCartStore((state) => state.addItem)
-  
-  // Available colors for all products
-  const availableColors = ['Jet Black', 'Navy Blue', 'Milky White', 'Grey', 'Dark Purple']
-  
-  // Available sizes for ready-made products
-  const availableSizes = ['XS', 'S', 'M', 'L', 'XL']
 
   useEffect(() => {
     fetchProduct()
@@ -46,6 +42,9 @@ export default function ProductDetailPage() {
   const fetchProduct = async () => {
     try {
       const response = await apiClient.getReadyMadeProduct(params.id as string)
+      console.log('Product data:', response.data)
+      console.log('Product colors:', response.data.colors)
+      console.log('Product sizes:', response.data.sizes)
       setProduct(response.data)
     } catch (error) {
       console.error('Error fetching product:', error)
@@ -67,12 +66,16 @@ export default function ProductDetailPage() {
   const handleAddToCart = () => {
     if (!product) return
     
-    // Validate selections
-    if (!selectedSize) {
+    // Get available colors and sizes
+    const availableColors = product.colors || []
+    const availableSizes = product.sizes || []
+    
+    // Validate selections only if options exist
+    if (availableSizes.length > 0 && !selectedSize) {
       alert('Please select a size')
       return
     }
-    if (!selectedColor) {
+    if (availableColors.length > 0 && !selectedColor) {
       alert('Please select a color')
       return
     }
@@ -86,8 +89,8 @@ export default function ProductDetailPage() {
       image: product.images[0],
       details: {
         material: product.material,
-        size: selectedSize,
-        color: selectedColor
+        size: selectedSize || 'N/A',
+        color: selectedColor || 'N/A'
       }
     })
     
@@ -114,6 +117,10 @@ export default function ProductDetailPage() {
       </div>
     )
   }
+
+  // Get dynamic colors and sizes from product data
+  const availableColors = product.colors || []
+  const availableSizes = product.sizes || []
 
   return (
     <div className="container mx-auto px-4 py-4 sm:py-8">
@@ -191,49 +198,62 @@ export default function ProductDetailPage() {
             </div>
           </div>
 
-          {/* Size Selection */}
-          <div className="mb-6">
-            <label className="block text-gray-700 dark:text-gray-300 font-semibold mb-3">
-              Select Size <span className="text-red-500">*</span>
-            </label>
-            <div className="grid grid-cols-5 gap-2">
-              {availableSizes.map((size) => (
-                <button
-                  key={size}
-                  onClick={() => setSelectedSize(size)}
-                  className={`py-2 px-3 rounded-lg border-2 font-medium transition-all ${
-                    selectedSize === size
-                      ? 'border-gray-900 dark:border-white bg-gray-900 dark:bg-white text-white dark:text-gray-900'
-                      : 'border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white hover:border-gray-500 dark:hover:border-gray-500'
-                  }`}
-                >
-                  {size}
-                </button>
-              ))}
+          {/* Size Selection - Only show if sizes are available */}
+          {availableSizes.length > 0 && (
+            <div className="mb-6">
+              <label className="block text-gray-700 dark:text-gray-300 font-semibold mb-3">
+                Select Size <span className="text-red-500">*</span>
+              </label>
+              <div className="grid grid-cols-5 gap-2">
+                {availableSizes.map((size) => (
+                  <button
+                    key={size}
+                    onClick={() => setSelectedSize(size)}
+                    className={`py-2 px-3 rounded-lg border-2 font-medium transition-all ${
+                      selectedSize === size
+                        ? 'border-gray-900 dark:border-white bg-gray-900 dark:bg-white text-white dark:text-gray-900'
+                        : 'border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white hover:border-gray-500 dark:hover:border-gray-500'
+                    }`}
+                  >
+                    {size}
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
-          {/* Color Selection */}
-          <div className="mb-6">
-            <label className="block text-gray-700 dark:text-gray-300 font-semibold mb-3">
-              Select Color <span className="text-red-500">*</span>
-            </label>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-              {availableColors.map((color) => (
-                <button
-                  key={color}
-                  onClick={() => setSelectedColor(color)}
-                  className={`py-3 px-4 rounded-lg border-2 font-medium transition-all text-left ${
-                    selectedColor === color
-                      ? 'border-gray-900 dark:border-white bg-gray-900 dark:bg-white text-white dark:text-gray-900'
-                      : 'border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white hover:border-gray-500 dark:hover:border-gray-500'
-                  }`}
-                >
-                  {color}
-                </button>
-              ))}
+          {/* Color Selection - Only show if colors are available */}
+          {availableColors.length > 0 && (
+            <div className="mb-6">
+              <label className="block text-gray-700 dark:text-gray-300 font-semibold mb-3">
+                Select Color <span className="text-red-500">*</span>
+              </label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {availableColors.map((color) => (
+                  <button
+                    key={color}
+                    onClick={() => setSelectedColor(color)}
+                    className={`py-3 px-4 rounded-lg border-2 font-medium transition-all text-left ${
+                      selectedColor === color
+                        ? 'border-gray-900 dark:border-white bg-gray-900 dark:bg-white text-white dark:text-gray-900'
+                        : 'border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white hover:border-gray-500 dark:hover:border-gray-500'
+                    }`}
+                  >
+                    {color}
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
+
+          {/* Show message if no colors or sizes */}
+          {availableColors.length === 0 && availableSizes.length === 0 && (
+            <div className="mb-6 p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+              <p className="text-sm text-yellow-800 dark:text-yellow-200">
+                No color or size options available for this product.
+              </p>
+            </div>
+          )}
           
           {/* Quantity */}
           <div className="mb-4 sm:mb-6">
