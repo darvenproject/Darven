@@ -366,17 +366,19 @@ export default function AdminFabricsPage() {
             {fabrics.map((fabric) => (
               <div key={fabric.id} className="bg-white dark:bg-dark-surface rounded-lg shadow-md overflow-hidden">
                 <div className="relative h-48 bg-gray-100 dark:bg-gray-800">
-                  <Image
-                    src={getImageUrl(fabric.images[0]) || '/placeholder.jpg'}
-                    alt={fabric.name}
-                    fill
-                    className="object-cover"
-                    onError={(e) => {
-                      const target = e.currentTarget as HTMLImageElement
-                      target.src = '/placeholder.jpg'
-                    }}
-                    unoptimized
-                  />
+                  {fabric.images && fabric.images.length > 0 ? (
+                    <Image
+                      src={getImageUrl(fabric.images[0])}
+                      alt={fabric.name}
+                      fill
+                      className="object-cover"
+                      unoptimized
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-gray-400">
+                      No Image
+                    </div>
+                  )}
                 </div>
                 <div className="p-4">
                   <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">
