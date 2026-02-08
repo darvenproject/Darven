@@ -22,7 +22,6 @@ export default function FabricPage() {
   const [fabrics, setFabrics] = useState<Fabric[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedCategory, setSelectedCategory] = useState<string>('All')
-  const [imageErrors, setImageErrors] = useState<Set<number>>(new Set())
   
   const fabricCategories = ['All', 'Wash n Wear', 'Blended', 'Boski', 'Soft Cotton', 'Giza Moon Cotton']
 
@@ -49,27 +48,6 @@ export default function FabricPage() {
     }
     return fabrics.filter(fabric => fabric.fabric_category === selectedCategory)
   }, [fabrics, selectedCategory])
-
-  const handleImageError = (fabricId: number) => {
-    console.error(`Image failed to load for fabric ID: ${fabricId}`)
-    setImageErrors(prev => new Set(prev).add(fabricId))
-  }
-
-  const getImageSource = (fabric: Fabric) => {
-    // If there was an error, use placeholder
-    if (imageErrors.has(fabric.id)) {
-      return '/placeholder.jpg'
-    }
-    
-    // Get the image URL
-    const imageUrl = fabric.images && fabric.images.length > 0 
-      ? getImageUrl(fabric.images[0]) 
-      : null
-    
-    console.log(`Fabric ${fabric.id} image URL:`, imageUrl)
-    
-    return imageUrl || '/placeholder.jpg'
-  }
 
   if (loading) {
     return (
@@ -115,82 +93,81 @@ export default function FabricPage() {
         </div>
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6">
-          {filteredFabrics.map((fabric, index) => {
-            const imageSrc = getImageSource(fabric)
-            
-            return (
-              <motion.div
-                key={fabric.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-              >
-                <Link href={`/fabric/${fabric.id}`}>
-                  <div className="bg-white dark:bg-dark-surface rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 group cursor-pointer">
-                    <div className="relative h-80 overflow-hidden bg-gray-100 dark:bg-gray-800">
-                      <Image
-                        key={`${fabric.id}-${selectedCategory}`} // Force re-render on category change
-                        src={imageSrc}
-                        alt={fabric.name}
-                        fill
-                        sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                        className="object-cover group-hover:scale-110 transition-transform duration-500"
-                        onError={() => handleImageError(fabric.id)}
-                      />
-                      {fabric.stock_meters === 0 && (
-                        <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-                          <span className="text-white text-xl font-bold">Out of Stock</span>
-                        </div>
-                      )}
-                    </div>
+          {filteredFabrics.map((fabric, index) => (
+            <motion.div
+              key={fabric.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.1 }}
+            >
+              <Link href={`/fabric/${fabric.id}`}>
+                <div className="bg-white dark:bg-dark-surface rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 group cursor-pointer">
+                  <div className="relative h-80 overflow-hidden bg-gray-100 dark:bg-gray-800">
+                    <Image
+                      src={getImageUrl(fabric.images[0]) || '/placeholder.jpg'}
+                      alt={fabric.name}
+                      fill
+                      sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                      className="object-cover group-hover:scale-110 transition-transform duration-500"
+                      loading={index < 8 ? "eager" : "lazy"}
+                      onError={(e) => {
+                        const target = e.currentTarget as HTMLImageElement
+                        target.src = '/placeholder.jpg'
+                      }}
+                    />
+                    {fabric.stock_meters === 0 && (
+                      <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+                        <span className="text-white text-xl font-bold">Out of Stock</span>
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div className="p-2 sm:p-4">
+                    <h3 className="text-sm sm:text-lg font-semibold text-gray-900 dark:text-white mb-1 sm:mb-2 line-clamp-1">
+                      {fabric.name}
+                    </h3>
                     
-                    <div className="p-2 sm:p-4">
-                      <h3 className="text-sm sm:text-lg font-semibold text-gray-900 dark:text-white mb-1 sm:mb-2 line-clamp-1">
-                        {fabric.name}
-                      </h3>
-                      
-                      <p className="hidden sm:block text-gray-600 dark:text-gray-400 text-sm mb-3 line-clamp-2">
-                        {fabric.description}
-                      </p>
-                      
-                      {fabric.colors && fabric.colors.length > 0 && (
-                        <div className="mb-2 sm:mb-3">
-                          <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">
-                            Colors: {fabric.colors.length}
-                          </p>
-                          <div className="flex flex-wrap gap-1">
-                            {fabric.colors.slice(0, 3).map((color, idx) => (
-                              <span
-                                key={idx}
-                                className="text-xs px-2 py-0.5 bg-gray-100 dark:bg-dark-bg text-gray-700 dark:text-gray-300 rounded"
-                              >
-                                {color}
-                              </span>
-                            ))}
-                            {fabric.colors.length > 3 && (
-                              <span className="text-xs px-2 py-0.5 text-gray-500 dark:text-gray-400">
-                                +{fabric.colors.length - 3}
-                              </span>
-                            )}
-                          </div>
+                    <p className="hidden sm:block text-gray-600 dark:text-gray-400 text-sm mb-3 line-clamp-2">
+                      {fabric.description}
+                    </p>
+                    
+                    {fabric.colors && fabric.colors.length > 0 && (
+                      <div className="mb-2 sm:mb-3">
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">
+                          Colors: {fabric.colors.length}
+                        </p>
+                        <div className="flex flex-wrap gap-1">
+                          {fabric.colors.slice(0, 3).map((color, idx) => (
+                            <span
+                              key={idx}
+                              className="text-xs px-2 py-0.5 bg-gray-100 dark:bg-dark-bg text-gray-700 dark:text-gray-300 rounded"
+                            >
+                              {color}
+                            </span>
+                          ))}
+                          {fabric.colors.length > 3 && (
+                            <span className="text-xs px-2 py-0.5 text-gray-500 dark:text-gray-400">
+                              +{fabric.colors.length - 3}
+                            </span>
+                          )}
                         </div>
-                      )}
+                      </div>
+                    )}
+                    
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-0">
+                      <span className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white">
+                        Rs {fabric.price_per_meter.toLocaleString()}/m
+                      </span>
                       
-                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-0">
-                        <span className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white">
-                          Rs {fabric.price_per_meter.toLocaleString()}/m
-                        </span>
-                        
-                        <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
-                          <span className="font-medium">{fabric.material}</span>
-                        </div>
+                      <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
+                        <span className="font-medium">{fabric.material}</span>
                       </div>
                     </div>
                   </div>
-                </Link>
-              </motion.div>
-            )
-          })}
+                </div>
+              </Link>
+            </motion.div>
+          ))}
         </div>
       )}
     </div>
