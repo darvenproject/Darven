@@ -22,7 +22,6 @@ export default function ReadyMadePage() {
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedCategory, setSelectedCategory] = useState<string>('All')
-  const [imageErrors, setImageErrors] = useState<Set<number>>(new Set())
   
   const fabricCategories = ['All', 'Wash n Wear', 'Blended', 'Boski', 'Soft Cotton', 'Giza Moon Cotton']
 
@@ -34,7 +33,6 @@ export default function ReadyMadePage() {
     try {
       const response = await apiClient.getReadyMadeProducts()
       console.log('Ready-made products response:', response.data)
-      console.log('First product image:', response.data[0]?.images)
       setProducts(response.data)
     } catch (error) {
       console.error('Error fetching products:', error)
@@ -49,25 +47,6 @@ export default function ReadyMadePage() {
     }
     return products.filter(product => product.fabric_category === selectedCategory)
   }, [products, selectedCategory])
-
-  const handleImageError = (productId: number) => {
-    console.error(`Image failed to load for product ID: ${productId}`)
-    setImageErrors(prev => new Set(prev).add(productId))
-  }
-
-  const getImageSource = (product: Product) => {
-    if (imageErrors.has(product.id)) {
-      return '/placeholder.jpg'
-    }
-    
-    const imageUrl = product.images && product.images.length > 0 
-      ? getImageUrl(product.images[0]) 
-      : null
-    
-    console.log(`Product ${product.id} image URL:`, imageUrl)
-    
-    return imageUrl || '/placeholder.jpg'
-  }
 
   if (loading) {
     return (
@@ -113,59 +92,61 @@ export default function ReadyMadePage() {
         </div>
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6">
-          {filteredProducts.map((product, index) => {
-            const imageSrc = getImageSource(product)
-            
-            return (
-              <motion.div
-                key={product.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-              >
-                <Link href={`/ready-made/${product.id}`}>
-                  <div className="bg-white dark:bg-dark-surface rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 group cursor-pointer">
-                    <div className="relative aspect-[3/4] overflow-hidden bg-gray-50 dark:bg-gray-900">
-                      <img
-                        src={imageSrc}
-                        alt={product.name}
-                        className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
-                        onError={() => handleImageError(product.id)}
-                        loading={index < 8 ? "eager" : "lazy"}
-                      />
-                      {product.stock === 0 && (
-                        <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-                          <span className="text-white text-xl font-bold">Out of Stock</span>
-                        </div>
-                      )}
-                    </div>
+          {filteredProducts.map((product, index) => (
+            <motion.div
+              key={product.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.05 }}
+            >
+              <Link href={`/ready-made/${product.id}`}>
+                <div className="bg-white dark:bg-dark-surface rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 group cursor-pointer">
+                  <div className="relative aspect-[3/4] overflow-hidden bg-gray-50 dark:bg-gray-900">
+                    {/* Use regular img tag instead of Next.js Image */}
+                    <img
+                      src={getImageUrl(product.images[0]) || '/placeholder.jpg'}
+                      alt={product.name}
+                      className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
+                      onLoad={(e) => {
+                        e.currentTarget.classList.add('loaded')
+                      }}
+                      onError={(e) => {
+                        console.error(`Failed to load image for product ${product.id}`)
+                        e.currentTarget.src = '/placeholder.jpg'
+                      }}
+                    />
+                    {product.stock === 0 && (
+                      <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+                        <span className="text-white text-xl font-bold">Out of Stock</span>
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div className="p-2 sm:p-4">
+                    <h3 className="text-sm sm:text-lg font-semibold text-gray-900 dark:text-white mb-1 sm:mb-2 line-clamp-1">
+                      {product.name}
+                    </h3>
                     
-                    <div className="p-2 sm:p-4">
-                      <h3 className="text-sm sm:text-lg font-semibold text-gray-900 dark:text-white mb-1 sm:mb-2 line-clamp-1">
-                        {product.name}
-                      </h3>
+                    <p className="hidden sm:block text-gray-600 dark:text-gray-400 text-sm mb-3 line-clamp-2">
+                      {product.description}
+                    </p>
+                    
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-0">
+                      <span className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white">
+                        Rs {product.price.toLocaleString()}
+                      </span>
                       
-                      <p className="hidden sm:block text-gray-600 dark:text-gray-400 text-sm mb-3 line-clamp-2">
-                        {product.description}
-                      </p>
-                      
-                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-0">
-                        <span className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white">
-                          Rs {product.price.toLocaleString()}
-                        </span>
-                        
-                        <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
-                          <span className="font-medium">{product.material}</span>
-                          <span className="mx-1 sm:mx-2">•</span>
-                          <span>{product.size}</span>
-                        </div>
+                      <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
+                        <span className="font-medium">{product.material}</span>
+                        <span className="mx-1 sm:mx-2">•</span>
+                        <span>{product.size}</span>
                       </div>
                     </div>
                   </div>
-                </Link>
-              </motion.div>
-            )
-          })}
+                </div>
+              </Link>
+            </motion.div>
+          ))}
         </div>
       )}
     </div>

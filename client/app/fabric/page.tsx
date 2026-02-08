@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useState, useMemo } from 'react'
-import Image from 'next/image'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { apiClient, getImageUrl } from '@/lib/api'
@@ -33,7 +32,6 @@ export default function FabricPage() {
     try {
       const response = await apiClient.getFabrics()
       console.log('Fabrics response:', response.data)
-      console.log('First fabric image:', response.data[0]?.images)
       setFabrics(response.data)
     } catch (error) {
       console.error('Error fetching fabrics:', error)
@@ -98,21 +96,22 @@ export default function FabricPage() {
               key={fabric.id}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1 }}
+              transition={{ delay: index * 0.05 }}
             >
               <Link href={`/fabric/${fabric.id}`}>
                 <div className="bg-white dark:bg-dark-surface rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 group cursor-pointer">
                   <div className="relative h-80 overflow-hidden bg-gray-100 dark:bg-gray-800">
-                    <Image
+                    {/* Use regular img tag instead of Next.js Image */}
+                    <img
                       src={getImageUrl(fabric.images[0]) || '/placeholder.jpg'}
                       alt={fabric.name}
-                      fill
-                      sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                      className="object-cover group-hover:scale-110 transition-transform duration-500"
-                      loading={index < 8 ? "eager" : "lazy"}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                      onLoad={(e) => {
+                        e.currentTarget.classList.add('loaded')
+                      }}
                       onError={(e) => {
-                        const target = e.currentTarget as HTMLImageElement
-                        target.src = '/placeholder.jpg'
+                        console.error(`Failed to load image for fabric ${fabric.id}`)
+                        e.currentTarget.src = '/placeholder.jpg'
                       }}
                     />
                     {fabric.stock_meters === 0 && (
@@ -140,14 +139,14 @@ export default function FabricPage() {
                           {fabric.colors.slice(0, 3).map((color, idx) => (
                             <span
                               key={idx}
-                              className="text-xs px-2 py-0.5 bg-gray-100 dark:bg-dark-bg text-gray-700 dark:text-gray-300 rounded"
+                              className="text-xs px-2 py-1 bg-gray-100 dark:bg-dark-bg text-gray-700 dark:text-gray-300 rounded"
                             >
                               {color}
                             </span>
                           ))}
                           {fabric.colors.length > 3 && (
-                            <span className="text-xs px-2 py-0.5 text-gray-500 dark:text-gray-400">
-                              +{fabric.colors.length - 3}
+                            <span className="text-xs px-2 py-1 text-gray-500 dark:text-gray-400">
+                              +{fabric.colors.length - 3} more
                             </span>
                           )}
                         </div>
