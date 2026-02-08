@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import Image from 'next/image'
 import { FiArrowLeft, FiUpload, FiTrash2, FiImage } from 'react-icons/fi'
 import { apiClient, getImageUrl } from '@/lib/api'
 import Link from 'next/link'
@@ -178,29 +177,41 @@ export default function AdminLandingPage() {
                   </button>
                 </div>
 
-                {/* Landscape Preview */}
+                {/* Landscape Preview - Using regular img */}
                 <div className="mb-3">
                   <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">Desktop (Landscape)</p>
                   <div className="relative w-full h-40 bg-gray-200 dark:bg-gray-700 rounded-lg overflow-hidden">
-                    <Image
+                    <img
                       src={getImageUrl(image.image_url)}
                       alt={`Hero ${index + 1}`}
-                      fill
-                      className="object-cover"
+                      className="w-full h-full object-cover"
+                      onLoad={(e) => {
+                        e.currentTarget.classList.add('loaded')
+                      }}
+                      onError={(e) => {
+                        console.error(`Image load error for hero ${image.id}`)
+                        e.currentTarget.src = '/placeholder.jpg'
+                      }}
                     />
                   </div>
                 </div>
 
-                {/* Portrait Preview */}
+                {/* Portrait Preview - Using regular img */}
                 <div className="mb-3">
                   <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">Mobile (Portrait)</p>
                   <div className="relative w-full h-40 bg-gray-200 dark:bg-gray-700 rounded-lg overflow-hidden">
                     {image.portrait_image_url ? (
-                      <Image
+                      <img
                         src={getImageUrl(image.portrait_image_url)}
                         alt={`Hero ${index + 1} Portrait`}
-                        fill
-                        className="object-cover"
+                        className="w-full h-full object-cover"
+                        onLoad={(e) => {
+                          e.currentTarget.classList.add('loaded')
+                        }}
+                        onError={(e) => {
+                          console.error(`Portrait image load error for hero ${image.id}`)
+                          e.currentTarget.src = '/placeholder.jpg'
+                        }}
                       />
                     ) : (
                       <div className="flex items-center justify-center h-full">
@@ -257,14 +268,20 @@ export default function AdminLandingPage() {
                     {category.title}
                   </h3>
                   
-                  {/* Preview */}
+                  {/* Preview - Using regular img */}
                   {existingImage && (
                     <div className="relative w-full h-48 bg-gray-200 dark:bg-gray-700 rounded-lg overflow-hidden mb-4">
-                      <Image
+                      <img
                         src={getImageUrl(existingImage.image_url)}
                         alt={category.title}
-                        fill
-                        className="object-cover"
+                        className="w-full h-full object-cover"
+                        onLoad={(e) => {
+                          e.currentTarget.classList.add('loaded')
+                        }}
+                        onError={(e) => {
+                          console.error(`Image load error for ${category.id}`)
+                          e.currentTarget.src = '/placeholder.jpg'
+                        }}
                       />
                     </div>
                   )}
