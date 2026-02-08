@@ -588,30 +588,38 @@ export default function StitchYourOwnPage() {
                 </div>
               </div>
             )}
+{/* Add to Cart Button Section */}
+            <div className="p-6 bg-white dark:bg-dark-bg border-t border-gray-100 dark:border-white/5">
+              <button
+                onClick={handleAddToCart}
+                disabled={!selectedFabric || !selectedColor}
+                className="group relative w-full overflow-hidden py-4 px-8 rounded-xl font-bold text-lg 
+                          transition-all duration-300 ease-out flex items-center justify-center gap-3
+                          /* Light Mode Styles */
+                          bg-gray-900 text-white hover:bg-black hover:shadow-xl hover:scale-[1.02]
+                          /* Dark Mode Styles */
+                          dark:bg-white dark:text-gray-900 dark:hover:bg-gray-50 
+                          dark:hover:shadow-[0_0_20px_rgba(255,255,255,0.1)]
+                          /* State Styles */
+                          active:scale-[0.98]
+                          disabled:opacity-20 disabled:bg-gray-200 dark:disabled:bg-gray-800 
+                          disabled:text-gray-500 disabled:cursor-not-allowed disabled:scale-100 disabled:shadow-none"
+              >
+                {/* Shimmer Effect - Only triggers when active */}
+                {!(!selectedFabric || !selectedColor) && (
+                  <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-shimmer pointer-events-none" />
+                )}
 
-            {/* Add to Cart Button */}
-            <div className="p-6">
-              <button
-                onClick={handleAddToCart}
-                disabled={!selectedFabric || !selectedColor}
-                className="group relative w-full overflow-hidden py-4 px-8 rounded-xl font-bold text-lg 
-                          transition-all duration-300 ease-out
-                          bg-gray-900 text-white hover:bg-black hover:shadow-xl hover:scale-[1.02]
-                          dark:bg-white dark:text-gray-900 dark:hover:bg-gray-50 dark:hover:shadow-[0_0_20px_rgba(255,255,255,0.15)]
-                          active:scale-[0.98]
-                          disabled:opacity-40 disabled:cursor-not-allowed disabled:scale-100 disabled:shadow-none
-                          flex items-center justify-center gap-3"
-              >
-                <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite] pointer-events-none" />
-                <FiShoppingCart className="w-6 h-6 transition-transform duration-300 group-hover:-translate-y-1 group-hover:translate-x-1" />
-                <span className="relative z-10">
-                  {!selectedFabric ? 'Select a Fabric' : !selectedColor ? 'Select a Color' : 'Add to Cart'}
-                </span>
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+                <FiShoppingCart className={`w-6 h-6 transition-transform duration-300 ${!selectedFabric || !selectedColor ? '' : 'group-hover:-translate-y-1 group-hover:translate-x-1'}`} />
+                
+                <span className="relative z-10">
+                  {!selectedFabric ? 'Select a Fabric' : !selectedColor ? 'Select a Color' : 'Add to Cart'}
+                </span>
+              </button>
+            </div>
+          </div> {/* End of customization container */}
+        </div> {/* End of grid column */}
+      </div> {/* End of main grid */}
+    </div> 
+  );
 }
