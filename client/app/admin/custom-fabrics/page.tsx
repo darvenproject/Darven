@@ -49,7 +49,6 @@ export default function AdminCustomFabricsPage() {
   const fetchFabrics = async () => {
     try {
       const response = await apiClient.getCustomFabrics()
-      console.log('Fetched custom fabrics:', response.data)
       setFabrics(response.data)
     } catch (error) {
       console.error('Error fetching custom fabrics:', error)
@@ -77,52 +76,20 @@ export default function AdminCustomFabricsPage() {
       data.append('price', formData.price)
       data.append('material', formData.material)
       
-      // Add colors as JSON string
-      console.log('Submitting colors:', colors)
       if (colors.length > 0) {
-        const colorsJson = JSON.stringify(colors)
-        console.log('Colors JSON string:', colorsJson)
-        data.append('colors', colorsJson)
+        data.append('colors', JSON.stringify(colors))
       } else {
-        console.log('No colors to submit')
-        // Send empty array to clear colors if editing
         data.append('colors', JSON.stringify([]))
       }
 
       if (file) {
-        console.log('Uploading new file:', file.name)
         data.append('file', file)
-      } else {
-        console.log('No new file selected')
       }
 
-      // Log all FormData entries
-      console.log('FormData contents:')
-      data.forEach((value, key) => {
-        console.log(key, ':', value)
-      })
-
-      let response
       if (editingFabric) {
-        console.log('Updating fabric ID:', editingFabric.id)
-        try {
-          response = await apiClient.api.put(`/custom-fabrics/${editingFabric.id}`, data)
-          console.log('Update response:', response.data)
-        } catch (error: any) {
-          console.error('Update failed:', error)
-          console.error('Error response:', error.response?.data)
-          throw error
-        }
+        await apiClient.api.put(`/custom-fabrics/${editingFabric.id}`, data)
       } else {
-        console.log('Creating new fabric')
-        try {
-          response = await apiClient.api.post('/custom-fabrics', data)
-          console.log('Create response:', response.data)
-        } catch (error: any) {
-          console.error('Create failed:', error)
-          console.error('Error response:', error.response?.data)
-          throw error
-        }
+        await apiClient.api.post('/custom-fabrics', data)
       }
 
       setShowForm(false)
@@ -142,9 +109,6 @@ export default function AdminCustomFabricsPage() {
   }
 
   const handleEdit = (fabric: CustomFabric) => {
-    console.log('Editing fabric:', fabric)
-    console.log('Fabric colors:', fabric.colors)
-    console.log('Fabric image_url:', fabric.image_url)
     setEditingFabric(fabric)
     setFormData({
       name: fabric.name,
@@ -153,9 +117,7 @@ export default function AdminCustomFabricsPage() {
       material: fabric.material
     })
     setColors(fabric.colors || [])
-    const imageUrl = getImageUrl(fabric.image_url)
-    console.log('Setting preview URL to:', imageUrl)
-    setPreviewUrl(imageUrl)
+    setPreviewUrl(getImageUrl(fabric.image_url))
     setShowForm(true)
   }
 
@@ -173,7 +135,7 @@ export default function AdminCustomFabricsPage() {
 
   if (loading && !showForm) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-white dark:bg-dark-bg">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 dark:border-white"></div>
       </div>
     )
@@ -181,32 +143,32 @@ export default function AdminCustomFabricsPage() {
 
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-dark-bg">
-      <header className="bg-white dark:bg-dark-surface shadow-md">
+      <header className="bg-white dark:bg-dark-surface shadow-md sticky top-0 z-10">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Link href="/admin/dashboard" className="p-2 hover:bg-gray-100 dark:hover:bg-dark-bg rounded-lg">
               <FiArrowLeft className="w-6 h-6 text-gray-900 dark:text-white" />
             </Link>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-              Manage Custom Stitch
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
+              Custom Stitch
             </h1>
           </div>
           {!showForm && (
             <button
               onClick={() => setShowForm(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-lg hover:bg-gray-800 dark:hover:bg-gray-100 transition-colors"
+              className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-lg hover:bg-gray-800 dark:hover:bg-gray-100 transition-colors text-sm sm:text-base"
             >
               <FiPlus />
-              Add Fabric Option
+              <span className="hidden sm:inline">Add Fabric</span>
             </button>
           )}
         </div>
       </header>
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-4 sm:py-8">
         {showForm ? (
-          <div className="max-w-2xl mx-auto bg-white dark:bg-dark-surface rounded-lg shadow-md p-6">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+          <div className="max-w-2xl mx-auto bg-white dark:bg-dark-surface rounded-lg shadow-md p-4 sm:p-6">
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4 sm:mb-6">
               {editingFabric ? 'Edit Custom Fabric' : 'Add New Custom Fabric'}
             </h2>
 
@@ -220,7 +182,7 @@ export default function AdminCustomFabricsPage() {
                   required
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-dark-bg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white"
+                  className="w-full px-4 py-2 sm:py-3 rounded-lg border-2 border-gray-300 dark:border-gray-700 bg-white dark:bg-dark-bg text-gray-900 dark:text-white focus:outline-none focus:border-gray-900 dark:focus:border-white"
                   placeholder="e.g., Premium Cotton"
                 />
               </div>
@@ -234,12 +196,12 @@ export default function AdminCustomFabricsPage() {
                   rows={3}
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-dark-bg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white"
+                  className="w-full px-4 py-2 sm:py-3 rounded-lg border-2 border-gray-300 dark:border-gray-700 bg-white dark:bg-dark-bg text-gray-900 dark:text-white focus:outline-none focus:border-gray-900 dark:focus:border-white"
                   placeholder="Describe the fabric quality and features"
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Price (Rs) *
@@ -249,7 +211,7 @@ export default function AdminCustomFabricsPage() {
                     required
                     value={formData.price}
                     onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                    className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-dark-bg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white"
+                    className="w-full px-4 py-2 sm:py-3 rounded-lg border-2 border-gray-300 dark:border-gray-700 bg-white dark:bg-dark-bg text-gray-900 dark:text-white focus:outline-none focus:border-gray-900 dark:focus:border-white"
                     placeholder="3000"
                   />
                   <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
@@ -266,7 +228,7 @@ export default function AdminCustomFabricsPage() {
                     required
                     value={formData.material}
                     onChange={(e) => setFormData({ ...formData, material: e.target.value })}
-                    className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-dark-bg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white"
+                    className="w-full px-4 py-2 sm:py-3 rounded-lg border-2 border-gray-300 dark:border-gray-700 bg-white dark:bg-dark-bg text-gray-900 dark:text-white focus:outline-none focus:border-gray-900 dark:focus:border-white"
                     placeholder="e.g., Cotton, Lawn"
                   />
                 </div>
@@ -290,8 +252,8 @@ export default function AdminCustomFabricsPage() {
                         }
                       }
                     }}
-                    className="flex-1 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-dark-bg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white"
-                    placeholder="e.g., White, Black, Navy Blue (press Enter to add)"
+                    className="flex-1 px-4 py-2 rounded-lg border-2 border-gray-300 dark:border-gray-700 bg-white dark:bg-dark-bg text-gray-900 dark:text-white focus:outline-none focus:border-gray-900 dark:focus:border-white"
+                    placeholder="Press Enter to add"
                   />
                   <button
                     type="button"
@@ -301,7 +263,7 @@ export default function AdminCustomFabricsPage() {
                         setColorInput('')
                       }
                     }}
-                    className="px-4 py-2 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-lg hover:bg-gray-800 dark:hover:bg-gray-100 transition-colors"
+                    className="px-4 py-2 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-lg hover:bg-gray-800 dark:hover:bg-gray-100 transition-colors whitespace-nowrap"
                   >
                     Add
                   </button>
@@ -326,20 +288,20 @@ export default function AdminCustomFabricsPage() {
                   </div>
                 )}
                 <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                  Add colors that customers can choose from when ordering this fabric
+                  Add colors that customers can choose from
                 </p>
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Fabric Image * {editingFabric && '(Leave empty to keep existing image)'}
+                  Fabric Image * {editingFabric && '(Leave empty to keep existing)'}
                 </label>
                 <input
                   type="file"
                   accept="image/*"
                   required={!editingFabric}
                   onChange={handleFileChange}
-                  className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-dark-bg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white"
+                  className="w-full px-4 py-2 sm:py-3 rounded-lg border-2 border-gray-300 dark:border-gray-700 bg-white dark:bg-dark-bg text-gray-900 dark:text-white"
                 />
                 {previewUrl && (
                   <div className="mt-4 relative h-48 w-full rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800">
@@ -348,7 +310,6 @@ export default function AdminCustomFabricsPage() {
                       alt="Preview"
                       className="w-full h-full object-cover"
                       onError={(e) => {
-                        console.error('Failed to load preview image:', previewUrl)
                         e.currentTarget.src = '/placeholder.jpg'
                       }}
                     />
@@ -356,7 +317,7 @@ export default function AdminCustomFabricsPage() {
                 )}
               </div>
 
-              <div className="flex gap-4">
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-4">
                 <button
                   type="submit"
                   disabled={loading}
@@ -375,7 +336,7 @@ export default function AdminCustomFabricsPage() {
                     setFile(null)
                     setPreviewUrl('')
                   }}
-                  className="px-6 py-3 border border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white rounded-lg hover:bg-gray-100 dark:hover:bg-dark-bg transition-colors"
+                  className="px-6 py-3 border-2 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white rounded-lg hover:bg-gray-100 dark:hover:bg-dark-bg transition-colors"
                 >
                   Cancel
                 </button>
@@ -384,13 +345,13 @@ export default function AdminCustomFabricsPage() {
           </div>
         ) : (
           <>
-            <div className="mb-6 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
-              <p className="text-blue-800 dark:text-blue-300">
-                <strong>Note:</strong> These fabric options will be available for customers when they order custom stitched suits on the "Stitch Your Own" page.
+            <div className="mb-4 sm:mb-6 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3 sm:p-4">
+              <p className="text-sm sm:text-base text-blue-800 dark:text-blue-300">
+                <strong>Note:</strong> These options appear on the "Stitch Your Own" page.
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
               {fabrics.map((fabric) => (
                 <div key={fabric.id} className="bg-white dark:bg-dark-surface rounded-lg shadow-md overflow-hidden">
                   <div className="relative h-48 bg-gray-100 dark:bg-gray-800">
@@ -399,22 +360,21 @@ export default function AdminCustomFabricsPage() {
                       alt={fabric.name}
                       className="w-full h-full object-cover"
                       onError={(e) => {
-                        console.error('Failed to load fabric image:', getImageUrl(fabric.image_url))
                         e.currentTarget.src = '/placeholder.jpg'
                       }}
                     />
                   </div>
                   <div className="p-4">
-                    <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">
+                    <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white mb-2 line-clamp-1">
                       {fabric.name}
                     </h3>
                     <p className="text-sm text-gray-600 dark:text-gray-400 mb-3 line-clamp-2">
                       {fabric.description}
                     </p>
-                    <div className="mb-4">
-                      <div className="flex items-center justify-between mb-2">
+                    <div className="mb-3">
+                      <div className="flex items-center justify-between">
                         <div>
-                          <span className="text-xl font-bold text-gray-900 dark:text-white">
+                          <span className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">
                             Rs {fabric.price.toLocaleString()}
                           </span>
                           <p className="text-xs text-gray-500 dark:text-gray-400">
@@ -425,7 +385,7 @@ export default function AdminCustomFabricsPage() {
                       {fabric.colors && fabric.colors.length > 0 && (
                         <div className="mt-2">
                           <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">
-                            Available Colors ({fabric.colors.length}):
+                            Colors ({fabric.colors.length}):
                           </p>
                           <div className="flex flex-wrap gap-1">
                             {fabric.colors.slice(0, 5).map((color, idx) => (
@@ -438,7 +398,7 @@ export default function AdminCustomFabricsPage() {
                             ))}
                             {fabric.colors.length > 5 && (
                               <span className="text-xs px-2 py-1 text-gray-500 dark:text-gray-400">
-                                +{fabric.colors.length - 5} more
+                                +{fabric.colors.length - 5}
                               </span>
                             )}
                           </div>
@@ -448,17 +408,17 @@ export default function AdminCustomFabricsPage() {
                     <div className="flex gap-2">
                       <button
                         onClick={() => handleEdit(fabric)}
-                        className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                        className="flex-1 flex items-center justify-center gap-1 sm:gap-2 px-3 sm:px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
                       >
-                        <FiEdit2 />
-                        Edit
+                        <FiEdit2 className="w-4 h-4" />
+                        <span className="hidden sm:inline">Edit</span>
                       </button>
                       <button
                         onClick={() => handleDelete(fabric.id)}
-                        className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                        className="flex-1 flex items-center justify-center gap-1 sm:gap-2 px-3 sm:px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm"
                       >
-                        <FiTrash2 />
-                        Delete
+                        <FiTrash2 className="w-4 h-4" />
+                        <span className="hidden sm:inline">Delete</span>
                       </button>
                     </div>
                   </div>
@@ -467,16 +427,16 @@ export default function AdminCustomFabricsPage() {
             </div>
 
             {fabrics.length === 0 && (
-              <div className="text-center py-20">
-                <p className="text-gray-600 dark:text-gray-400 text-xl mb-4">
+              <div className="text-center py-12 sm:py-20">
+                <p className="text-gray-600 dark:text-gray-400 text-lg sm:text-xl mb-4">
                   No custom fabric options yet
                 </p>
                 <button
                   onClick={() => setShowForm(true)}
-                  className="inline-flex items-center gap-2 px-6 py-3 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-lg hover:bg-gray-800 dark:hover:bg-gray-100 transition-colors"
+                  className="inline-flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-3 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-lg hover:bg-gray-800 dark:hover:bg-gray-100 transition-colors"
                 >
                   <FiPlus />
-                  Add Your First Fabric Option
+                  Add Your First Fabric
                 </button>
               </div>
             )}

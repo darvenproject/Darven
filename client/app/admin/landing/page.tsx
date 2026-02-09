@@ -58,9 +58,7 @@ export default function AdminLandingPage() {
       const formData = new FormData()
       formData.append('file', file)
 
-      console.log('Uploading image for category:', category)
-      const response = await apiClient.updateLandingImage(category, formData)
-      console.log('Upload response:', response.data)
+      await apiClient.updateLandingImage(category, formData)
       alert(`Landing image uploaded successfully!`)
       await fetchLandingImages()
     } catch (error) {
@@ -111,21 +109,21 @@ export default function AdminLandingPage() {
 
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-dark-bg">
-      <header className="bg-white dark:bg-dark-surface shadow-md">
+      <header className="bg-white dark:bg-dark-surface shadow-md sticky top-0 z-10">
         <div className="container mx-auto px-4 py-4 flex items-center gap-4">
           <Link href="/admin/dashboard" className="p-2 hover:bg-gray-100 dark:hover:bg-dark-bg rounded-lg">
             <FiArrowLeft className="w-6 h-6 text-gray-900 dark:text-white" />
           </Link>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-            Manage Landing Images
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
+            Landing Images
           </h1>
         </div>
       </header>
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-4 sm:py-8">
         {/* Hero Section Slideshow */}
-        <div className="mb-8">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+        <div className="mb-6 sm:mb-8">
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-3 sm:mb-4">
             Hero Section Slideshow
           </h2>
           <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
@@ -133,7 +131,7 @@ export default function AdminLandingPage() {
           </p>
           
           {/* Upload New Hero Image Buttons */}
-          <div className="flex flex-col md:flex-row gap-4 mb-6">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-4 sm:mb-6">
             {/* Landscape Upload */}
             <label className="flex-1">
               <input
@@ -146,26 +144,26 @@ export default function AdminLandingPage() {
                 className="hidden"
                 disabled={loading}
               />
-              <div className="flex items-center justify-center gap-2 px-6 py-4 bg-blue-600 text-white rounded-lg cursor-pointer hover:bg-blue-700 transition-colors">
-                <FiUpload className="w-5 h-5" />
-                {uploadingCategory === 'hero' ? 'Uploading...' : 'Add New Hero Image (Landscape)'}
+              <div className="flex items-center justify-center gap-2 px-4 sm:px-6 py-3 sm:py-4 bg-blue-600 text-white rounded-lg cursor-pointer hover:bg-blue-700 transition-colors text-sm sm:text-base">
+                <FiUpload className="w-4 h-4 sm:w-5 sm:h-5" />
+                <span className="text-center">{uploadingCategory === 'hero' ? 'Uploading...' : 'Add Hero Image (Landscape)'}</span>
               </div>
             </label>
 
             {/* Portrait Upload - Note */}
-            <div className="flex-1 flex items-center justify-center px-6 py-4 bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-lg border-2 border-dashed border-gray-400 dark:border-gray-600">
-              <p className="text-sm text-center">
-                Upload landscape image first, then add portrait version below
+            <div className="flex-1 flex items-center justify-center px-4 sm:px-6 py-3 sm:py-4 bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-lg border-2 border-dashed border-gray-400 dark:border-gray-600">
+              <p className="text-xs sm:text-sm text-center">
+                Upload landscape first, then add portrait version below
               </p>
             </div>
           </div>
 
           {/* Hero Images List */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {heroImages.map((image, index) => (
               <div key={image.id} className="bg-white dark:bg-dark-surface rounded-lg shadow-md p-4">
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">
                     Hero Image {index + 1}
                   </h3>
                   <button
@@ -177,45 +175,37 @@ export default function AdminLandingPage() {
                   </button>
                 </div>
 
-                {/* Landscape Preview - Using regular img */}
+                {/* Landscape Preview */}
                 <div className="mb-3">
                   <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">Desktop (Landscape)</p>
-                  <div className="relative w-full h-40 bg-gray-200 dark:bg-gray-700 rounded-lg overflow-hidden">
+                  <div className="relative w-full h-32 sm:h-40 bg-gray-200 dark:bg-gray-700 rounded-lg overflow-hidden">
                     <img
                       src={getImageUrl(image.image_url)}
                       alt={`Hero ${index + 1}`}
                       className="w-full h-full object-cover"
-                      onLoad={(e) => {
-                        e.currentTarget.classList.add('loaded')
-                      }}
                       onError={(e) => {
-                        console.error(`Image load error for hero ${image.id}`)
                         e.currentTarget.src = '/placeholder.jpg'
                       }}
                     />
                   </div>
                 </div>
 
-                {/* Portrait Preview - Using regular img */}
+                {/* Portrait Preview */}
                 <div className="mb-3">
                   <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">Mobile (Portrait)</p>
-                  <div className="relative w-full h-40 bg-gray-200 dark:bg-gray-700 rounded-lg overflow-hidden">
+                  <div className="relative w-full h-32 sm:h-40 bg-gray-200 dark:bg-gray-700 rounded-lg overflow-hidden">
                     {image.portrait_image_url ? (
                       <img
                         src={getImageUrl(image.portrait_image_url)}
                         alt={`Hero ${index + 1} Portrait`}
                         className="w-full h-full object-cover"
-                        onLoad={(e) => {
-                          e.currentTarget.classList.add('loaded')
-                        }}
                         onError={(e) => {
-                          console.error(`Portrait image load error for hero ${image.id}`)
                           e.currentTarget.src = '/placeholder.jpg'
                         }}
                       />
                     ) : (
                       <div className="flex items-center justify-center h-full">
-                        <FiImage className="w-12 h-12 text-gray-400" />
+                        <FiImage className="w-10 h-10 sm:w-12 sm:h-12 text-gray-400" />
                       </div>
                     )}
                   </div>
@@ -233,7 +223,7 @@ export default function AdminLandingPage() {
                     className="hidden"
                     disabled={loading}
                   />
-                  <div className="flex items-center justify-center gap-2 px-4 py-2 bg-gray-600 text-white rounded-lg cursor-pointer hover:bg-gray-700 transition-colors text-sm">
+                  <div className="flex items-center justify-center gap-2 px-4 py-2 sm:py-3 bg-gray-600 text-white rounded-lg cursor-pointer hover:bg-gray-700 transition-colors text-sm">
                     <FiUpload className="w-4 h-4" />
                     {image.portrait_image_url ? 'Change Portrait' : 'Add Portrait'}
                   </div>
@@ -243,7 +233,7 @@ export default function AdminLandingPage() {
           </div>
 
           {heroImages.length === 0 && (
-            <p className="text-gray-600 dark:text-gray-400 text-center py-8">
+            <p className="text-gray-600 dark:text-gray-400 text-center py-6 sm:py-8 text-sm sm:text-base">
               No hero images yet. Upload your first hero image above.
             </p>
           )}
@@ -251,35 +241,31 @@ export default function AdminLandingPage() {
 
         {/* Section Images */}
         <div>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-3 sm:mb-4">
             Section Images
           </h2>
           <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
             Upload images for Ready Made, Stitch Your Own, and Fabric sections
           </p>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {sectionCategories.map((category) => {
               const existingImage = sectionImages.find(img => img.category === category.id)
               
               return (
-                <div key={category.id} className="bg-white dark:bg-dark-surface rounded-lg shadow-md p-6">
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                <div key={category.id} className="bg-white dark:bg-dark-surface rounded-lg shadow-md p-4 sm:p-6">
+                  <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-3">
                     {category.title}
                   </h3>
                   
-                  {/* Preview - Using regular img */}
+                  {/* Preview */}
                   {existingImage && (
-                    <div className="relative w-full h-48 bg-gray-200 dark:bg-gray-700 rounded-lg overflow-hidden mb-4">
+                    <div className="relative w-full h-40 sm:h-48 bg-gray-200 dark:bg-gray-700 rounded-lg overflow-hidden mb-4">
                       <img
                         src={getImageUrl(existingImage.image_url)}
                         alt={category.title}
                         className="w-full h-full object-cover"
-                        onLoad={(e) => {
-                          e.currentTarget.classList.add('loaded')
-                        }}
                         onError={(e) => {
-                          console.error(`Image load error for ${category.id}`)
                           e.currentTarget.src = '/placeholder.jpg'
                         }}
                       />
@@ -298,8 +284,8 @@ export default function AdminLandingPage() {
                       className="hidden"
                       disabled={loading}
                     />
-                    <div className="flex items-center justify-center gap-2 px-4 py-3 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-lg cursor-pointer hover:bg-gray-800 dark:hover:bg-gray-100 transition-colors">
-                      <FiUpload />
+                    <div className="flex items-center justify-center gap-2 px-4 py-3 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-lg cursor-pointer hover:bg-gray-800 dark:hover:bg-gray-100 transition-colors text-sm sm:text-base">
+                      <FiUpload className="w-4 h-4 sm:w-5 sm:h-5" />
                       {uploadingCategory === category.id ? 'Uploading...' : existingImage ? 'Change Image' : 'Upload Image'}
                     </div>
                   </label>

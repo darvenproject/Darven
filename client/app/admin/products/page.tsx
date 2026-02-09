@@ -56,7 +56,6 @@ export default function AdminProductsPage() {
   const fetchProducts = async () => {
     try {
       const response = await apiClient.getReadyMadeProducts()
-      console.log('Admin products:', response.data)
       setProducts(response.data)
     } catch (error) {
       console.error('Error fetching products:', error)
@@ -143,7 +142,7 @@ export default function AdminProductsPage() {
 
   if (loading && !showForm) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-white dark:bg-dark-bg">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 dark:border-white"></div>
       </div>
     )
@@ -151,39 +150,210 @@ export default function AdminProductsPage() {
 
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-dark-bg">
-      <header className="bg-white dark:bg-dark-surface shadow-md">
+      <header className="bg-white dark:bg-dark-surface shadow-md sticky top-0 z-10">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Link href="/admin/dashboard" className="p-2 hover:bg-gray-100 dark:hover:bg-dark-bg rounded-lg">
               <FiArrowLeft className="w-6 h-6 text-gray-900 dark:text-white" />
             </Link>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
               Manage Products
             </h1>
           </div>
           {!showForm && (
             <button
               onClick={() => setShowForm(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-lg hover:bg-gray-800 dark:hover:bg-gray-100 transition-colors"
+              className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-lg hover:bg-gray-800 dark:hover:bg-gray-100 transition-colors text-sm sm:text-base"
             >
               <FiPlus />
-              Add Product
+              <span className="hidden sm:inline">Add Product</span>
             </button>
           )}
         </div>
       </header>
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-4 sm:py-8">
         {showForm ? (
-          <div className="max-w-2xl mx-auto bg-white dark:bg-dark-surface rounded-lg shadow-md p-6">
-            {/* Form content - keeping original */}
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+          <div className="max-w-2xl mx-auto bg-white dark:bg-dark-surface rounded-lg shadow-md p-4 sm:p-6">
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4 sm:mb-6">
               {editingProduct ? 'Edit Product' : 'Add New Product'}
             </h2>
 
             <form onSubmit={handleSubmit} className="space-y-4">
-              {/* Keep all form fields as they were - not showing here for brevity */}
-              <div className="flex gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Product Name *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  className="w-full px-4 py-2 sm:py-3 rounded-lg border-2 border-gray-300 dark:border-gray-700 bg-white dark:bg-dark-bg text-gray-900 dark:text-white focus:outline-none focus:border-gray-900 dark:focus:border-white"
+                  placeholder="e.g., Premium Black Suit"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Description *
+                </label>
+                <textarea
+                  required
+                  rows={3}
+                  value={formData.description}
+                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  className="w-full px-4 py-2 sm:py-3 rounded-lg border-2 border-gray-300 dark:border-gray-700 bg-white dark:bg-dark-bg text-gray-900 dark:text-white focus:outline-none focus:border-gray-900 dark:focus:border-white"
+                  placeholder="Describe the product..."
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Price (Rs) *
+                  </label>
+                  <input
+                    type="number"
+                    required
+                    value={formData.price}
+                    onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                    className="w-full px-4 py-2 sm:py-3 rounded-lg border-2 border-gray-300 dark:border-gray-700 bg-white dark:bg-dark-bg text-gray-900 dark:text-white focus:outline-none focus:border-gray-900 dark:focus:border-white"
+                    placeholder="5000"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Stock *
+                  </label>
+                  <input
+                    type="number"
+                    required
+                    value={formData.stock}
+                    onChange={(e) => setFormData({ ...formData, stock: e.target.value })}
+                    className="w-full px-4 py-2 sm:py-3 rounded-lg border-2 border-gray-300 dark:border-gray-700 bg-white dark:bg-dark-bg text-gray-900 dark:text-white focus:outline-none focus:border-gray-900 dark:focus:border-white"
+                    placeholder="10"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Material *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={formData.material}
+                    onChange={(e) => setFormData({ ...formData, material: e.target.value })}
+                    className="w-full px-4 py-2 sm:py-3 rounded-lg border-2 border-gray-300 dark:border-gray-700 bg-white dark:bg-dark-bg text-gray-900 dark:text-white focus:outline-none focus:border-gray-900 dark:focus:border-white"
+                    placeholder="e.g., Cotton"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Size *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={formData.size}
+                    onChange={(e) => setFormData({ ...formData, size: e.target.value })}
+                    className="w-full px-4 py-2 sm:py-3 rounded-lg border-2 border-gray-300 dark:border-gray-700 bg-white dark:bg-dark-bg text-gray-900 dark:text-white focus:outline-none focus:border-gray-900 dark:focus:border-white"
+                    placeholder="e.g., M, L, XL"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Fabric Category (Optional)
+                </label>
+                <select
+                  value={formData.fabric_category}
+                  onChange={(e) => setFormData({ ...formData, fabric_category: e.target.value })}
+                  className="w-full px-4 py-2 sm:py-3 rounded-lg border-2 border-gray-300 dark:border-gray-700 bg-white dark:bg-dark-bg text-gray-900 dark:text-white focus:outline-none focus:border-gray-900 dark:focus:border-white"
+                >
+                  <option value="">Select category...</option>
+                  {fabricCategories.map((cat) => (
+                    <option key={cat} value={cat}>{cat}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Available Colors (Optional)
+                </label>
+                <div className="flex gap-2 mb-2">
+                  <input
+                    type="text"
+                    value={colorInput}
+                    onChange={(e) => setColorInput(e.target.value)}
+                    onKeyPress={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault()
+                        if (colorInput.trim() && !colors.includes(colorInput.trim())) {
+                          setColors([...colors, colorInput.trim()])
+                          setColorInput('')
+                        }
+                      }
+                    }}
+                    className="flex-1 px-4 py-2 rounded-lg border-2 border-gray-300 dark:border-gray-700 bg-white dark:bg-dark-bg text-gray-900 dark:text-white focus:outline-none focus:border-gray-900 dark:focus:border-white"
+                    placeholder="Press Enter to add"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (colorInput.trim() && !colors.includes(colorInput.trim())) {
+                        setColors([...colors, colorInput.trim()])
+                        setColorInput('')
+                      }
+                    }}
+                    className="px-4 py-2 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-lg hover:bg-gray-800 dark:hover:bg-gray-100 transition-colors"
+                  >
+                    Add
+                  </button>
+                </div>
+                {colors.length > 0 && (
+                  <div className="flex flex-wrap gap-2 p-3 bg-gray-50 dark:bg-dark-bg rounded-lg">
+                    {colors.map((color, index) => (
+                      <span
+                        key={index}
+                        className="inline-flex items-center gap-2 px-3 py-1 bg-white dark:bg-dark-surface border border-gray-300 dark:border-gray-700 rounded-lg text-sm"
+                      >
+                        {color}
+                        <button
+                          type="button"
+                          onClick={() => setColors(colors.filter((_, i) => i !== index))}
+                          className="text-red-600 hover:text-red-800 font-bold"
+                        >
+                          ×
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Product Images * {editingProduct && '(Leave empty to keep existing)'}
+                </label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  required={!editingProduct}
+                  onChange={(e) => setFiles(e.target.files)}
+                  className="w-full px-4 py-2 sm:py-3 rounded-lg border-2 border-gray-300 dark:border-gray-700 bg-white dark:bg-dark-bg text-gray-900 dark:text-white"
+                />
+              </div>
+
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-4">
                 <button
                   type="submit"
                   disabled={loading}
@@ -201,7 +371,7 @@ export default function AdminProductsPage() {
                     setColorInput('')
                     setFiles(null)
                   }}
-                  className="px-6 py-3 border border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white rounded-lg hover:bg-gray-100 dark:hover:bg-dark-bg transition-colors"
+                  className="px-6 py-3 border-2 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white rounded-lg hover:bg-gray-100 dark:hover:bg-dark-bg transition-colors"
                 >
                   Cancel
                 </button>
@@ -209,7 +379,7 @@ export default function AdminProductsPage() {
             </form>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {products.map((product) => (
               <div key={product.id} className="bg-white dark:bg-dark-surface rounded-lg shadow-md overflow-hidden">
                 <div className="relative aspect-[3/4] bg-gray-50 dark:bg-gray-900">
@@ -218,11 +388,7 @@ export default function AdminProductsPage() {
                       src={getImageUrl(product.images[0])}
                       alt={product.name}
                       className="w-full h-full object-contain"
-                      onLoad={(e) => {
-                        e.currentTarget.classList.add('loaded')
-                      }}
                       onError={(e) => {
-                        console.error(`Failed to load image for product ${product.id}`)
                         e.currentTarget.src = '/placeholder.jpg'
                       }}
                     />
@@ -238,14 +404,14 @@ export default function AdminProductsPage() {
                   )}
                 </div>
                 <div className="p-4">
-                  <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">
+                  <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white mb-2 line-clamp-1">
                     {product.name}
                   </h3>
                   <p className="text-sm text-gray-600 dark:text-gray-400 mb-3 line-clamp-2">
                     {product.description}
                   </p>
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-xl font-bold text-gray-900 dark:text-white">
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">
                       Rs {product.price.toLocaleString()}
                     </span>
                     <span className="text-sm text-gray-600 dark:text-gray-400">
@@ -253,9 +419,9 @@ export default function AdminProductsPage() {
                     </span>
                   </div>
                   {product.colors && product.colors.length > 0 && (
-                    <div className="mb-2">
+                    <div className="mb-3">
                       <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">
-                        Available Colors ({product.colors.length}):
+                        Colors ({product.colors.length}):
                       </p>
                       <div className="flex flex-wrap gap-1">
                         {product.colors.slice(0, 3).map((color, idx) => (
@@ -268,26 +434,26 @@ export default function AdminProductsPage() {
                         ))}
                         {product.colors.length > 3 && (
                           <span className="text-xs px-2 py-1 text-gray-500 dark:text-gray-400">
-                            +{product.colors.length - 3} more
+                            +{product.colors.length - 3}
                           </span>
                         )}
                       </div>
                     </div>
                   )}
-                  <div className="flex gap-2 mt-4">
+                  <div className="flex gap-2">
                     <button
                       onClick={() => handleEdit(product)}
-                      className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                      className="flex-1 flex items-center justify-center gap-1 sm:gap-2 px-3 sm:px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
                     >
-                      <FiEdit2 />
-                      Edit
+                      <FiEdit2 className="w-4 h-4" />
+                      <span className="hidden sm:inline">Edit</span>
                     </button>
                     <button
                       onClick={() => handleDelete(product.id)}
-                      className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                      className="flex-1 flex items-center justify-center gap-1 sm:gap-2 px-3 sm:px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm"
                     >
-                      <FiTrash2 />
-                      Delete
+                      <FiTrash2 className="w-4 h-4" />
+                      <span className="hidden sm:inline">Delete</span>
                     </button>
                   </div>
                 </div>
@@ -297,13 +463,13 @@ export default function AdminProductsPage() {
         )}
 
         {!showForm && products.length === 0 && (
-          <div className="text-center py-20">
-            <p className="text-gray-600 dark:text-gray-400 text-xl mb-4">
+          <div className="text-center py-12 sm:py-20">
+            <p className="text-gray-600 dark:text-gray-400 text-lg sm:text-xl mb-4">
               No products yet
             </p>
             <button
               onClick={() => setShowForm(true)}
-              className="inline-flex items-center gap-2 px-6 py-3 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-lg hover:bg-gray-800 dark:hover:bg-gray-100 transition-colors"
+              className="inline-flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-3 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-lg hover:bg-gray-800 dark:hover:bg-gray-100 transition-colors"
             >
               <FiPlus />
               Add Your First Product
