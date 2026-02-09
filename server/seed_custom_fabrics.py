@@ -22,12 +22,11 @@ fabrics_data = [
         "price": 3200,
         "material": "Wash n Wear",
         "colors": [
-            # The Neutrals
-            "White", "Westar", "Silver Sand", "Cement", "Zinc", "Iron Gray", "Heavy Metal", "Black",
-            # The Earth Tones
-            "Spring Wood", "Dune", "Mirage", "Dune Brown", "Paco Brown", "Dark Olive", "Rangitoto", "Timber Green", "Firefly",
-            # The Blues & Purples
-            "Navy", "Navy Blue", "Orient", "Congo Purple"
+            "Gray", "Navy Blue", "Dune Brown", "Millbrook", "Orient", "Black", 
+            "Dark Olive", "Firefly", "Silver Sand", "Spring Wood", "Mirage", 
+            "Cement", "Dune", "Congo Purple", "Iron Gray", "Merino White", 
+            "Paco Brown", "Zinc", "Westar", "Heavy Metal", "Timber Green", 
+            "Rangitoto", "Navy"
         ],
         "image_url": f"{FRONTEND_URL}/placeholder-washnwear.jpg"
     },
@@ -37,14 +36,7 @@ fabrics_data = [
         "price": 3800,
         "material": "Blended",
         "colors": [
-            # The Whites & Greys
-            "Paper White", "Off White", "Coconut White", "Silver Grey", "Ash Grey", "Grey", "Royal Grey",
-            # The Soft Tones
-            "Light Sand", "Biscotti", "Beige", "Warm Biscuit", "Fawn", "Desert Biscuit", "Light Brown",
-            # The Pastels
-            "Dark Cream", "Ice Green", "Pista Green", "Light Mehandi", "Lilac", "Light Onion",
-            # The Darks
-            "Navy Blue", "Dark Teal", "Emerald Green"
+            "Gray", "White", "Navy Blue", "Black"
         ],
         "image_url": f"{FRONTEND_URL}/placeholder.jpg"
     },
@@ -54,16 +46,7 @@ fabrics_data = [
         "price": 4500,
         "material": "Boski",
         "colors": [
-            # The Classics
-            "Off-White", "Cream",
-            # The Midnight Series
-            "Dark Grey", "Charcoal Grey", "Pearl Black",
-            # The Heritage Browns
-            "Cedar Brown", "Peanut Brown",
-            # The Royal Collection
-            "Royal Blue", "Navy Blue", "Indigo Blue", "Dark Plum", "Imperial Maroon", "Dark Rust", "Forest Green",
-            # The Signature Accents
-            "Desert Gold", "Mint green"
+            "Gray", "White", "Navy Blue", "Black"
         ],
         "image_url": f"{FRONTEND_URL}/placeholder.jpg"
     },
@@ -73,18 +56,10 @@ fabrics_data = [
         "price": 3000,
         "material": "Soft Cotton",
         "colors": [
-            # The Desert Tones
-            "Dune Brown", "Lisbon Brown", "Cedar", "Cocoa Bean", "Paco",
-            # Metallic Earth
-            "Ironstone", "Metallic Bronze", "Metallic Brown",
-            # The Neutrals
-            "Dune", "Birch", "Mirage",
-            # The Blues
-            "Navy", "Navy Tuna", "Charade",
-            # The Greens
-            "Rangitoto", "Timber Green",
-            # The Warmth
-            "Spicy Mix"
+            "White", "Black", "Navy", "Gray", "Spicy Mix", "Dune", "Birch", 
+            "Lisbon Brown", "Cedar", "Dune Brown", "Rangitoto", "Metallic Bronze", 
+            "Metallic Brown", "Charade", "Timber Green", "Mirage", "Paco", 
+            "Cocoa Bean", "Ironstone", "Navy Tuna", "Off White"
         ],
         "image_url": f"{FRONTEND_URL}/placeholder-cotton.jpg"
     },
@@ -94,14 +69,8 @@ fabrics_data = [
         "price": 5000,
         "material": "Giza Moon Cotton",
         "colors": [
-            # The Sunset Shades
-            "Coral Reef", "Coral Tree", "Dark Yellow",
-            # The Regal Deep
-            "Maroon",
-            # The Ocean Cool
-            "Ship Cove",
-            # The Olive Series
-            "Pesto"
+            "Gray", "White", "Black", "Navy Blue", "Pesto", "Coral Reef", 
+            "Coral Tree", "Maroon", "Ship Cove", "Dark Yellow"
         ],
         "image_url": f"{FRONTEND_URL}/placeholder-cotton.jpg"
     }
