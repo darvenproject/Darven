@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { FiShoppingCart, FiMinus, FiPlus, FiCheck } from 'react-icons/fi'
+import { FiShoppingCart, FiMinus, FiPlus, FiCheck, FiScissors } from 'react-icons/fi'
 import { apiClient, getImageUrl } from '@/lib/api'
 import { useCartStore } from '@/store/cartStore'
 import { getColorHex, getTextColorForBackground } from '@/lib/colorMapping'
@@ -177,11 +177,11 @@ export default function StitchYourOwnPage() {
     <div className="min-h-screen bg-white dark:bg-dark-bg">
       {/* Hero Header */}
       <div className="border-b border-gray-200 dark:border-gray-800">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-2">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-gray-900 dark:text-white mb-3 tracking-tight">
             Stitch Your Own Suit
           </h1>
-          <p className="text-base sm:text-lg text-gray-600 dark:text-gray-400 max-w-max">
+          <p className="text-base sm:text-lg text-gray-600 dark:text-gray-400 max-w-2xl">
             Choose your premium fabric, select your perfect color, and provide custom measurements for a suit tailored exclusively for you.
           </p>
         </div>
@@ -233,13 +233,26 @@ export default function StitchYourOwnPage() {
                         <p className="text-sm text-gray-600 dark:text-gray-400 mb-4 line-clamp-2">
                           {fabric.description}
                         </p>
-                        <div className="flex items-center justify-between">
-                          <span className="text-2xl font-black text-gray-900 dark:text-white">
-                            Rs {fabric.price.toLocaleString()}
-                          </span>
-                          <span className="text-xs px-3 py-1.5 bg-white dark:bg-gray-800 rounded-full font-bold text-gray-600 dark:text-gray-400">
-                            {fabric.colors?.length || 0} colors available
-                          </span>
+                        <div className="flex items-end justify-between gap-3">
+                          <div>
+                            <span className="text-2xl font-black text-gray-900 dark:text-white">
+                              Rs {fabric.price.toLocaleString()}
+                            </span>
+                            <span className="text-xs text-gray-500 dark:text-gray-400 font-bold ml-1">
+                              /4 meters
+                            </span>
+                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                              {fabric.colors?.length || 0} colors available
+                            </p>
+                          </div>
+                          <div className="text-right">
+                            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                              <FiScissors className="w-3 h-3 text-blue-600 dark:text-blue-400" />
+                              <span className="text-xs font-bold text-blue-700 dark:text-blue-300">
+                                +Rs 3,500
+                              </span>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -528,13 +541,30 @@ export default function StitchYourOwnPage() {
             {/* Total & Add to Cart */}
             {selectedFabric && (
               <div className="sticky bottom-0 p-6 bg-white dark:bg-dark-bg border-2 border-gray-900 dark:border-white rounded-2xl space-y-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-xl font-black text-gray-600 dark:text-gray-400">
-                    Total:
-                  </span>
-                  <span className="text-3xl font-black text-gray-900 dark:text-white">
-                    Rs {(selectedFabric.price * quantity).toLocaleString()}
-                  </span>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-gray-600 dark:text-gray-400">Fabric (4 meters):</span>
+                    <span className="font-bold text-gray-900 dark:text-white">
+                      Rs {(selectedFabric.price * quantity).toLocaleString()}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-gray-600 dark:text-gray-400 flex items-center gap-1">
+                      <FiScissors className="w-3 h-3" />
+                      Stitching:
+                    </span>
+                    <span className="font-bold text-gray-900 dark:text-white">
+                      Rs {(3500 * quantity).toLocaleString()}
+                    </span>
+                  </div>
+                  <div className="border-t-2 border-gray-200 dark:border-gray-700 pt-2 flex items-center justify-between">
+                    <span className="text-xl font-black text-gray-900 dark:text-white">
+                      Total:
+                    </span>
+                    <span className="text-3xl font-black text-gray-900 dark:text-white">
+                      Rs {((selectedFabric.price + 3500) * quantity).toLocaleString()}
+                    </span>
+                  </div>
                 </div>
 
                 <button
@@ -545,6 +575,10 @@ export default function StitchYourOwnPage() {
                   <FiShoppingCart className="w-6 h-6" />
                   {!selectedFabric ? 'Select a Fabric' : (selectedFabric.colors && selectedFabric.colors.length > 0 && !selectedColor) ? 'Select a Color' : 'Add to Cart'}
                 </button>
+                
+                <p className="text-xs text-center text-gray-500 dark:text-gray-400">
+                  Price includes fabric (4 meters) + stitching charges
+                </p>
               </div>
             )}
           </div>

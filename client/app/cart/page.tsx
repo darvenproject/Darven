@@ -1,10 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { FiTrash2, FiMinus, FiPlus, FiShoppingCart } from 'react-icons/fi'
+import { FiTrash2, FiMinus, FiPlus, FiShoppingCart, FiPackage, FiScissors } from 'react-icons/fi'
 import { useCartStore } from '@/store/cartStore'
 
 export default function CartPage() {
@@ -15,23 +14,30 @@ export default function CartPage() {
   const getTotalPrice = useCartStore((state) => state.getTotalPrice)
 
   const subtotal = getTotalPrice()
+  
+  // Calculate stitching cost (Rs 3,500 per custom suit)
+  const customItems = items.filter(item => item.type === 'custom')
+  const totalStitchingCost = customItems.reduce((total, item) => total + (3500 * item.quantity), 0)
+  
   const deliveryCharges = 200
-  const total = subtotal + deliveryCharges
+  const total = subtotal + totalStitchingCost + deliveryCharges
 
   if (items.length === 0) {
     return (
-      <div className="min-h-screen flex items-center justify-center px-4">
+      <div className="min-h-screen flex items-center justify-center px-4 bg-white dark:bg-dark-bg">
         <div className="text-center">
-          <FiShoppingCart className="w-16 h-16 sm:w-24 sm:h-24 text-gray-400 mx-auto mb-4" />
-          <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-3 sm:mb-4">
+          <div className="w-24 h-24 mx-auto mb-6 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center">
+            <FiShoppingCart className="w-12 h-12 text-gray-400" />
+          </div>
+          <h2 className="text-2xl sm:text-3xl font-black text-gray-900 dark:text-white mb-3 tracking-tight">
             Your cart is empty
           </h2>
-          <p className="text-gray-600 dark:text-gray-400 mb-6 sm:mb-8 text-sm sm:text-base">
+          <p className="text-gray-600 dark:text-gray-400 mb-8 text-sm sm:text-base">
             Add some items to get started!
           </p>
           <Link
             href="/"
-            className="inline-block bg-gray-900 dark:bg-white text-white dark:text-gray-900 py-2.5 sm:py-3 px-6 sm:px-8 rounded-lg font-bold hover:bg-gray-800 dark:hover:bg-gray-100 transition-colors text-sm sm:text-base"
+            className="inline-block bg-gray-900 dark:bg-white text-white dark:text-gray-900 py-3 px-8 rounded-xl font-bold hover:bg-black dark:hover:bg-gray-100 hover:scale-105 transition-all text-sm sm:text-base"
           >
             Continue Shopping
           </Link>
@@ -41,28 +47,36 @@ export default function CartPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-4 sm:py-8">
-      <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4 sm:mb-8">
-        Shopping Cart
-      </h1>
+    <div className="min-h-screen bg-white dark:bg-dark-bg">
+      {/* Header */}
+      <div className="border-b border-gray-200 dark:border-gray-800">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-gray-900 dark:text-white tracking-tight">
+            Shopping Cart
+          </h1>
+          <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 mt-2">
+            {items.length} {items.length === 1 ? 'item' : 'items'} in your cart
+          </p>
+        </div>
+      </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
-        {/* Cart Items */}
-        <div className="lg:col-span-2">
-          <div className="space-y-4">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
+          
+          {/* Cart Items */}
+          <div className="lg:col-span-2 space-y-4">
             {items.map((item) => (
               <div
                 key={item.id}
-                className="bg-white dark:bg-dark-surface rounded-lg p-4 shadow-md"
+                className="bg-gray-50 dark:bg-dark-surface rounded-2xl p-4 sm:p-6 border-2 border-gray-200 dark:border-gray-800 hover:border-gray-300 dark:hover:border-gray-700 transition-all"
               >
                 <div className="flex gap-4">
                   {/* Image */}
-                  <div className="relative w-24 h-24 flex-shrink-0 rounded-lg overflow-hidden">
-                    <Image
+                  <div className="relative w-20 h-20 sm:w-28 sm:h-28 flex-shrink-0 rounded-xl overflow-hidden bg-gray-200 dark:bg-gray-800 border border-gray-300 dark:border-gray-700">
+                    <img
                       src={item.image || '/placeholder.jpg'}
                       alt={item.name}
-                      fill
-                      className="object-cover"
+                      className="w-full h-full object-cover"
                       onError={(e) => {
                         e.currentTarget.src = '/placeholder.jpg'
                       }}
@@ -70,187 +84,208 @@ export default function CartPage() {
                   </div>
 
                   {/* Details */}
-                  <div className="flex-1">
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">
-                      {item.name}
-                    </h3>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-start justify-between gap-2 mb-2">
+                      <h3 className="text-base sm:text-lg font-black text-gray-900 dark:text-white line-clamp-2">
+                        {item.name}
+                      </h3>
+                      <button
+                        onClick={() => removeItem(item.id)}
+                        className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors flex-shrink-0"
+                        title="Remove item"
+                      >
+                        <FiTrash2 className="w-5 h-5" />
+                      </button>
+                    </div>
 
                     {/* Item-specific details */}
-                    {item.type === 'ready-made' && (
-                      <div className="text-sm text-gray-600 dark:text-gray-400">
-                        <p>Material: {item.details?.material}</p>
-                        <p>Size: {item.details?.size}</p>
-                      </div>
-                    )}
+                    <div className="mb-4">
+                      {item.type === 'ready-made' && (
+                        <div className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
+                          <p className="flex items-center gap-2">
+                            <FiPackage className="w-4 h-4" />
+                            <span>Material: {item.details?.material}</span>
+                          </p>
+                          <p>Size: {item.details?.size}</p>
+                        </div>
+                      )}
 
-                    {item.type === 'fabric' && (
-                      <div className="text-sm text-gray-600 dark:text-gray-400">
-                        <p>Material: {item.details?.material}</p>
-                        <p>Length: {item.details?.length} meters</p>
-                        <p>Price per meter: Rs {item.details?.price_per_meter?.toLocaleString()}</p>
-                      </div>
-                    )}
+                      {item.type === 'fabric' && (
+                        <div className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
+                          <p className="flex items-center gap-2">
+                            <FiPackage className="w-4 h-4" />
+                            <span>Material: {item.details?.material}</span>
+                          </p>
+                          <p>Length: {item.details?.length} meters</p>
+                          <p>Rs {item.details?.price_per_meter?.toLocaleString()}/meter</p>
+                        </div>
+                      )}
 
-                    {item.type === 'custom' && (
-                      <div className="text-sm text-gray-600 dark:text-gray-400">
-                        <p>Fabric: {item.details?.fabric}</p>
-                        <p>Material: {item.details?.material}</p>
-                        <details className="mt-2">
-                          <summary className="cursor-pointer hover:text-gray-900 dark:hover:text-white">
-                            View Measurements & Details
-                          </summary>
-                          <div className="mt-2 pl-4 space-y-2">
-                            {/* Measurement Type */}
-                            <p className="font-semibold">Type: {item.details?.measurements?.measurementType === 'predefined' ? 'Predefined Size' : 'Custom Measurements'}</p>
-                            
-                            {/* Options */}
-                            <div>
-                              <p className="font-semibold mt-2">Options:</p>
-                              <p>Cuffs: {item.details?.measurements?.cuffs === 'yes' ? 'Yes' : 'No'}</p>
-                              <p>Collar: {item.details?.measurements?.collarType === 'sherwani' ? 'Sherwani Collar' : 'Shirt Collar'}</p>
-                              <p>Bottom Wear: {item.details?.measurements?.bottomWear === 'pajama' ? 'Pajama' : 'Shalwar'}</p>
-                            </div>
-
-                            {/* Kameez Measurements */}
-                            {item.details?.measurements?.measurementType === 'predefined' ? (
+                      {item.type === 'custom' && (
+                        <div className="text-sm text-gray-600 dark:text-gray-400">
+                          <p className="flex items-center gap-2 mb-2">
+                            <FiScissors className="w-4 h-4" />
+                            <span className="font-bold">Custom Stitched Suit</span>
+                          </p>
+                          <p>Fabric: {item.details?.fabric}</p>
+                          <p>Material: {item.details?.material}</p>
+                          <p>Color: {item.details?.color}</p>
+                          <details className="mt-3">
+                            <summary className="cursor-pointer hover:text-gray-900 dark:hover:text-white font-bold text-xs uppercase">
+                              View Full Details →
+                            </summary>
+                            <div className="mt-3 pl-4 space-y-2 text-xs border-l-2 border-gray-300 dark:border-gray-700">
                               <div>
-                                <p className="font-semibold mt-2">Kameez Size: {item.details?.measurements?.kameezSize}</p>
-                                {item.details?.measurements?.kameezMeasurements && (
-                                  <>
-                                    <p>Collar: {item.details?.measurements?.kameezMeasurements?.collar}"</p>
-                                    <p>Shoulder: {item.details?.measurements?.kameezMeasurements?.shoulder}"</p>
-                                    <p>Chest: {item.details?.measurements?.kameezMeasurements?.chest}"</p>
-                                    <p>Sleeves: {item.details?.measurements?.kameezMeasurements?.sleeves}"</p>
-                                    <p>Length: {item.details?.measurements?.kameezMeasurements?.length}"</p>
-                                  </>
-                                )}
+                                <p className="font-bold text-gray-900 dark:text-white mb-1">Options:</p>
+                                <p>Cuffs: {item.details?.measurements?.cuffs === 'yes' ? 'Yes' : 'No'}</p>
+                                <p>Collar: {item.details?.measurements?.collarType === 'sherwani' ? 'Sherwani' : 'Shirt'}</p>
+                                <p>Bottom: {item.details?.measurements?.bottomWear === 'pajama' ? 'Pajama' : 'Shalwar'}</p>
                               </div>
-                            ) : (
+
                               <div>
-                                <p className="font-semibold mt-2">Custom Kameez Measurements:</p>
+                                <p className="font-bold text-gray-900 dark:text-white mb-1">Kameez Measurements:</p>
                                 <p>Collar: {item.details?.measurements?.customCollar}"</p>
                                 <p>Shoulder: {item.details?.measurements?.customShoulder}"</p>
                                 <p>Chest: {item.details?.measurements?.customChest}"</p>
                                 <p>Sleeves: {item.details?.measurements?.customSleeves}"</p>
                                 <p>Length: {item.details?.measurements?.customKameezLength}"</p>
                               </div>
-                            )}
 
-                            {/* Bottom Wear Measurements */}
-                            {item.details?.measurements?.bottomWear === 'shalwar' && (
-                              <div>
-                                {item.details?.measurements?.measurementType === 'predefined' ? (
-                                  <>
-                                    <p className="font-semibold mt-2">Shalwar Size: {item.details?.measurements?.shalwarSize}</p>
-                                    {item.details?.measurements?.shalwarMeasurements && (
-                                      <p>Length: {item.details?.measurements?.shalwarMeasurements?.length}"</p>
-                                    )}
-                                  </>
-                                ) : (
-                                  <>
-                                    <p className="font-semibold mt-2">Custom Shalwar Measurements:</p>
-                                    <p>Length: {item.details?.measurements?.customShalwarLength}"</p>
-                                  </>
-                                )}
-                              </div>
-                            )}
+                              {item.details?.measurements?.bottomWear === 'shalwar' && (
+                                <div>
+                                  <p className="font-bold text-gray-900 dark:text-white mb-1">Shalwar:</p>
+                                  <p>Length: {item.details?.measurements?.customShalwarLength}"</p>
+                                </div>
+                              )}
 
-                            {item.details?.measurements?.bottomWear === 'pajama' && item.details?.measurements?.measurementType === 'custom' && (
-                              <div>
-                                <p className="font-semibold mt-2">Custom Pajama Measurements:</p>
-                                <p>Length: {item.details?.measurements?.customPajamaLength}"</p>
-                                <p>Waist: {item.details?.measurements?.customWaist}"</p>
-                                <p>Thigh: {item.details?.measurements?.customThigh}"</p>
-                              </div>
-                            )}
+                              {item.details?.measurements?.bottomWear === 'pajama' && (
+                                <div>
+                                  <p className="font-bold text-gray-900 dark:text-white mb-1">Pajama:</p>
+                                  <p>Length: {item.details?.measurements?.customPajamaLength}"</p>
+                                  <p>Waist: {item.details?.measurements?.customWaist}"</p>
+                                  <p>Thigh: {item.details?.measurements?.customThigh}"</p>
+                                </div>
+                              )}
+                            </div>
+                          </details>
+                          
+                          {/* Stitching Cost Badge */}
+                          <div className="mt-3 inline-flex items-center gap-2 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                            <FiScissors className="w-3 h-3 text-blue-600 dark:text-blue-400" />
+                            <span className="text-xs font-bold text-blue-700 dark:text-blue-300">
+                              Stitching: Rs 3,500
+                            </span>
                           </div>
-                        </details>
-                      </div>
-                    )}
+                        </div>
+                      )}
+                    </div>
 
-                    <div className="flex items-center justify-between mt-4">
+                    {/* Quantity & Price */}
+                    <div className="flex items-center justify-between gap-4 flex-wrap">
                       {/* Quantity */}
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-3 bg-white dark:bg-dark-bg rounded-xl p-1 border border-gray-200 dark:border-gray-700">
                         <button
                           onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                          className="p-1 bg-gray-200 dark:bg-dark-bg rounded hover:bg-gray-300 dark:hover:bg-gray-700 transition-colors"
+                          className="w-8 h-8 flex items-center justify-center bg-gray-100 dark:bg-gray-800 rounded-lg hover:bg-gray-900 dark:hover:bg-white hover:text-white dark:hover:text-gray-900 transition-all"
                         >
-                          <FiMinus className="w-4 h-4 text-gray-900 dark:text-white" />
+                          <FiMinus className="w-4 h-4" />
                         </button>
 
-                        <span className="text-gray-900 dark:text-white font-medium w-8 text-center">
+                        <span className="text-gray-900 dark:text-white font-black min-w-[24px] text-center">
                           {item.quantity}
                         </span>
 
                         <button
                           onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                          className="p-1 bg-gray-200 dark:bg-dark-bg rounded hover:bg-gray-300 dark:hover:bg-gray-700 transition-colors"
+                          className="w-8 h-8 flex items-center justify-center bg-gray-100 dark:bg-gray-800 rounded-lg hover:bg-gray-900 dark:hover:bg-white hover:text-white dark:hover:text-gray-900 transition-all"
                         >
-                          <FiPlus className="w-4 h-4 text-gray-900 dark:text-white" />
+                          <FiPlus className="w-4 h-4" />
                         </button>
                       </div>
 
                       {/* Price */}
                       <div className="text-right">
-                        <p className="text-xl font-bold text-gray-900 dark:text-white">
+                        <p className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white">
                           Rs {(item.price * item.quantity).toLocaleString()}
                         </p>
+                        {item.type === 'custom' && (
+                          <p className="text-xs text-gray-500 dark:text-gray-400">
+                            + Rs {(3500 * item.quantity).toLocaleString()} stitching
+                          </p>
+                        )}
                       </div>
-
-                      {/* Remove */}
-                      <button
-                        onClick={() => removeItem(item.id)}
-                        className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors"
-                      >
-                        <FiTrash2 className="w-5 h-5" />
-                      </button>
                     </div>
                   </div>
                 </div>
               </div>
             ))}
           </div>
-        </div>
 
-        {/* Order Summary */}
-        <div className="lg:col-span-1">
-          <div className="bg-white dark:bg-dark-surface rounded-lg p-4 sm:p-6 shadow-md lg:sticky lg:top-24">
-            <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4 sm:mb-6">
-              Order Summary
-            </h2>
+          {/* Order Summary */}
+          <div className="lg:col-span-1">
+            <div className="bg-gray-50 dark:bg-dark-surface rounded-2xl p-6 border-2 border-gray-200 dark:border-gray-800 lg:sticky lg:top-24">
+              <h2 className="text-2xl font-black text-gray-900 dark:text-white mb-6 tracking-tight">
+                Order Summary
+              </h2>
 
-            <div className="space-y-3 sm:space-y-4 mb-4 sm:mb-6">
-              <div className="flex justify-between text-gray-600 dark:text-gray-400 text-sm sm:text-base">
-                <span>Subtotal:</span>
-                <span>Rs {subtotal.toLocaleString()}</span>
-              </div>
+              <div className="space-y-4 mb-6">
+                <div className="flex justify-between text-gray-600 dark:text-gray-400">
+                  <span>Subtotal:</span>
+                  <span className="font-bold">Rs {subtotal.toLocaleString()}</span>
+                </div>
 
-              <div className="flex justify-between text-gray-600 dark:text-gray-400 text-sm sm:text-base">
-                <span>Delivery Charges:</span>
-                <span>Rs {deliveryCharges.toLocaleString()}</span>
-              </div>
+                {totalStitchingCost > 0 && (
+                  <div className="flex justify-between text-gray-600 dark:text-gray-400">
+                    <span className="flex items-center gap-2">
+                      <FiScissors className="w-4 h-4" />
+                      Stitching Cost:
+                    </span>
+                    <span className="font-bold">Rs {totalStitchingCost.toLocaleString()}</span>
+                  </div>
+                )}
 
-              <div className="border-t border-gray-300 dark:border-gray-700 pt-3 sm:pt-4">
-                <div className="flex justify-between text-lg sm:text-xl font-bold text-gray-900 dark:text-white">
-                  <span>Total:</span>
-                  <span>Rs {total.toLocaleString()}</span>
+                <div className="flex justify-between text-gray-600 dark:text-gray-400">
+                  <span className="flex items-center gap-2">
+                    <FiPackage className="w-4 h-4" />
+                    Delivery:
+                  </span>
+                  <span className="font-bold">Rs {deliveryCharges.toLocaleString()}</span>
+                </div>
+
+                <div className="border-t-2 border-gray-200 dark:border-gray-700 pt-4">
+                  <div className="flex justify-between items-center">
+                    <span className="text-xl font-black text-gray-900 dark:text-white">Total:</span>
+                    <span className="text-3xl font-black text-gray-900 dark:text-white">
+                      Rs {total.toLocaleString()}
+                    </span>
+                  </div>
                 </div>
               </div>
+
+              <button
+                onClick={() => router.push('/checkout')}
+                className="w-full bg-gray-900 dark:bg-white text-white dark:text-gray-900 py-4 px-6 rounded-xl font-black text-lg hover:bg-black dark:hover:bg-gray-100 hover:scale-105 hover:shadow-2xl transition-all active:scale-95 mb-4"
+              >
+                Proceed to Checkout
+              </button>
+
+              <Link
+                href="/"
+                className="block text-center text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white font-bold transition-colors"
+              >
+                ← Continue Shopping
+              </Link>
+
+              {/* Delivery Info */}
+              <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl">
+                <p className="text-sm text-blue-800 dark:text-blue-300 font-bold">
+                  ✓ Free delivery on orders above Rs 10,000
+                </p>
+                <p className="text-xs text-blue-700 dark:text-blue-400 mt-1">
+                  Estimated delivery: 7 working days
+                </p>
+              </div>
             </div>
-
-            <button
-              onClick={() => router.push('/checkout')}
-              className="w-full bg-gray-900 dark:bg-white text-white dark:text-gray-900 py-3 sm:py-4 px-6 sm:px-8 rounded-lg font-bold text-base sm:text-lg hover:bg-gray-800 dark:hover:bg-gray-100 transition-colors"
-            >
-              Proceed to Checkout
-            </button>
-
-            <Link
-              href="/"
-              className="block text-center text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white mt-4 transition-colors"
-            >
-              Continue Shopping
-            </Link>
           </div>
         </div>
       </div>
