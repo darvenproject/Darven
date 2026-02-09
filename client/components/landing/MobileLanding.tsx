@@ -272,7 +272,7 @@ export default function MobileLanding() {
 
             {/* Text */}
             <div className="absolute inset-0 flex items-center justify-center z-10">
-              <h2 className="text-white text-4xl md:text-5xl font-bold text-center px-4 drop-shadow-2xl">
+              <h2 className="text-white text-6xl md:text-6xl font-bold text-center px-4 drop-shadow-2xl">
                 {item.title}
               </h2>
             </div>

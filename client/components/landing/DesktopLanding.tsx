@@ -254,7 +254,7 @@ export default function DesktopLanding() {
 
               {/* Text */}
               <div className="absolute inset-0 flex items-center justify-center z-10">
-                <h2 className="text-white text-3xl md:text-4xl font-bold text-center px-4 group-hover:scale-110 transition-transform duration-300 drop-shadow-2xl">
+                <h2 className="text-white text-3xl md:text-6xl font-bold text-center px-4 group-hover:scale-110 transition-transform duration-300 drop-shadow-2xl">
                   {item.title}
                 </h2>
               </div>

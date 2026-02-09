@@ -1,15 +1,22 @@
 import './globals.css'
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { Outfit } from 'next/font/google'
 import ClientLayout from '@/components/ClientLayout'
 
-const inter = Inter({ subsets: ['latin'] })
+// Outfit is a very modern, geometric font that looks high-end
+// Weights 700 (Bold) and 900 (Black) provide that thick, luxurious feel
+const outfit = Outfit({ 
+  subsets: ['latin'],
+  weight: ['300', '400', '500', '700', '900'],
+  display: 'swap',
+  variable: '--font-outfit',
+})
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://shopdarven.pk'),
   title: {
-    default: 'Darven - Premium Kurta Pajama & Shalwar Kameez | Traditional Pakistani Clothing',
-    template: '%s | Darven'
+    default: 'ShopDarven - Premium Kurta Pajama & Shalwar Kameez | Traditional Pakistani Clothing',
+    template: '%s | ShopDarven'
   },
   description: 'Shop premium quality kurta pajama, shalwar kameez, and traditional Pakistani clothing. Custom stitching services available. Ready-made and custom fabric options in Pakistan.',
   keywords: [
@@ -25,12 +32,12 @@ export const metadata: Metadata = {
     'cotton kurta pajama',
     'ready made shalwar kameez',
     'fabric shop Pakistan',
-    'darven',
+    'shopdarven',
     'online clothing Pakistan'
   ],
-  authors: [{ name: 'Darven' }],
-  creator: 'Darven',
-  publisher: 'Darven',
+  authors: [{ name: 'ShopDarven' }],
+  creator: 'ShopDarven',
+  publisher: 'ShopDarven',
   formatDetection: {
     email: false,
     address: false,
@@ -40,24 +47,24 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'en_PK',
     url: 'https://shopdarven.pk',
-    siteName: 'Darven',
-    title: 'Darven - Premium Kurta Pajama & Shalwar Kameez',
+    siteName: 'ShopDarven',
+    title: 'ShopDarven - Premium Kurta Pajama & Shalwar Kameez',
     description: 'Shop premium quality kurta pajama, shalwar kameez, and traditional Pakistani clothing. Custom stitching services available.',
     images: [
       {
         url: '/og-image.jpg',
         width: 1200,
         height: 630,
-        alt: 'Darven - Premium Pakistani Clothing',
+        alt: 'ShopDarven - Premium Pakistani Clothing',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Darven - Premium Kurta Pajama & Shalwar Kameez',
+    title: 'ShopDarven - Premium Kurta Pajama & Shalwar Kameez',
     description: 'Shop premium quality kurta pajama, shalwar kameez, and traditional Pakistani clothing.',
     images: ['/og-image.jpg'],
-    creator: '@darven',
+    creator: '@shopdarven',
   },
   robots: {
     index: true,
@@ -84,12 +91,6 @@ export const metadata: Metadata = {
   alternates: {
     canonical: 'https://shopdarven.pk',
   },
-  verification: {
-    // Add your verification codes when you get them
-    // google: 'your-google-verification-code',
-    // yandex: 'your-yandex-verification-code',
-    // bing: 'your-bing-verification-code',
-  },
 }
 
 export default function RootLayout({
@@ -100,26 +101,26 @@ export default function RootLayout({
   const organizationSchema = {
     '@context': 'https://schema.org',
     '@type': 'Organization',
-    name: 'Darven',
-    url: 'https://shopdarven.pk',
-    logo: 'https://shopdarven.pk/logo.png',
-    description: 'Premium Pakistani traditional clothing store offering kurta pajama, shalwar kameez, and custom stitching services',
-    address: {
+    'name': 'ShopDarven',
+    'url': 'https://shopdarven.pk',
+    'logo': 'https://shopdarven.pk/logo.png',
+    'description': 'Premium Pakistani traditional clothing store offering kurta pajama, shalwar kameez, and custom stitching services',
+    'address': {
       '@type': 'PostalAddress',
-      addressCountry: 'PK'
+      'addressCountry': 'PK'
     }
   }
 
   const websiteSchema = {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
-    name: 'Darven',
-    url: 'https://shopdarven.pk',
-    potentialAction: {
+    'name': 'ShopDarven',
+    'url': 'https://shopdarven.pk',
+    'potentialAction': {
       '@type': 'SearchAction',
-      target: {
+      'target': {
         '@type': 'EntryPoint',
-        urlTemplate: 'https://shopdarven.pk/search?q={search_term_string}'
+        'urlTemplate': 'https://shopdarven.pk/search?q={search_term_string}'
       },
       'query-input': 'required name=search_term_string'
     }
@@ -141,7 +142,8 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
         />
       </head>
-      <body className={inter.className}>
+      {/* Applying outfit.className globally with antialiased rendering */}
+      <body className={`${outfit.className} antialiased`}>
         <ClientLayout>{children}</ClientLayout>
       </body>
     </html>
