@@ -181,7 +181,7 @@ export default function StitchYourOwnPage() {
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-gray-900 dark:text-white mb-3 tracking-tight">
             Stitch Your Own Suit
           </h1>
-          <p className="text-base sm:text-lg text-gray-600 dark:text-gray-400 max-w-2xl">
+          <p className="text-base sm:text-lg text-gray-600 dark:text-gray-400 max-w-max">
             Choose your premium fabric, select your perfect color, and provide custom measurements for a suit tailored exclusively for you.
           </p>
         </div>
@@ -204,15 +204,15 @@ export default function StitchYourOwnPage() {
                   <button
                     key={fabric.id}
                     onClick={() => handleFabricSelect(fabric)}
-                    className={`group relative overflow-hidden rounded-2xl transition-all duration-500
+                    className={`group relative overflow-hidden rounded-2xl transition-all duration-500 hover:-translate-y-1
                       ${selectedFabric?.id === fabric.id
-                        ? 'ring-2 ring-gray-900 dark:ring-white shadow-2xl'
-                        : 'hover:shadow-xl'
+                        ? 'ring-2 ring-gray-900 dark:ring-white shadow-2xl border-2 border-gray-900 dark:border-white'
+                        : 'border-2 border-gray-200 dark:border-gray-800 hover:border-gray-400 dark:hover:border-gray-600 hover:shadow-xl shadow-md'
                       }`}
                   >
-                    <div className="flex gap-5 p-5 bg-gray-50 dark:bg-dark-surface">
+                    <div className="flex gap-5 p-5 bg-gray-50 dark:bg-dark-surface group-hover:bg-white dark:group-hover:bg-gray-800 transition-colors">
                       {/* Image */}
-                      <div className="relative w-32 h-32 rounded-xl overflow-hidden flex-shrink-0 bg-gray-200 dark:bg-gray-800">
+                      <div className="relative w-32 h-32 rounded-xl overflow-hidden flex-shrink-0 bg-gray-200 dark:bg-gray-800 border border-gray-300 dark:border-gray-700">
                         <img
                           src={getImageUrl(fabric.image_url)}
                           alt={fabric.name}
@@ -256,9 +256,9 @@ export default function StitchYourOwnPage() {
               <div className="flex items-center gap-4">
                 <button
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                  className="w-14 h-14 flex items-center justify-center bg-white dark:bg-gray-800 rounded-xl border-2 border-gray-200 dark:border-gray-700 hover:border-gray-900 dark:hover:border-white transition-all active:scale-95"
+                  className="w-14 h-14 flex items-center justify-center bg-white dark:bg-gray-800 rounded-xl border-2 border-gray-200 dark:border-gray-700 hover:border-gray-900 dark:hover:border-white hover:bg-gray-900 dark:hover:bg-white hover:text-white dark:hover:text-gray-900 transition-all active:scale-95 hover:scale-110 hover:shadow-lg"
                 >
-                  <FiMinus className="w-5 h-5 text-gray-900 dark:text-white" />
+                  <FiMinus className="w-5 h-5" />
                 </button>
 
                 <span className="text-4xl font-black text-gray-900 dark:text-white min-w-[50px] text-center">
@@ -267,9 +267,9 @@ export default function StitchYourOwnPage() {
 
                 <button
                   onClick={() => setQuantity(quantity + 1)}
-                  className="w-14 h-14 flex items-center justify-center bg-white dark:bg-gray-800 rounded-xl border-2 border-gray-200 dark:border-gray-700 hover:border-gray-900 dark:hover:border-white transition-all active:scale-95"
+                  className="w-14 h-14 flex items-center justify-center bg-white dark:bg-gray-800 rounded-xl border-2 border-gray-200 dark:border-gray-700 hover:border-gray-900 dark:hover:border-white hover:bg-gray-900 dark:hover:bg-white hover:text-white dark:hover:text-gray-900 transition-all active:scale-95 hover:scale-110 hover:shadow-lg"
                 >
-                  <FiPlus className="w-5 h-5 text-gray-900 dark:text-white" />
+                  <FiPlus className="w-5 h-5" />
                 </button>
               </div>
             </div>
@@ -303,10 +303,10 @@ export default function StitchYourOwnPage() {
                       <button
                         key={color}
                         onClick={() => setSelectedColor(color)}
-                        className={`group relative rounded-xl transition-all duration-300 ${
+                        className={`group relative rounded-xl transition-all duration-300 hover:scale-110 ${
                           isSelected
-                            ? 'ring-2 ring-gray-900 dark:ring-white scale-105'
-                            : 'hover:scale-105'
+                            ? 'ring-2 ring-gray-900 dark:ring-white scale-105 shadow-lg'
+                            : 'hover:shadow-md border border-gray-200 dark:border-gray-700'
                         }`}
                         style={{ minHeight: '80px' }}
                       >
@@ -360,7 +360,7 @@ export default function StitchYourOwnPage() {
                       step="0.5"
                       value={measurements[field as keyof Measurements]}
                       onChange={(e) => handleMeasurementChange(field as keyof Measurements, e.target.value)}
-                      className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-bg text-gray-900 dark:text-white font-bold focus:outline-none focus:border-gray-900 dark:focus:border-white transition-colors"
+                      className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-bg text-gray-900 dark:text-white font-bold focus:outline-none focus:border-gray-900 dark:focus:border-white hover:border-gray-400 dark:hover:border-gray-600 transition-all"
                       placeholder={placeholder}
                     />
                   </div>
@@ -400,7 +400,7 @@ export default function StitchYourOwnPage() {
                   <select
                     value={measurements.cuffs}
                     onChange={(e) => handleMeasurementChange('cuffs', e.target.value)}
-                    className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-bg text-gray-900 dark:text-white font-bold focus:outline-none focus:border-gray-900 dark:focus:border-white transition-colors"
+                    className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-bg text-gray-900 dark:text-white font-bold focus:outline-none focus:border-gray-900 dark:focus:border-white hover:border-gray-400 dark:hover:border-gray-600 transition-all cursor-pointer"
                   >
                     <option value="">Select option</option>
                     <option value="yes">Yes</option>
@@ -415,7 +415,7 @@ export default function StitchYourOwnPage() {
                   <select
                     value={measurements.collarType}
                     onChange={(e) => handleMeasurementChange('collarType', e.target.value)}
-                    className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-bg text-gray-900 dark:text-white font-bold focus:outline-none focus:border-gray-900 dark:focus:border-white transition-colors"
+                    className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-bg text-gray-900 dark:text-white font-bold focus:outline-none focus:border-gray-900 dark:focus:border-white hover:border-gray-400 dark:hover:border-gray-600 transition-all cursor-pointer"
                   >
                     <option value="">Select collar type</option>
                     <option value="sherwani">Sherwani Collar</option>
@@ -430,7 +430,7 @@ export default function StitchYourOwnPage() {
                   <select
                     value={measurements.bottomWear}
                     onChange={(e) => handleMeasurementChange('bottomWear', e.target.value)}
-                    className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-bg text-gray-900 dark:text-white font-bold focus:outline-none focus:border-gray-900 dark:focus:border-white transition-colors"
+                    className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-bg text-gray-900 dark:text-white font-bold focus:outline-none focus:border-gray-900 dark:focus:border-white hover:border-gray-400 dark:hover:border-gray-600 transition-all cursor-pointer"
                   >
                     <option value="">Select bottom wear</option>
                     <option value="pajama">Pajama</option>
@@ -540,7 +540,7 @@ export default function StitchYourOwnPage() {
                 <button
                   onClick={handleAddToCart}
                   disabled={!selectedFabric || (selectedFabric.colors && selectedFabric.colors.length > 0 && !selectedColor)}
-                  className="w-full py-4 px-8 rounded-xl font-black text-lg bg-gray-900 dark:bg-white text-white dark:text-gray-900 hover:bg-black dark:hover:bg-gray-100 disabled:bg-gray-200 dark:disabled:bg-gray-800 disabled:text-gray-400 disabled:cursor-not-allowed transition-all active:scale-95 flex items-center justify-center gap-3"
+                  className="w-full py-4 px-8 rounded-xl font-black text-lg bg-gray-900 dark:bg-white text-white dark:text-gray-900 hover:bg-black dark:hover:bg-gray-100 hover:shadow-2xl hover:scale-105 disabled:bg-gray-300 dark:disabled:bg-gray-700 disabled:text-gray-500 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:shadow-none transition-all active:scale-95 flex items-center justify-center gap-3"
                 >
                   <FiShoppingCart className="w-6 h-6" />
                   {!selectedFabric ? 'Select a Fabric' : (selectedFabric.colors && selectedFabric.colors.length > 0 && !selectedColor) ? 'Select a Color' : 'Add to Cart'}

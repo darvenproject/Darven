@@ -60,11 +60,11 @@ export default function ReadyMadePage() {
     <div className="min-h-screen bg-white dark:bg-dark-bg">
       {/* Hero Header */}
       <div className="border-b border-gray-200 dark:border-gray-800">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
-          <h1 className="text-4xl sm:text-5xl lg:text-5xl font-black text-gray-900 dark:text-white mb-3 tracking-tight">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-gray-900 dark:text-white mb-3 tracking-tight">
             Ready Made Collection
           </h1>
-          <p className="text-base sm:text-lg text-gray-600 dark:text-gray-400 max-w-auto">
+          <p className="text-base sm:text-lg text-gray-600 dark:text-gray-400 max-w-max">
             Discover our curated collection of premium ready-to-wear kurtas and shalwar kameez, crafted from the finest fabrics.
           </p>
         </div>
@@ -72,7 +72,7 @@ export default function ReadyMadePage() {
 
       {/* Filter Tabs */}
       <div className="border-b border-gray-200 dark:border-gray-800">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex gap-2 sm:gap-3 overflow-x-auto pb-2 scrollbar-hide">
             {fabricCategories.map((category) => (
               <button
@@ -120,9 +120,9 @@ export default function ReadyMadePage() {
                 transition={{ delay: index * 0.05 }}
               >
                 <Link href={`/ready-made/${product.id}`}>
-                  <div className="group bg-white dark:bg-dark-surface rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-500 border border-gray-100 dark:border-gray-800 hover:border-gray-900 dark:hover:border-white">
+                  <div className="group bg-white dark:bg-dark-surface rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-500 border-2 border-gray-200 dark:border-gray-800 hover:border-gray-900 dark:hover:border-white hover:-translate-y-2">
                     {/* Image Container */}
-                    <div className="relative aspect-[3/4] overflow-hidden bg-gray-50 dark:bg-gray-900">
+                    <div className="relative aspect-[3/4] overflow-hidden bg-gray-100 dark:bg-gray-900">
                       <img
                         src={getImageUrl(product.images[0]) || '/placeholder.jpg'}
                         alt={product.name}
@@ -145,11 +145,11 @@ export default function ReadyMadePage() {
                       )}
 
                       {/* Quick View Overlay */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                     </div>
                     
                     {/* Content */}
-                    <div className="p-4">
+                    <div className="p-4 bg-gray-50 dark:bg-dark-surface group-hover:bg-white dark:group-hover:bg-gray-800 transition-colors">
                       <h3 className="text-base sm:text-lg font-black text-gray-900 dark:text-white mb-2 line-clamp-1 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors">
                         {product.name}
                       </h3>
@@ -176,8 +176,8 @@ export default function ReadyMadePage() {
                         </div>
 
                         {/* Arrow Icon */}
-                        <div className="w-10 h-10 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center group-hover:bg-gray-900 dark:group-hover:bg-white transition-colors">
-                          <svg className="w-5 h-5 text-gray-900 dark:text-white group-hover:text-white dark:group-hover:text-gray-900 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div className="w-10 h-10 bg-gray-200 dark:bg-gray-800 rounded-full flex items-center justify-center group-hover:bg-gray-900 dark:group-hover:bg-white transition-all group-hover:scale-110">
+                          <svg className="w-5 h-5 text-gray-900 dark:text-white group-hover:text-white dark:group-hover:text-gray-900 transition-colors group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                           </svg>
                         </div>

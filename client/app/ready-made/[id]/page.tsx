@@ -155,10 +155,10 @@ export default function ProductDetailPage() {
                   <button
                     key={index}
                     onClick={() => setSelectedImage(index)}
-                    className={`relative aspect-[3/4] rounded-xl overflow-hidden border-2 transition-all ${
+                    className={`relative aspect-[3/4] rounded-xl overflow-hidden border-2 transition-all hover:scale-110 ${
                       selectedImage === index
-                        ? 'border-gray-900 dark:border-white scale-105'
-                        : 'border-gray-200 dark:border-gray-800 hover:border-gray-400 dark:hover:border-gray-600'
+                        ? 'border-gray-900 dark:border-white scale-105 shadow-lg'
+                        : 'border-gray-300 dark:border-gray-800 hover:border-gray-500 dark:hover:border-gray-600 hover:shadow-md'
                     }`}
                   >
                     <img
@@ -222,10 +222,10 @@ export default function ProductDetailPage() {
                   <button
                     key={size}
                     onClick={() => setSelectedSize(size)}
-                    className={`py-3 px-4 rounded-xl border-2 font-black transition-all ${
+                    className={`py-3 px-4 rounded-xl border-2 font-black transition-all hover:scale-105 ${
                       selectedSize === size
-                        ? 'border-gray-900 dark:border-white bg-gray-900 dark:bg-white text-white dark:text-gray-900 scale-105'
-                        : 'border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white hover:border-gray-400 dark:hover:border-gray-600'
+                        ? 'border-gray-900 dark:border-white bg-gray-900 dark:bg-white text-white dark:text-gray-900 scale-105 shadow-lg'
+                        : 'border-gray-300 dark:border-gray-700 bg-white dark:bg-dark-surface text-gray-900 dark:text-white hover:border-gray-500 dark:hover:border-gray-500 hover:shadow-md'
                     }`}
                   >
                     {size}
@@ -245,10 +245,10 @@ export default function ProductDetailPage() {
                     <button
                       key={color}
                       onClick={() => setSelectedColor(color)}
-                      className={`py-4 px-5 rounded-xl border-2 font-black transition-all text-left flex items-center justify-between ${
+                      className={`py-4 px-5 rounded-xl border-2 font-black transition-all text-left flex items-center justify-between hover:scale-105 ${
                         selectedColor === color
-                          ? 'border-gray-900 dark:border-white bg-gray-900 dark:bg-white text-white dark:text-gray-900'
-                          : 'border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white hover:border-gray-400 dark:hover:border-gray-600'
+                          ? 'border-gray-900 dark:border-white bg-gray-900 dark:bg-white text-white dark:text-gray-900 shadow-lg'
+                          : 'border-gray-300 dark:border-gray-700 bg-white dark:bg-dark-surface text-gray-900 dark:text-white hover:border-gray-500 dark:hover:border-gray-500 hover:shadow-md'
                       }`}
                     >
                       <span>{color}</span>
@@ -269,9 +269,9 @@ export default function ProductDetailPage() {
               <div className="flex items-center gap-4">
                 <button
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                  className="w-12 h-12 flex items-center justify-center bg-gray-100 dark:bg-gray-800 rounded-xl hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+                  className="w-14 h-14 flex items-center justify-center bg-gray-100 dark:bg-gray-800 rounded-xl hover:bg-gray-900 dark:hover:bg-white hover:text-white dark:hover:text-gray-900 transition-all hover:scale-110 border-2 border-gray-200 dark:border-gray-700 hover:border-gray-900 dark:hover:border-white"
                 >
-                  <FiMinus className="w-5 h-5 text-gray-900 dark:text-white" />
+                  <FiMinus className="w-5 h-5" />
                 </button>
                 
                 <span className="text-3xl font-black text-gray-900 dark:text-white min-w-[50px] text-center">
@@ -280,10 +280,10 @@ export default function ProductDetailPage() {
                 
                 <button
                   onClick={() => setQuantity(quantity + 1)}
-                  className="w-12 h-12 flex items-center justify-center bg-gray-100 dark:bg-gray-800 rounded-xl hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+                  className="w-14 h-14 flex items-center justify-center bg-gray-100 dark:bg-gray-800 rounded-xl hover:bg-gray-900 dark:hover:bg-white hover:text-white dark:hover:text-gray-900 transition-all hover:scale-110 border-2 border-gray-200 dark:border-gray-700 hover:border-gray-900 dark:hover:border-white disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:bg-gray-100 dark:disabled:hover:bg-gray-800"
                   disabled={product.stock > 0 && quantity >= product.stock}
                 >
-                  <FiPlus className="w-5 h-5 text-gray-900 dark:text-white" />
+                  <FiPlus className="w-5 h-5" />
                 </button>
               </div>
             </div>
@@ -292,7 +292,7 @@ export default function ProductDetailPage() {
             <button
               onClick={handleAddToCart}
               disabled={product.stock === 0}
-              className="w-full py-5 px-8 rounded-xl font-black text-lg bg-gray-900 dark:bg-white text-white dark:text-gray-900 hover:bg-black dark:hover:bg-gray-100 disabled:bg-gray-200 dark:disabled:bg-gray-800 disabled:text-gray-400 disabled:cursor-not-allowed transition-all active:scale-95 flex items-center justify-center gap-3"
+              className="w-full py-5 px-8 rounded-xl font-black text-lg bg-gray-900 dark:bg-white text-white dark:text-gray-900 hover:bg-black dark:hover:bg-gray-100 hover:shadow-2xl hover:scale-105 disabled:bg-gray-300 dark:disabled:bg-gray-700 disabled:text-gray-500 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:shadow-none transition-all active:scale-95 flex items-center justify-center gap-3"
             >
               <FiShoppingCart className="w-6 h-6" />
               {product.stock > 0 ? 'Add to Cart' : 'Out of Stock'}
@@ -310,18 +310,19 @@ export default function ProductDetailPage() {
             <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
               {relatedProducts.map((relatedProduct) => (
                 <Link key={relatedProduct.id} href={`/ready-made/${relatedProduct.id}`}>
-                  <div className="group bg-white dark:bg-dark-surface rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-500 border border-gray-100 dark:border-gray-800 hover:border-gray-900 dark:hover:border-white">
-                    <div className="relative aspect-[3/4] overflow-hidden bg-gray-50 dark:bg-gray-900">
+                  <div className="group bg-white dark:bg-dark-surface rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-500 border-2 border-gray-200 dark:border-gray-800 hover:border-gray-900 dark:hover:border-white hover:-translate-y-2">
+                    <div className="relative aspect-[3/4] overflow-hidden bg-gray-100 dark:bg-gray-900">
                       <img
                         src={getImageUrl(relatedProduct.images[0])}
                         alt={relatedProduct.name}
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                         loading="lazy"
                       />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                     </div>
                     
-                    <div className="p-4">
-                      <h3 className="text-base font-black text-gray-900 dark:text-white mb-2 line-clamp-1">
+                    <div className="p-4 bg-gray-50 dark:bg-dark-surface group-hover:bg-white dark:group-hover:bg-gray-800 transition-colors">
+                      <h3 className="text-base font-black text-gray-900 dark:text-white mb-2 line-clamp-1 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors">
                         {relatedProduct.name}
                       </h3>
                       
