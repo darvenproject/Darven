@@ -16,63 +16,81 @@ FRONTEND_URL = os.getenv("FRONTEND_URL", "https://shopdarven.pk").rstrip("/")
 
 # Define fabrics with their color arrays
 fabrics_data = [
-    {
+{
         "name": "Wash n Wear",
         "description": "Premium wash and wear fabric with excellent durability and easy care. Perfect for everyday wear with a crisp finish.",
         "price": 3200,
         "material": "Wash n Wear",
         "colors": [
-            "Gray", "Navy Blue", "Dune Brown", "Millbrook", "Orient", "Black", 
-            "Dark Olive", "Firefly", "Silver Sand", "Spring Wood", "Mirage", 
-            "Cement", "Dune", "Congo Purple", "Iron Gray", "Merino White", 
-            "Paco Brown", "Zinc", "Westar", "Heavy Metal", "Timber Green", 
-            "Rangitoto", "Navy"
+            {"name": "Gray", "code": "#8E8E8E"}, {"name": "Navy Blue", "code": "#1A2232"},
+            {"name": "Dune Brown", "code": "#7A6A53"}, {"name": "Millbrook", "code": "#594433"},
+            {"name": "Orient", "code": "#25465F"}, {"name": "Black", "code": "#1B1B1B"},
+            {"name": "Dark Olive", "code": "#3D3F32"}, {"name": "Firefly", "code": "#0D1C2E"},
+            {"name": "Silver Sand", "code": "#BFC1C2"}, {"name": "Spring Wood", "code": "#F1EBD9"},
+            {"name": "Mirage", "code": "#5D5E60"}, {"name": "Cement", "code": "#A5A5A5"},
+            {"name": "Dune", "code": "#A89B8C"}, {"name": "Congo Purple", "code": "#59373E"},
+            {"name": "Iron Gray", "code": "#52595D"}, {"name": "Merino White", "code": "#F2F0E6"},
+            {"name": "Paco Brown", "code": "#7E7166"}, {"name": "Zinc", "code": "#7D7F7D"},
+            {"name": "Westar", "code": "#D5D1C9"}, {"name": "Heavy Metal", "code": "#2B3228"},
+            {"name": "Timber Green", "code": "#1B302B"}, {"name": "Rangitoto", "code": "#2E332D"}
         ],
         "image_url": f"{FRONTEND_URL}/placeholder-washnwear.jpg"
     },
-    {
-        "name": "Blended",
-        "description": "Luxurious blended fabric combining comfort and style. Ideal for both formal and casual occasions.",
-        "price": 3800,
-        "material": "Blended",
-        "colors": [
-            "Gray", "White", "Navy Blue", "Black"
-        ],
-        "image_url": f"{FRONTEND_URL}/placeholder.jpg"
-    },
-    {
-        "name": "Boski",
-        "description": "Traditional Boski fabric with a premium finish. Perfect for special occasions and formal events.",
-        "price": 4500,
-        "material": "Boski",
-        "colors": [
-            "Gray", "White", "Navy Blue", "Black"
-        ],
-        "image_url": f"{FRONTEND_URL}/placeholder.jpg"
-    },
-    {
+   {
         "name": "Soft Cotton",
         "description": "Premium soft cotton fabric with excellent breathability. Ideal for hot weather and comfortable all-day wear.",
         "price": 3000,
         "material": "Soft Cotton",
         "colors": [
-            "White", "Black", "Navy", "Gray", "Spicy Mix", "Dune", "Birch", 
-            "Lisbon Brown", "Cedar", "Dune Brown", "Rangitoto", "Metallic Bronze", 
-            "Metallic Brown", "Charade", "Timber Green", "Mirage", "Paco", 
-            "Cocoa Bean", "Ironstone", "Navy Tuna", "Off White"
+            {"name": "White", "code": "#FFFFFF"}, {"name": "Black", "code": "#1B1B1B"},
+            {"name": "Navy", "code": "#1A2232"}, {"name": "Gray", "code": "#8E8E8E"},
+            {"name": "Spicy Mix", "code": "#8D5E4C"}, {"name": "Dune", "code": "#A89B8C"},
+            {"name": "Birch", "code": "#96897B"}, {"name": "Lisbon Brown", "code": "#635447"},
+            {"name": "Cedar", "code": "#3D3622"}, {"name": "Dune Brown", "code": "#7A6A53"},
+            {"name": "Rangitoto", "code": "#2E332D"}, {"name": "Metallic Bronze", "code": "#4D4433"},
+            {"name": "Metallic Brown", "code": "#5E503F"}, {"name": "Charade", "code": "#2D313A"},
+            {"name": "Timber Green", "code": "#1B302B"}, {"name": "Mirage", "code": "#5D5E60"},
+            {"name": "Paco", "code": "#7E7166"}, {"name": "Cocoa Bean", "code": "#481C14"},
+            {"name": "Ironstone", "code": "#86483E"}, {"name": "Navy Tuna", "code": "#343642"},
+            {"name": "Off White", "code": "#FAF9F6"}
         ],
         "image_url": f"{FRONTEND_URL}/placeholder-cotton.jpg"
     },
-    {
+   {
         "name": "Giza Moon Cotton",
-        "description": "Luxurious Giza Moon cotton with superior quality and comfort. Premium fabric for those who appreciate the finest.",
+        "description": "Luxurious Giza Moon cotton with superior quality and comfort.",
         "price": 5000,
         "material": "Giza Moon Cotton",
         "colors": [
-            "Gray", "White", "Black", "Navy Blue", "Pesto", "Coral Reef", 
-            "Coral Tree", "Maroon", "Ship Cove", "Dark Yellow"
+            {"name": "Gray", "code": "#8E8E8E"}, {"name": "White", "code": "#FFFFFF"},
+            {"name": "Black", "code": "#1B1B1B"}, {"name": "Navy Blue", "code": "#1A2232"},
+            {"name": "Pesto", "code": "#7C7C44"}, {"name": "Coral Reef", "code": "#F29191"},
+            {"name": "Coral Tree", "code": "#A75949"}, {"name": "Maroon", "code": "#800000"},
+            {"name": "Ship Cove", "code": "#788BA5"}, {"name": "Dark Yellow", "code": "#D4AF37"}
         ],
         "image_url": f"{FRONTEND_URL}/placeholder-cotton.jpg"
+    },
+   {
+        "name": "Boski",
+        "description": "Traditional Boski fabric with a premium finish.",
+        "price": 4500,
+        "material": "Boski",
+        "colors": [
+            {"name": "Gray", "code": "#8E8E8E"}, {"name": "White", "code": "#FFFFFF"},
+            {"name": "Navy Blue", "code": "#1A2232"}, {"name": "Black", "code": "#1B1B1B"}
+        ],
+        "image_url": f"{FRONTEND_URL}/placeholder.jpg"
+    },
+    {
+        "name": "Blended",
+        "description": "Luxurious blended fabric combining comfort and style.",
+        "price": 3800,
+        "material": "Blended",
+        "colors": [
+            {"name": "Gray", "code": "#8E8E8E"}, {"name": "White", "code": "#FFFFFF"},
+            {"name": "Navy Blue", "code": "#1A2232"}, {"name": "Black", "code": "#1B1B1B"}
+        ],
+        "image_url": f"{FRONTEND_URL}/placeholder.jpg"
     }
 ]
 
