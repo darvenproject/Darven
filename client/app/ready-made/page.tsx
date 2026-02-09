@@ -60,7 +60,7 @@ export default function ReadyMadePage() {
     <div className="min-h-screen bg-white dark:bg-dark-bg">
       {/* Hero Header */}
       <div className="border-b border-gray-200 dark:border-gray-800">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-2">
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-gray-900 dark:text-white mb-3 tracking-tight">
             Ready Made Collection
           </h1>
