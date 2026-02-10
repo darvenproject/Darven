@@ -31,19 +31,6 @@ fabrics_data = [
         "image_url": f"{FRONTEND_URL}/placeholder-washnwear.jpg"
     },
     {
-        "name": "Blended",
-        "description": "Luxurious blended fabric combining comfort and style. Ideal for both formal and casual occasions.",
-        "price": 3800,
-        "material": "Blended",
-        "colors": [
-            "White", "Black", "Navy", "Gray", "Spicy Mix", "Dune", "Birch", 
-            "Lisbon Brown", "Cedar", "Dune Brown", "Rangitoto", "Metallic Bronze", 
-            "Metallic Brown", "Charade", "Timber Green", "Mirage", "Paco", 
-            "Cocoa Bean", "Ironstone", "Navy Tuna", "Off White"
-        ],
-        "image_url": f"{FRONTEND_URL}/placeholder.jpg"
-    },
-    {
         "name": "Boski",
         "description": "Traditional Boski fabric with a premium finish. Perfect for special occasions and formal events.",
         "price": 4500,

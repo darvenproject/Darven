@@ -22,7 +22,7 @@ export default function FabricPage() {
   const [loading, setLoading] = useState(true)
   const [selectedCategory, setSelectedCategory] = useState<string>('All')
   
-  const fabricCategories = ['All', 'Wash n Wear', 'Blended', 'Boski', 'Soft Cotton', 'Giza Moon Cotton']
+  const fabricCategories = ['All', 'Wash n Wear', 'Boski', 'Soft Cotton', 'Giza Moon Cotton']
 
   useEffect(() => {
     fetchFabrics()

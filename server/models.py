@@ -28,7 +28,7 @@ class ReadyMadeProduct(Base):
     description = Column(Text)
     price = Column(Float)
     material = Column(String)
-    fabric_category = Column(String, nullable=True, index=True)  # Wash n Wear, Blended, Boski, Soft Cotton, Giza Moon Cotton
+    fabric_category = Column(String, nullable=True, index=True)  # Wash n Wear, Boski, Soft Cotton, Giza Moon Cotton
     size = Column(String)
     colors = Column(JSON, nullable=True)  # Array of available colors
     images = Column(JSON)  # List of image URLs
@@ -44,7 +44,7 @@ class Fabric(Base):
     description = Column(Text)
     price_per_meter = Column(Float)
     material = Column(String)
-    fabric_category = Column(String, nullable=True, index=True)  # Wash n Wear, Blended, Boski, Soft Cotton, Giza Moon Cotton
+    fabric_category = Column(String, nullable=True, index=True)  # Wash n Wear, Boski, Soft Cotton, Giza Moon Cotton
     colors = Column(JSON, nullable=True)  # Array of available colors
     images = Column(JSON)  # List of image URLs
     stock_meters = Column(Float, default=0)
