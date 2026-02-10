@@ -587,16 +587,41 @@ export default function AdminDashboard() {
                                 <summary className="font-medium hover:text-gray-900 dark:hover:text-white">
                                   📏 View Measurements
                                 </summary>
-                                <div className="mt-2 pl-4 space-y-1 bg-gray-50 dark:bg-gray-800/50 p-3 rounded">
-                                  <p>Neck: {item.details.measurements.neck}"</p>
-                                  <p>Shoulder: {item.details.measurements.shoulder}"</p>
-                                  <p>Chest: {item.details.measurements.chest}"</p>
-                                  <p>Sleeve: {item.details.measurements.sleeve}"</p>
-                                  <p>Height: {item.details.measurements.height}"</p>
-                                  <p>Biceps: {item.details.measurements.biceps}"</p>
-                                  <p>Waist: {item.details.measurements.waist}"</p>
-                                  <p>Trouser Height: {item.details.measurements.trouser_height}"</p>
+                                <div className="mt-2 space-y-3 bg-gray-50 dark:bg-gray-800/50 p-3 rounded text-xs">
+                                {/* Options */}
+                                <div className="pb-2 border-b border-gray-200 dark:border-gray-700">
+                                  <p className="font-bold text-gray-900 dark:text-white mb-1">Options:</p>
+                                  <p>Cuffs: {item.details.measurements.cuffs === 'yes' ? '✓ Yes' : '✗ No'}</p>
+                                  <p>Collar Type: {item.details.measurements.collarType === 'sherwani' ? 'Sherwani' : 'Shirt'}</p>
+                                  <p>Bottom Wear: {item.details.measurements.bottomWear === 'pajama' ? 'Pajama' : 'Shalwar'}</p>
                                 </div>
+
+                                {/* Kameez */}
+                                <div className="pb-2 border-b border-gray-200 dark:border-gray-700">
+                                  <p className="font-bold text-gray-900 dark:text-white mb-1">Kameez:</p>
+                                  <p>Collar: {item.details.measurements.customCollar}"</p>
+                                  <p>Shoulder: {item.details.measurements.customShoulder}"</p>
+                                  <p>Chest: {item.details.measurements.customChest}"</p>
+                                  <p>Sleeves: {item.details.measurements.customSleeves}"</p>
+                                  <p>Length: {item.details.measurements.customKameezLength}"</p>
+                                </div>
+
+                                {/* Bottom Wear */}
+                                {item.details.measurements.bottomWear === 'shalwar' && (
+                                  <div>
+                                    <p className="font-bold text-gray-900 dark:text-white mb-1">Shalwar:</p>
+                                    <p>Length: {item.details.measurements.customShalwarLength}"</p>
+                                  </div>
+                                )}
+                                {item.details.measurements.bottomWear === 'pajama' && (
+                                  <div>
+                                    <p className="font-bold text-gray-900 dark:text-white mb-1">Pajama:</p>
+                                    <p>Length: {item.details.measurements.customPajamaLength}"</p>
+                                    <p>Waist: {item.details.measurements.customWaist}"</p>
+                                    <p>Thigh: {item.details.measurements.customThigh}"</p>
+                                  </div>
+                                )}
+                              </div>
                               </details>
                             )}
                           </div>
@@ -612,7 +637,7 @@ export default function AdminDashboard() {
                 </div>
               </div>
 
-              {/* Order Summary */}
+             {/* Order Summary */}
               <div className="mb-6">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
                   <FiDollarSign className="w-5 h-5 text-green-600 dark:text-green-400" />
@@ -625,12 +650,26 @@ export default function AdminDashboard() {
                       Rs {selectedOrder.subtotal.toLocaleString()}
                     </span>
                   </div>
+
+                  {selectedOrder.items.some(item => item.type === 'custom') && (
+                    <div className="flex justify-between">
+                      <span className="text-gray-600 dark:text-gray-400">Stitching Cost</span>
+                      <span className="font-medium text-gray-900 dark:text-white">
+                        Rs {selectedOrder.items
+                          .filter(item => item.type === 'custom')
+                          .reduce((t, item) => t + (3500 * item.quantity), 0)
+                          .toLocaleString()}
+                      </span>
+                    </div>
+                  )}
+
                   <div className="flex justify-between">
                     <span className="text-gray-600 dark:text-gray-400">Delivery Charges</span>
                     <span className="font-medium text-gray-900 dark:text-white">
                       Rs {selectedOrder.delivery_charges.toLocaleString()}
                     </span>
                   </div>
+
                   <div className="border-t border-gray-300 dark:border-gray-600 pt-2 flex justify-between">
                     <span className="font-semibold text-gray-900 dark:text-white">Total</span>
                     <span className="font-bold text-xl text-gray-900 dark:text-white">
