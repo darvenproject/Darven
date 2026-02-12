@@ -4,104 +4,120 @@ export const colorToHex: Record<string, string> = {
 "White": "#FFFFFF",
   "Paper White": "#F2F2F2",
   "Off White": "#FAF9F6", // Unified from Off-White
-  "Merino White": "#F2F0E6",
-  "Coconut White": "#F9F1E2",
+  "Merino White": "#F6F0E6",
+  "Coconut White": "#965A3E",
   "Cream": "#FFFDD0",
   
   // II. Pale Tints
-  "Dark Cream": "#F3E5AB",
+  "Dark Cream": "#FBC678",
   "Ice Green": "#87D8C3",
-  "Pista Green": "#B9D9B2",
-  "Spring Wood": "#F1EBD9",
-  "Westar": "#D5D1C9",
+  "Pista Green": "#84B067",
+  "Spring Wood": "#F8F6F1",
+  "Westar": "#D4CFC5",
   
   // III. Light Neutrals
-  "Silver Sand": "#BFC1C2",
+  "Silver Sand": "#BBBEC3",
   "Silver Grey": "#C0C0C0",
   "Ash Grey": "#B2BEB5",
-  "Light Sand": "#D8D1C5",
-  "Biscotti": "#E3DAC9",
-  "Cement": "#A5A5A5",
+  "Light Sand": "#C2B280",
+  "Biscotti": "#C27E79",
+  "Cement": "#A5A391",
   
   // IV. The Biscuits & Browns
-  "Beige": "#FFFACD",
-  "Warm Biscuit": "#E1C699",
+  "Beige": "#F5F5DC",
+  "Warm Biscuit": "#E4CBAC",
   "Fawn": "#E5AA70",
-  "Desert Biscuit": "#D2B48C",
-  "Millbrook": "#594433",
-  "Paco": "#7E7166",
-  "Paco Brown": "#7E7166",
-  "Cocoa Bean": "#481C14",
+  "Desert Biscuit": "#FEEDCA",
+  "Millbrook": "#595648",
+  "Paco": "#4F4037",
+  "Paco Brown": "#C27E79",
+  "Cocoa Bean": "#481C1C",
   
   // V. Soft Pastels & Muted
   "Lilac": "#C8A2C8",
-  "Light Onion": "#E0B0FF",
-  "Mint Green": "#98FF98",
-  "Zinc": "#7D7F7D",
+  "Light Onion": "#f6dce9",
+  "Mint Green": "#3eb489",
+  "Zinc": "#6B6862",
   
   // VI. Mid-Neutrals
-  "Dune": "#A89B8C",
-  "Birch": "#96897B",
-  "Light Brown": "#AD8A66",
-  "Gray": "#8E8E8E", // Standardized spelling
-  "Grey": "#8E8E8E",
-  "Mirage": "#5D5E60",
-  "Iron Gray": "#52595D",
+  "Dune": "#383533",
+  "Birch": "#EDE2D4",
+  "Light Brown": "#C4A484",
+  "Gray": "#808080", // Standardized spelling
+  "Grey": "#808080",
+  "Mirage": "#161928",
+  "Iron Gray": "#4B5D67",
   
   // VII. Sunset Earth
-  "Desert Gold": "#C2A463",
-  "Coral Reef": "#F29191",
-  "Coral Tree": "#A75949",
-  "Dark Yellow": "#D4AF37",
+  "Desert Gold": "#D4B680",
+  "Coral Reef": "#FD7C6E",
+  "Coral Tree": "#A86B6B",
+  "Dark Yellow": "#BA8E23",
   "Maroon": "#800000",
-  "Ironstone": "#86483E",
+  "Ironstone": "#86483C",
   
   // VIII. Muted Earth
-  "Light Mehandi": "#8B864E",
-  "Pesto": "#7C7C44",
-  "Metallic Bronze": "#4D4433",
-  "Metallic Brown": "#5E503F",
-  "Spicy Mix": "#8D5E4C",
-  "Cedar": "#3D3622",
+  "Light Mehandi": "#AE7F29",
+  "Pesto": "#7C7631",
+  "Metallic Bronze": "#49371B",
+  "Metallic Brown": "#AC4313",
+  "Spicy Mix": "#8D5F4D",
+  "Cedar": "#BD9176",
   
   // IX. Rich Browns
-  "Dune Brown": "#7A6A53",
-  "Lisbon Brown": "#635447",
-  "Peanut Brown": "#795C34",
+  "Dune Brown": "#917C6E",
+  "Lisbon Brown": "#423921",
+  "Peanut Brown": "#d9a068",
+  "Rolling Stone": "#6D7876",
+
   
   // X. Deep Naturals
-  "Dark Olive": "#3D3F32",
-  "Cedar Brown": "#3B1E1E",
+  "Dark Olive": "#373E02",
+  "Cedar Brown": "#52412E",
+  
   
   // XI. Royal Tones
-  "Royal Grey": "#5D5E60",
-  "Royal Blue": "#4169E1",
-  "Ship Cove": "#788BA5",
-  "Dark Rust": "#8B0200",
-  "Dark Plum": "#674172",
+  "Royal Grey": "#7F909E",
+  "Royal Blue": "#305CDE",
+  "Ship Cove": "#7988ab",
+  "Dark Rust": "#8B3103",
+  "Dark Plum": "#3D1A39",
+  "Nevada": "#d7deda",
+  "Boulder": "#7A7A7A",
+  "Natural Gray": "#8B8680",
+
   
   // XII. Forest Deeps
-  "Rangitoto": "#2E332D",
-  "Timber Green": "#1B302B",
-  "Forest Green": "#228B22",
-  "Emerald Green": "#046307",
-  
+  "Rangitoto": "#2E3222",
+  "Timber Green": "#16322C",
+  "Forest Green": "#2E6F40",
+  "Emerald Green": "#00674F",
+  "Regent St Blue": "#A0CDD9",
+
   // XIII. The Regals
-  "Imperial Maroon": "#560319",
-  "Indigo Blue": "#00416A",
-  "Dark Teal": "#003333",
+  "Imperial Maroon": "#360909",
+  "Indigo Blue": "#001B94",
+  "Dark Teal": "#014D4E",
+  "Fuscous Gray": "#3C3B3C",
+  "Dark Brown": "#302621",
+
   
   // XIV. The Navies
-  "Orient": "#25465F",
-  "Navy Blue": "#1A2232",
-  "Navy": "#1A2232",
+  "Orient": "#156681",
+  "Navy Blue": "#111184",
+  "Navy": "#2A344D",
   "Navy Tuna": "#343642",
+  "Ironside Gray": "#656862",
+  "Dark Gray": "#363737",
   
   // XV. The Charcoals
   "Black": "#1B1B1B",
   "Dark Grey": "#363636",
   "Charcoal Grey": "#333333",
   "Charade": "#2D313A",
+  "Dusty Gray": "#A8989B",
+  "Raven": "#727B89",
+  "Zobra": "#A29589",
   
   // XVI. Midnight
   "Heavy Metal": "#2B3228",
@@ -109,6 +125,8 @@ export const colorToHex: Record<string, string> = {
   "Firefly": "#0D1C2E",
   "Pearl Black": "#1C1C1C",
   "Obsidian Night": "#000000",
+  "Granite Green": "8D8974",
+  "Navy Black": "00001C",
 }
 
 
