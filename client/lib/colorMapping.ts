@@ -117,7 +117,7 @@ export const colorToHex: Record<string, string> = {
   "Charade": "#2D313A",
   "Dusty Gray": "#A8989B",
   "Raven": "#727B89",
-  "Zobra": "#A29589",
+  "Zobra": "#A59B91",
   
   // XVI. Midnight
   "Heavy Metal": "#2B3228",
@@ -125,7 +125,7 @@ export const colorToHex: Record<string, string> = {
   "Firefly": "#0D1C2E",
   "Pearl Black": "#1C1C1C",
   "Obsidian Night": "#000000",
-  "Granite Green": "8D8974",
+  "Granite Green": "86A293",
   "Navy Black": "00001C",
 }
 
