@@ -4,32 +4,37 @@ export const colorToHex: Record<string, string> = {
 "White": "#FFFFFF",
   "Paper White": "#F2F2F2",
   "Off White": "#FAF9F6", // Unified from Off-White
-  "Merino White": "#F6F0E6",
-  "Coconut White": "#965A3E",
+  "Merino White": "#ECEAE2",
+  "Spring Wood": "#E9E1D9",
   "Cream": "#FFFDD0",
   
   // II. Pale Tints
   "Dark Cream": "#FBC678",
   "Ice Green": "#87D8C3",
   "Pista Green": "#84B067",
-  "Spring Wood": "#F8F6F1",
+  
   "Westar": "#D4CFC5",
   
   // III. Light Neutrals
   "Silver Sand": "#BBBEC3",
   "Silver Grey": "#C0C0C0",
   "Ash Grey": "#B2BEB5",
-  "Light Sand": "#C2B280",
-  "Biscotti": "#C27E79",
+  
+  
   "Cement": "#A5A391",
   
   // IV. The Biscuits & Browns
-  "Beige": "#F5F5DC",
+  "Beige": "#EDE8D0",
+  "Light Sand": "#C2B280",
   "Warm Biscuit": "#E4CBAC",
   "Fawn": "#E5AA70",
-  "Desert Biscuit": "#FEEDCA",
+  "Coconut White": "#965A3E",
+  "Desert Biscuit": "#EDC9AF",
   "Millbrook": "#595648",
   "Paco": "#4F4037",
+  "Biscotti": "#E6C487",
+  "Light Brown": "#C4A484",
+  "Desert Gold": "#D4B680",
   "Paco Brown": "#C27E79",
   "Cocoa Bean": "#481C1C",
   
@@ -41,15 +46,14 @@ export const colorToHex: Record<string, string> = {
   
   // VI. Mid-Neutrals
   "Dune": "#383533",
-  "Birch": "#EDE2D4",
-  "Light Brown": "#C4A484",
+  "Birch": "#D2cfc4",
   "Gray": "#808080", // Standardized spelling
   "Grey": "#808080",
-  "Mirage": "#161928",
+  
   "Iron Gray": "#4B5D67",
   
   // VII. Sunset Earth
-  "Desert Gold": "#D4B680",
+  
   "Coral Reef": "#FD7C6E",
   "Coral Tree": "#A86B6B",
   "Dark Yellow": "#BA8E23",
@@ -82,7 +86,7 @@ export const colorToHex: Record<string, string> = {
   "Ship Cove": "#7988ab",
   "Dark Rust": "#8B3103",
   "Dark Plum": "#3D1A39",
-  "Nevada": "#d7deda",
+  "Nevada": "#BAD3C8",
   "Boulder": "#7A7A7A",
   "Natural Gray": "#8B8680",
 
@@ -92,7 +96,8 @@ export const colorToHex: Record<string, string> = {
   "Timber Green": "#16322C",
   "Forest Green": "#2E6F40",
   "Emerald Green": "#00674F",
-  "Regent St Blue": "#A0CDD9",
+
+  "Granite Green": "#86A293",
 
   // XIII. The Regals
   "Imperial Maroon": "#360909",
@@ -103,6 +108,7 @@ export const colorToHex: Record<string, string> = {
 
   
   // XIV. The Navies
+  "Regent St Blue": "#A0CDD9",
   "Orient": "#156681",
   "Navy Blue": "#111184",
   "Navy": "#2A344D",
@@ -125,8 +131,9 @@ export const colorToHex: Record<string, string> = {
   "Firefly": "#0D1C2E",
   "Pearl Black": "#1C1C1C",
   "Obsidian Night": "#000000",
-  "Granite Green": "86A293",
-  "Navy Black": "00001C",
+  
+  "Navy Black": "#00001C",
+  "Mirage": "#161928",
 }
 
 
