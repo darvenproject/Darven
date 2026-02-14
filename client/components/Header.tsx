@@ -50,6 +50,7 @@ export default function ModernHeader() {
   const buttonHoverEffect = "hover:scale-110 hover:-translate-y-0.5 active:scale-95 p-2 rounded-full transition-all duration-300 ease-out hover:bg-black/5 dark:hover:bg-white/10";
 
   const navLinks = [
+    { href: '/', label: 'Home' },
     { href: '/ready-made', label: 'Ready-Made' },
     { href: '/fabric', label: 'Fabric' },
     { href: '/stitch-your-own', label: 'Stitch Your Own Suit' },
@@ -70,8 +71,8 @@ export default function ModernHeader() {
       >
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            {/* Left - Mobile Menu Button (visible on mobile/tablet) */}
-            <div className="flex-1 lg:hidden">
+            {/* Left - Menu Button (visible on all screens) */}
+            <div className="flex-1">
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                 className={`flex items-center justify-center ${buttonHoverEffect} ${getTextColor()}`}
@@ -84,21 +85,6 @@ export default function ModernHeader() {
                 )}
               </button>
             </div>
-
-            {/* Left - Desktop Navigation (hidden on mobile/tablet) */}
-            <nav className="hidden lg:flex flex-1 items-center space-x-8">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className={`text-sm font-medium transition-all duration-300 hover:opacity-70 ${getTextColor()} ${
-                    isActiveLink(link.href) ? 'underline underline-offset-4' : ''
-                  }`}
-                >
-                  {link.label}
-                </Link>
-              ))}
-            </nav>
 
             {/* Center - Logo */}
             <div className="flex-shrink-0">
@@ -150,9 +136,9 @@ export default function ModernHeader() {
         </div>
       </header>
 
-      {/* Mobile Menu Overlay */}
+      {/* Menu Overlay */}
       <div
-        className={`fixed inset-0 z-40 lg:hidden transition-opacity duration-300 ${
+        className={`fixed inset-0 z-40 transition-opacity duration-300 ${
           isMobileMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
         }`}
         style={{
@@ -161,9 +147,9 @@ export default function ModernHeader() {
         onClick={() => setIsMobileMenuOpen(false)}
       />
 
-      {/* Mobile Menu Panel */}
+      {/* Menu Panel */}
       <div
-        className={`fixed top-0 left-0 bottom-0 z-40 w-80 max-w-[85vw] lg:hidden transform transition-transform duration-300 ease-out ${
+        className={`fixed top-0 left-0 bottom-0 z-40 w-80 max-w-[85vw] transform transition-transform duration-300 ease-out ${
           isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
         style={{
