@@ -442,10 +442,17 @@ export default function ProductDetailPage() {
                 </label>
                 <button
                   onClick={() => setShowSizeChart(true)}
-                  className="text-sm font-bold text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white underline flex items-center gap-1 transition-colors"
+                  className="group relative px-4 py-2 rounded-xl bg-gradient-to-r from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 hover:from-gray-900 hover:to-gray-800 dark:hover:from-white dark:hover:to-gray-100 border-2 border-gray-300 dark:border-gray-600 hover:border-gray-900 dark:hover:border-white transition-all duration-300 hover:scale-105 hover:shadow-lg"
                 >
-                  <FiInfo className="w-4 h-4" />
-                  Size Chart
+                  <div className="flex items-center gap-2">
+                    <div className="relative">
+                      <FiInfo className="w-4 h-4 text-gray-700 dark:text-gray-300 group-hover:text-white dark:group-hover:text-gray-900 transition-colors" />
+                      <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+                    </div>
+                    <span className="text-sm font-black text-gray-700 dark:text-gray-300 group-hover:text-white dark:group-hover:text-gray-900 transition-colors">
+                      Size Chart
+                    </span>
+                  </div>
                 </button>
               </div>
               <div className="grid grid-cols-5 gap-2">
@@ -462,6 +469,26 @@ export default function ProductDetailPage() {
                     {size}
                   </button>
                 ))}
+              </div>
+              
+              {/* Size Chart Quick Access Banner */}
+              <div className="mt-3 p-3 bg-blue-50 dark:bg-blue-900/20 border-2 border-blue-200 dark:border-blue-800 rounded-xl">
+                <div className="flex items-start gap-3">
+                  <div className="flex-shrink-0 w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
+                    <FiInfo className="w-4 h-4 text-white" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-xs font-bold text-blue-900 dark:text-blue-100">
+                      Not sure about your size? 
+                      <button 
+                        onClick={() => setShowSizeChart(true)}
+                        className="ml-1 underline hover:text-blue-600 dark:hover:text-blue-300 transition-colors font-black"
+                      >
+                        View our detailed size chart
+                      </button>
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
 
