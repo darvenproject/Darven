@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useParams, useRouter } from 'next/navigation'
-import { FiShoppingCart, FiMinus, FiPlus, FiCheck, FiPackage, FiTruck } from 'react-icons/fi'
+import { FiShoppingCart, FiMinus, FiPlus, FiCheck, FiPackage, FiTruck, FiX, FiInfo } from 'react-icons/fi'
 import { apiClient, getImageUrl } from '@/lib/api'
 import { useCartStore } from '@/store/cartStore'
 
@@ -20,6 +20,15 @@ interface Product {
   stock: number
 }
 
+interface SizeChartData {
+  size: string
+  collar: number
+  shoulder: number
+  chest: number
+  sleeves: number
+  length: number
+}
+
 export default function ProductDetailPage() {
   const params = useParams()
   const router = useRouter()
@@ -30,9 +39,35 @@ export default function ProductDetailPage() {
   const [quantity, setQuantity] = useState(1)
   const [selectedSize, setSelectedSize] = useState('')
   const [selectedColor, setSelectedColor] = useState('')
+  const [showSizeChart, setShowSizeChart] = useState(false)
   const addItem = useCartStore((state) => state.addItem)
   
   const availableSizes = ['XS', 'S', 'M', 'L', 'XL']
+
+  // Size chart data from your backend
+  const kameezSizeChart: SizeChartData[] = [
+    { size: 'XS', collar: 14.5, shoulder: 17, chest: 22, sleeves: 23, length: 39 },
+    { size: 'S', collar: 15, shoulder: 17.5, chest: 23, sleeves: 23.5, length: 40 },
+    { size: 'M', collar: 16, shoulder: 18.5, chest: 24, sleeves: 24.25, length: 42 },
+    { size: 'L', collar: 17, shoulder: 19.5, chest: 25, sleeves: 25, length: 43 },
+    { size: 'XL', collar: 18, shoulder: 20.5, chest: 27, sleeves: 25.5, length: 44 },
+  ]
+
+  const shalwarSizeChart = [
+    { size: 'XS', length: 39 },
+    { size: 'S', length: 40 },
+    { size: 'M', length: 42 },
+    { size: 'L', length: 43 },
+    { size: 'XL', length: 44 },
+  ]
+
+  const pajamaSizeChart = [
+    { size: 'XS', length: 37, waist: 27, hips: 38 },
+    { size: 'S', length: 38, waist: 29, hips: 39 },
+    { size: 'M', length: 39, waist: 31, hips: 40 },
+    { size: 'L', length: 40, waist: 33, hips: 42 },
+    { size: 'XL', length: 41, waist: 34, hips: 44 },
+  ]
 
   useEffect(() => {
     fetchProduct()
@@ -117,6 +152,193 @@ export default function ProductDetailPage() {
 
   return (
     <div className="min-h-screen bg-white dark:bg-dark-bg">
+      {/* Size Chart Modal */}
+      {showSizeChart && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="bg-white dark:bg-dark-surface rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border-2 border-gray-200 dark:border-gray-700">
+            {/* Modal Header */}
+            <div className="sticky top-0 bg-white dark:bg-dark-surface border-b border-gray-200 dark:border-gray-700 p-6 flex items-center justify-between">
+              <h2 className="text-2xl font-black text-gray-900 dark:text-white">Size Chart</h2>
+              <button
+                onClick={() => setShowSizeChart(false)}
+                className="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              >
+                <FiX className="w-6 h-6 text-gray-600 dark:text-gray-400" />
+              </button>
+            </div>
+
+            {/* Modal Content */}
+            <div className="p-6 space-y-8">
+              {/* Kameez Size Chart */}
+              <div>
+                <h3 className="text-xl font-black text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                  <FiPackage className="w-5 h-5" />
+                  Kameez Measurements
+                </h3>
+                <div className="overflow-x-auto">
+                  <table className="w-full border-2 border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden">
+                    <thead>
+                      <tr className="bg-gray-900 dark:bg-white">
+                        <th className="px-4 py-3 text-left text-sm font-black text-white dark:text-gray-900">Size</th>
+                        <th className="px-4 py-3 text-center text-sm font-black text-white dark:text-gray-900">Collar</th>
+                        <th className="px-4 py-3 text-center text-sm font-black text-white dark:text-gray-900">Shoulder</th>
+                        <th className="px-4 py-3 text-center text-sm font-black text-white dark:text-gray-900">Chest</th>
+                        <th className="px-4 py-3 text-center text-sm font-black text-white dark:text-gray-900">Sleeves</th>
+                        <th className="px-4 py-3 text-center text-sm font-black text-white dark:text-gray-900">Length</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {kameezSizeChart.map((row, index) => (
+                        <tr
+                          key={row.size}
+                          className={`${
+                            index % 2 === 0 ? 'bg-gray-50 dark:bg-gray-800' : 'bg-white dark:bg-dark-surface'
+                          } hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors`}
+                        >
+                          <td className="px-4 py-3 text-left font-black text-gray-900 dark:text-white border-r border-gray-200 dark:border-gray-700">
+                            {row.size}
+                          </td>
+                          <td className="px-4 py-3 text-center text-gray-700 dark:text-gray-300 font-bold">{row.collar}"</td>
+                          <td className="px-4 py-3 text-center text-gray-700 dark:text-gray-300 font-bold">{row.shoulder}"</td>
+                          <td className="px-4 py-3 text-center text-gray-700 dark:text-gray-300 font-bold">{row.chest}"</td>
+                          <td className="px-4 py-3 text-center text-gray-700 dark:text-gray-300 font-bold">{row.sleeves}"</td>
+                          <td className="px-4 py-3 text-center text-gray-700 dark:text-gray-300 font-bold">{row.length}"</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* Shalwar Size Chart */}
+              <div>
+                <h3 className="text-xl font-black text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                  <FiPackage className="w-5 h-5" />
+                  Shalwar Measurements
+                </h3>
+                <div className="overflow-x-auto">
+                  <table className="w-full border-2 border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden">
+                    <thead>
+                      <tr className="bg-gray-900 dark:bg-white">
+                        <th className="px-4 py-3 text-left text-sm font-black text-white dark:text-gray-900">Size</th>
+                        <th className="px-4 py-3 text-center text-sm font-black text-white dark:text-gray-900">Length</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {shalwarSizeChart.map((row, index) => (
+                        <tr
+                          key={row.size}
+                          className={`${
+                            index % 2 === 0 ? 'bg-gray-50 dark:bg-gray-800' : 'bg-white dark:bg-dark-surface'
+                          } hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors`}
+                        >
+                          <td className="px-4 py-3 text-left font-black text-gray-900 dark:text-white border-r border-gray-200 dark:border-gray-700">
+                            {row.size}
+                          </td>
+                          <td className="px-4 py-3 text-center text-gray-700 dark:text-gray-300 font-bold">{row.length}"</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* Pajama Size Chart */}
+              <div>
+                <h3 className="text-xl font-black text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                  <FiPackage className="w-5 h-5" />
+                  Pajama Measurements
+                </h3>
+                <div className="overflow-x-auto">
+                  <table className="w-full border-2 border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden">
+                    <thead>
+                      <tr className="bg-gray-900 dark:bg-white">
+                        <th className="px-4 py-3 text-left text-sm font-black text-white dark:text-gray-900">Size</th>
+                        <th className="px-4 py-3 text-center text-sm font-black text-white dark:text-gray-900">Length</th>
+                        <th className="px-4 py-3 text-center text-sm font-black text-white dark:text-gray-900">Waist</th>
+                        <th className="px-4 py-3 text-center text-sm font-black text-white dark:text-gray-900">Hips</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {pajamaSizeChart.map((row, index) => (
+                        <tr
+                          key={row.size}
+                          className={`${
+                            index % 2 === 0 ? 'bg-gray-50 dark:bg-gray-800' : 'bg-white dark:bg-dark-surface'
+                          } hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors`}
+                        >
+                          <td className="px-4 py-3 text-left font-black text-gray-900 dark:text-white border-r border-gray-200 dark:border-gray-700">
+                            {row.size}
+                          </td>
+                          <td className="px-4 py-3 text-center text-gray-700 dark:text-gray-300 font-bold">{row.length}"</td>
+                          <td className="px-4 py-3 text-center text-gray-700 dark:text-gray-300 font-bold">{row.waist}"</td>
+                          <td className="px-4 py-3 text-center text-gray-700 dark:text-gray-300 font-bold">{row.hips}"</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* Measurement Guide */}
+              <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-6 border-2 border-gray-200 dark:border-gray-700">
+                <h4 className="text-lg font-black text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+                  <FiInfo className="w-5 h-5" />
+                  How to Measure
+                </h4>
+                <div className="space-y-4">
+                  <div>
+                    <p className="text-sm font-black text-gray-900 dark:text-white mb-2">For Kameez:</p>
+                    <ul className="space-y-2 text-sm text-gray-700 dark:text-gray-300">
+                      <li className="flex items-start gap-2">
+                        <span className="font-black text-gray-900 dark:text-white mt-0.5">•</span>
+                        <span><strong className="font-black">Collar:</strong> Measure around the base of your neck</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="font-black text-gray-900 dark:text-white mt-0.5">•</span>
+                        <span><strong className="font-black">Shoulder:</strong> Measure from shoulder point to shoulder point across the back</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="font-black text-gray-900 dark:text-white mt-0.5">•</span>
+                        <span><strong className="font-black">Chest:</strong> Measure around the fullest part of your chest</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="font-black text-gray-900 dark:text-white mt-0.5">•</span>
+                        <span><strong className="font-black">Sleeves:</strong> Measure from shoulder to wrist</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="font-black text-gray-900 dark:text-white mt-0.5">•</span>
+                        <span><strong className="font-black">Length:</strong> Measure from shoulder to desired length</span>
+                      </li>
+                    </ul>
+                  </div>
+                  <div>
+                    <p className="text-sm font-black text-gray-900 dark:text-white mb-2">For Pajama:</p>
+                    <ul className="space-y-2 text-sm text-gray-700 dark:text-gray-300">
+                      <li className="flex items-start gap-2">
+                        <span className="font-black text-gray-900 dark:text-white mt-0.5">•</span>
+                        <span><strong className="font-black">Length:</strong> Measure from waist to ankle</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="font-black text-gray-900 dark:text-white mt-0.5">•</span>
+                        <span><strong className="font-black">Waist:</strong> Measure around your natural waistline</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="font-black text-gray-900 dark:text-white mt-0.5">•</span>
+                        <span><strong className="font-black">Hips:</strong> Measure around the fullest part of your hips</span>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+                <p className="mt-4 text-xs text-gray-600 dark:text-gray-400 italic">
+                  * All measurements are in inches. For best results, have someone help you measure.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Breadcrumb */}
       <div className="border-b border-gray-200 dark:border-gray-800">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -214,9 +436,18 @@ export default function ProductDetailPage() {
 
             {/* Size Selection */}
             <div>
-              <label className="block text-lg font-black text-gray-900 dark:text-white mb-3">
-                Select Size <span className="text-red-500">*</span>
-              </label>
+              <div className="flex items-center justify-between mb-3">
+                <label className="text-lg font-black text-gray-900 dark:text-white">
+                  Select Size <span className="text-red-500">*</span>
+                </label>
+                <button
+                  onClick={() => setShowSizeChart(true)}
+                  className="text-sm font-bold text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white underline flex items-center gap-1 transition-colors"
+                >
+                  <FiInfo className="w-4 h-4" />
+                  Size Chart
+                </button>
+              </div>
               <div className="grid grid-cols-5 gap-2">
                 {availableSizes.map((size) => (
                   <button
