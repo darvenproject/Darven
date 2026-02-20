@@ -504,24 +504,24 @@ export default function ProductDetailPage() {
               <label className="block text-lg font-black text-gray-900 dark:text-white mb-3">
                 Quantity
               </label>
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-3">
                 <button
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                  className="w-14 h-14 flex items-center justify-center bg-gray-100 dark:bg-gray-800 rounded-xl hover:bg-gray-900 dark:hover:bg-white hover:text-white dark:hover:text-gray-900 transition-all hover:scale-110 border-2 border-gray-200 dark:border-gray-700 hover:border-gray-900 dark:hover:border-white"
+                  className="w-10 h-10 flex items-center justify-center bg-gray-100 dark:bg-gray-800 rounded-lg hover:bg-gray-900 dark:hover:bg-white hover:text-white dark:hover:text-gray-900 transition-all hover:scale-110 border-2 border-gray-200 dark:border-gray-700 hover:border-gray-900 dark:hover:border-white"
                 >
-                  <FiMinus className="w-5 h-5" />
+                  <FiMinus className="w-4 h-4" />
                 </button>
                 
-                <span className="text-3xl font-black text-gray-900 dark:text-white min-w-[50px] text-center">
+                <span className="text-2xl font-black text-gray-900 dark:text-white min-w-[40px] text-center">
                   {quantity}
                 </span>
                 
                 <button
                   onClick={() => setQuantity(quantity + 1)}
-                  className="w-14 h-14 flex items-center justify-center bg-gray-100 dark:bg-gray-800 rounded-xl hover:bg-gray-900 dark:hover:bg-white hover:text-white dark:hover:text-gray-900 transition-all hover:scale-110 border-2 border-gray-200 dark:border-gray-700 hover:border-gray-900 dark:hover:border-white disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:bg-gray-100 dark:disabled:hover:bg-gray-800"
+                  className="w-10 h-10 flex items-center justify-center bg-gray-100 dark:bg-gray-800 rounded-lg hover:bg-gray-900 dark:hover:bg-white hover:text-white dark:hover:text-gray-900 transition-all hover:scale-110 border-2 border-gray-200 dark:border-gray-700 hover:border-gray-900 dark:hover:border-white disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:bg-gray-100 dark:disabled:hover:bg-gray-800"
                   disabled={product.stock > 0 && quantity >= product.stock}
                 >
-                  <FiPlus className="w-5 h-5" />
+                  <FiPlus className="w-4 h-4" />
                 </button>
               </div>
             </div>
