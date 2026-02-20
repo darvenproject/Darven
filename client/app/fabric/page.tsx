@@ -59,7 +59,7 @@ export default function FabricPage() {
     <div className="min-h-screen bg-white dark:bg-dark-bg">
       {/* Hero Header */}
       <div className="border-b border-gray-300 dark:border-gray-800">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-gray-900 dark:text-white mb-3 tracking-tight">
             Premium Fabrics
           </h1>
@@ -67,8 +67,8 @@ export default function FabricPage() {
       </div>
 
       {/* Filter Tabs */}
-      <div className="border-b border-gray-200 dark:border-gray-800">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <div className="border-b border-gray-200 dark:border-gray-800 py-1">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-1">
           <div className="flex gap-2 sm:gap-3 overflow-x-auto pb-2 scrollbar-hide">
             {fabricCategories.map((category) => (
               <button
