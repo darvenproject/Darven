@@ -60,13 +60,10 @@ export default function ReadyMadePage() {
     <div className="min-h-screen bg-white dark:bg-dark-bg">
       {/* Hero Header */}
       <div className="border-b border-gray-200 dark:border-gray-800">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-2">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-gray-900 dark:text-white mb-3 tracking-tight">
             Ready Made Collection
           </h1>
-          <p className="text-base sm:text-lg text-gray-600 dark:text-gray-400 max-w-max">
-            Discover our curated collection of premium ready-to-wear kurtas and shalwar kameez, crafted from the finest fabrics.
-          </p>
         </div>
       </div>
 
@@ -111,7 +108,7 @@ export default function ReadyMadePage() {
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
             {filteredProducts.map((product, index) => (
               <motion.div
                 key={product.id}
@@ -121,8 +118,8 @@ export default function ReadyMadePage() {
               >
                 <Link href={`/ready-made/${product.id}`}>
                   <div className="group bg-white dark:bg-dark-surface rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-500 border-2 border-gray-200 dark:border-gray-800 hover:border-gray-900 dark:hover:border-white hover:-translate-y-2">
-                    {/* Image Container */}
-                    <div className="relative aspect-[3/4] overflow-hidden bg-gray-100 dark:bg-gray-900">
+                    {/* Image Container - Fixed Height */}
+                    <div className="relative h-[400px] overflow-hidden bg-gray-100 dark:bg-gray-900">
                       <img
                         src={getImageUrl(product.images[0]) || '/placeholder.jpg'}
                         alt={product.name}
@@ -154,7 +151,7 @@ export default function ReadyMadePage() {
                         {product.name}
                       </h3>
                       
-                      <p className="hidden sm:block text-sm text-gray-600 dark:text-gray-400 mb-3 line-clamp-2">
+                      <p className="text-sm text-gray-600 dark:text-gray-400 mb-3 line-clamp-2">
                         {product.description}
                       </p>
                       

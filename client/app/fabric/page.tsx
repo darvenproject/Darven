@@ -59,13 +59,10 @@ export default function FabricPage() {
     <div className="min-h-screen bg-white dark:bg-dark-bg">
       {/* Hero Header */}
       <div className="border-b border-gray-300 dark:border-gray-800">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-2">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-gray-900 dark:text-white mb-3 tracking-tight">
             Premium Fabrics
           </h1>
-          <p className="text-base sm:text-lg text-gray-600 dark:text-gray-400 max-w-max">
-            Discover our exquisite collection of premium fabrics, perfect for creating your custom suits and traditional wear.
-          </p>
         </div>
       </div>
 
@@ -110,7 +107,7 @@ export default function FabricPage() {
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
             {filteredFabrics.map((fabric, index) => (
               <motion.div
                 key={fabric.id}
@@ -120,8 +117,8 @@ export default function FabricPage() {
               >
                 <Link href={`/fabric/${fabric.id}`}>
                   <div className="group bg-white dark:bg-dark-surface rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-500 border-2 border-gray-200 dark:border-gray-800 hover:border-gray-900 dark:hover:border-white hover:-translate-y-2">
-                    {/* Image Container */}
-                    <div className="relative h-80 overflow-hidden bg-gray-100 dark:bg-gray-900">
+                    {/* Image Container - Fixed Height */}
+                    <div className="relative h-[400px] overflow-hidden bg-gray-100 dark:bg-gray-900">
                       <img
                         src={getImageUrl(fabric.images[0]) || '/placeholder.jpg'}
                         alt={fabric.name}
@@ -153,7 +150,7 @@ export default function FabricPage() {
                         {fabric.name}
                       </h3>
                       
-                      <p className="hidden sm:block text-sm text-gray-600 dark:text-gray-400 mb-3 line-clamp-2">
+                      <p className="text-sm text-gray-600 dark:text-gray-400 mb-3 line-clamp-2">
                         {fabric.description}
                       </p>
                       

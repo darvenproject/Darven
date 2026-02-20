@@ -408,7 +408,7 @@ export default function ProductDetailPage() {
             
             {/* Price */}
             <div className="py-6 border-y border-gray-200 dark:border-gray-800">
-              <span className="text-5xl font-black text-gray-900 dark:text-white">
+              <span className="text-3xl sm:text-5xl font-black text-gray-900 dark:text-white">
                 Rs {product.price.toLocaleString()}
               </span>
             </div>
@@ -469,26 +469,6 @@ export default function ProductDetailPage() {
                     {size}
                   </button>
                 ))}
-              </div>
-              
-              {/* Size Chart Quick Access Banner */}
-              <div className="mt-3 p-3 bg-blue-50 dark:bg-blue-900/20 border-2 border-blue-200 dark:border-blue-800 rounded-xl">
-                <div className="flex items-start gap-3">
-                  <div className="flex-shrink-0 w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
-                    <FiInfo className="w-4 h-4 text-white" />
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-xs font-bold text-blue-900 dark:text-blue-100">
-                      Not sure about your size? 
-                      <button 
-                        onClick={() => setShowSizeChart(true)}
-                        className="ml-1 underline hover:text-blue-600 dark:hover:text-blue-300 transition-colors font-black"
-                      >
-                        View our detailed size chart
-                      </button>
-                    </p>
-                  </div>
-                </div>
               </div>
             </div>
 
@@ -565,7 +545,39 @@ export default function ProductDetailPage() {
               You Might Also Like
             </h2>
             
-            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+            {/* Scrollable container on mobile, grid on larger screens */}
+            <div className="lg:hidden overflow-x-auto pb-4 -mx-4 px-4">
+              <div className="flex gap-4 min-w-max">
+                {relatedProducts.map((relatedProduct) => (
+                  <Link key={relatedProduct.id} href={`/ready-made/${relatedProduct.id}`}>
+                    <div className="group bg-white dark:bg-dark-surface rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-500 border-2 border-gray-200 dark:border-gray-800 hover:border-gray-900 dark:hover:border-white hover:-translate-y-2 w-[280px]">
+                      <div className="relative aspect-[3/4] overflow-hidden bg-gray-100 dark:bg-gray-900">
+                        <img
+                          src={getImageUrl(relatedProduct.images[0])}
+                          alt={relatedProduct.name}
+                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                          loading="lazy"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                      </div>
+                      
+                      <div className="p-4 bg-gray-50 dark:bg-dark-surface group-hover:bg-white dark:group-hover:bg-gray-800 transition-colors">
+                        <h3 className="text-base font-black text-gray-900 dark:text-white mb-2 line-clamp-1 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors">
+                          {relatedProduct.name}
+                        </h3>
+                        
+                        <span className="text-lg font-black text-gray-900 dark:text-white">
+                          Rs {relatedProduct.price.toLocaleString()}
+                        </span>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+
+            {/* Grid layout for tablet and desktop */}
+            <div className="hidden lg:grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
               {relatedProducts.map((relatedProduct) => (
                 <Link key={relatedProduct.id} href={`/ready-made/${relatedProduct.id}`}>
                   <div className="group bg-white dark:bg-dark-surface rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-500 border-2 border-gray-200 dark:border-gray-800 hover:border-gray-900 dark:hover:border-white hover:-translate-y-2">
