@@ -160,10 +160,10 @@ export default function FabricDetailPage() {
             
             {/* Price */}
             <div className="py-6 border-y border-gray-200 dark:border-gray-800">
-              <span className="text-5xl font-black text-gray-900 dark:text-white">
+              <span className="text-3xl sm:text-4xl lg:text-5xl font-black text-gray-900 dark:text-white">
                 Rs {fabric.price_per_meter.toLocaleString()}
               </span>
-              <span className="text-2xl text-gray-500 dark:text-gray-400 font-bold">/meter</span>
+              <span className="text-lg sm:text-xl lg:text-2xl text-gray-500 dark:text-gray-400 font-bold">/meter</span>
             </div>
             
             {/* Product Info Cards */}
