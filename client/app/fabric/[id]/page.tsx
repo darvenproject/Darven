@@ -306,9 +306,9 @@ export default function FabricDetailPage() {
             <button
               onClick={handleAddToCart}
               disabled={fabric.stock_meters === 0}
-              className="w-full py-5 px-8 rounded-xl font-black text-lg bg-gray-900 dark:bg-white text-white dark:text-gray-900 hover:bg-black dark:hover:bg-gray-100 hover:shadow-2xl hover:scale-105 disabled:bg-gray-300 dark:disabled:bg-gray-700 disabled:text-gray-500 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:shadow-none transition-all active:scale-95 flex items-center justify-center gap-3"
+              className="w-full py-3 md:py-5 px-4 md:px-8 rounded-xl font-black text-base md:text-lg bg-gray-900 dark:bg-white text-white dark:text-gray-900 hover:bg-black dark:hover:bg-gray-100 hover:shadow-2xl hover:scale-105 disabled:bg-gray-300 dark:disabled:bg-gray-700 disabled:text-gray-500 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:shadow-none transition-all active:scale-95 flex items-center justify-center gap-2 md:gap-3"
             >
-              <FiShoppingCart className="w-6 h-6" />
+              <FiShoppingCart className="w-5 h-5 md:w-6 md:h-6" />
               {fabric.stock_meters > 0 ? 'Add to Cart' : 'Out of Stock'}
             </button>
           </div>

@@ -178,7 +178,7 @@ export default function FabricPage() {
                       {/* Price & Details */}
                       <div className="flex items-end justify-between mt-4">
                         <div>
-                          <span className="text-2xl font-black text-gray-900 dark:text-white">
+                          <span className="text-xl md:text-2xl font-black text-gray-900 dark:text-white">
                             Rs {fabric.price_per_meter.toLocaleString()}
                           </span>
                           <span className="text-sm text-gray-500 dark:text-gray-400 font-bold">/m</span>
