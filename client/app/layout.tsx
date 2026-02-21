@@ -14,6 +14,12 @@ const outfit = Outfit({
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://shopdarven.pk'),
+  viewport: {
+    width: 'device-width',
+    initialScale: 1,
+    maximumScale: 5,
+    userScalable: true,
+  },
   title: {
     default: 'ShopDarven - Premium Kurta Pajama & Shalwar Kameez | Traditional Pakistani Clothing',
     template: '%s | ShopDarven'
