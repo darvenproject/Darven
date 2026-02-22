@@ -1,6 +1,8 @@
 'use client'
 
 import Image from 'next/image'
+import Link from 'next/link'
+import { ArrowLeft } from 'lucide-react'
 
 export default function AboutPage() {
   const images = [
@@ -15,20 +17,31 @@ export default function AboutPage() {
 
   return (
     <div className="min-h-screen bg-white">
-      <div className="max-w-7xl mx-auto px-6 lg:px-8 py-16">
+      <div className="max-w-4xl mx-auto px-6 lg:px-8 py-16">
+        <div className="mb-8">
+          <Link 
+            href="/" 
+            className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors font-light"
+          >
+            <ArrowLeft className="w-5 h-5" strokeWidth={1.5} />
+            <span>Back to Home</span>
+          </Link>
+        </div>
+
         <h1 className="text-4xl md:text-5xl font-light tracking-wider text-gray-900 text-center mb-16">
           ABOUT US
         </h1>
         
-        <div className="grid grid-cols-1 md:grid-cols-7 gap-6">
+        <div className="flex flex-col gap-8">
           {images.map((image, index) => (
-            <div key={index} className="relative w-full aspect-square">
+            <div key={index} className="relative w-full">
               <Image
                 src={image.src}
                 alt={image.alt}
-                fill
-                className="object-cover rounded-lg"
-                sizes="(max-width: 768px) 100vw, 14vw"
+                width={1200}
+                height={800}
+                className="w-full h-auto rounded-lg"
+                sizes="100vw"
               />
             </div>
           ))}

@@ -195,17 +195,44 @@ export default function ContactPage() {
 
           {/* Contact Info */}
           <div className="mt-12 pt-8 border-t-2 border-gray-200">
-            <h3 className="text-xl font-bold text-gray-900 mb-4">Other ways to reach us</h3>
-            <div className="space-y-3">
-              <div className="flex items-center gap-3 text-gray-600">
-                <FiMail className="w-5 h-5" />
-                <a href="mailto:shopdarven@gmail.com" className="hover:text-gray-900 transition-colors">
-                  shopdarven@gmail.com
-                </a>
+            <h3 className="text-xl font-bold text-gray-900 mb-6">Other ways to reach us</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div>
+                <h4 className="text-sm font-bold text-gray-900 mb-3 uppercase">Shop</h4>
+                <ul className="space-y-2">
+                  <li><a href="/ready-made" className="text-sm text-gray-600 hover:text-gray-900 transition-colors">Ready Made</a></li>
+                  <li><a href="/stitch-your-own" className="text-sm text-gray-600 hover:text-gray-900 transition-colors">Stitch Your Own</a></li>
+                  <li><a href="/fabric" className="text-sm text-gray-600 hover:text-gray-900 transition-colors">Fabrics</a></li>
+                  <li><a href="/cart" className="text-sm text-gray-600 hover:text-gray-900 transition-colors">Cart</a></li>
+                  <li><a href="/about" className="text-sm text-gray-600 hover:text-gray-900 transition-colors">About Us</a></li>
+                  <li><a href="/size-chart" className="text-sm text-gray-600 hover:text-gray-900 transition-colors">Size Chart</a></li>
+                  <li><a href="/return-exchange-policy" className="text-sm text-gray-600 hover:text-gray-900 transition-colors">Return & Exchange Policy</a></li>
+                </ul>
               </div>
-              <div className="flex items-center gap-3 text-gray-600">
-                <FiPhone className="w-5 h-5" />
-                <span>Karachi, Pakistan</span>
+              <div>
+                <h4 className="text-sm font-bold text-gray-900 mb-3 uppercase">Contact</h4>
+                <ul className="space-y-2">
+                  <li className="flex items-start gap-2 text-sm text-gray-600">
+                    <FiPhone className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                    <span>Karachi, Pakistan</span>
+                  </li>
+                  <li className="flex items-center gap-2 text-sm text-gray-600">
+                    <FiMail className="w-4 h-4 flex-shrink-0" />
+                    <a href="mailto:shopdarven@gmail.com" className="hover:text-gray-900 transition-colors">
+                      shopdarven@gmail.com
+                    </a>
+                  </li>
+                  <li className="text-sm text-gray-600 pt-2">
+                    <a href="https://www.instagram.com/shopdarven/" target="_blank" rel="noopener noreferrer" className="hover:text-gray-900 transition-colors">
+                      Instagram: ShopDarven
+                    </a>
+                  </li>
+                  <li className="text-sm text-gray-600">
+                    <a href="https://www.facebook.com/profile.php?id=61580410082761" target="_blank" rel="noopener noreferrer" className="hover:text-gray-900 transition-colors">
+                      Facebook: ShopDarven
+                    </a>
+                  </li>
+                </ul>
               </div>
             </div>
           </div>
