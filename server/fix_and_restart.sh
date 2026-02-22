@@ -8,9 +8,10 @@ echo "1. Killing all processes using port 8000..."
 sudo lsof -ti:8000 | xargs -r sudo kill -9
 sleep 2
 
-# Kill any remaining uvicorn/python processes related to the server
-echo "2. Stopping all uvicorn processes..."
+# Kill any remaining uvicorn/python/gunicorn processes related to the server
+echo "2. Stopping all server processes..."
 sudo pkill -9 -f "uvicorn main:app"
+sudo pkill -9 -f "gunicorn"
 sudo pkill -9 -f "python.*run.py"
 sleep 2
 
