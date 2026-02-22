@@ -70,14 +70,14 @@ export default function AdminLandingPage() {
     }
   }
 
-  const handlePortraitUpload = async (imageId: number, file: File) => {
+  const handlePortraitUpload = async (category: string, imageId: number, file: File) => {
     setLoading(true)
 
     try {
       const formData = new FormData()
       formData.append('file', file)
 
-      await apiClient.updateLandingPortraitImage('hero', imageId, formData)
+      await apiClient.updateLandingPortraitImage(category, imageId, formData)
       alert(`Portrait image uploaded successfully!`)
       fetchLandingImages()
     } catch (error) {
@@ -218,7 +218,7 @@ export default function AdminLandingPage() {
                     accept="image/*"
                     onChange={(e) => {
                       const file = e.target.files?.[0]
-                      if (file) handlePortraitUpload(image.id, file)
+                      if (file) handlePortraitUpload('hero', image.id, file)
                     }}
                     className="hidden"
                     disabled={loading}
@@ -327,7 +327,7 @@ export default function AdminLandingPage() {
                           accept="image/*"
                           onChange={(e) => {
                             const file = e.target.files?.[0]
-                            if (file) handlePortraitUpload(existingImage.id, file)
+                            if (file) handlePortraitUpload(category.id, existingImage.id, file)
                           }}
                           className="hidden"
                           disabled={loading}
