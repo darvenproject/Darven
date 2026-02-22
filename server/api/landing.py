@@ -95,15 +95,19 @@ async def update_landing_portrait_image(
     category: str,
     image_id: int,
     file: UploadFile = File(...),
-    admin: Admin = Depends(get_current_admin),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    admin: Admin = Depends(get_current_admin)
 ):
     # Validate category - all categories can have portrait images now
     valid_categories = ["hero", "ready-made", "stitch-your-own", "fabric"]
     if category not in valid_categories:
         raise HTTPException(status_code=400, detail="Invalid category for portrait image")
     
-    # Save file to S3
+    # Check if file is valid
+    if not file or not file.filename:
+        raise HTTPException(status_code=400, detail="No file provided")
+    
+    # Save file to local storage
     file_extension = os.path.splitext(file.filename)[1]
     filename = f"{category}-portrait-{uuid4()}{file_extension}"
     portrait_image_url = await upload_file_local(file, "landing", filename)
