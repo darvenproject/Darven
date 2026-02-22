@@ -98,8 +98,8 @@ async def update_landing_portrait_image(
     admin: Admin = Depends(get_current_admin),
     db: Session = Depends(get_db)
 ):
-    # Validate category - only hero section needs portrait
-    valid_categories = ["hero"]
+    # Validate category - all categories can have portrait images now
+    valid_categories = ["hero", "ready-made", "stitch-your-own", "fabric"]
     if category not in valid_categories:
         raise HTTPException(status_code=400, detail="Invalid category for portrait image")
     

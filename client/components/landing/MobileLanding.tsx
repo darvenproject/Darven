@@ -214,30 +214,33 @@ export default function MobileLanding() {
       )}
 
       {/* Category Sections - TEXT REMOVED */}
-      {sectionImages.map((item, index) => (
-        <Link
-          key={`${item.category}-${index}`}
-          href={item.link!}
-          className="h-screen w-full snap-start snap-always block relative"
-        >
-          <div className="absolute inset-0" style={{ backgroundColor: '#2a2a2a' }}>
-            <div className="relative h-full w-full">
-              <Image
-                src={getImageUrl(item.image_url)}
-                alt={item.title}
-                fill
-                sizes="100vw"
-                priority
-                className="object-cover"
-                unoptimized
-              />
+      {sectionImages.map((item, index) => {
+        const imageUrl = item.portrait_image_url || item.image_url
+        return (
+          <Link
+            key={`${item.category}-${index}`}
+            href={item.link!}
+            className="h-screen w-full snap-start snap-always block relative"
+          >
+            <div className="absolute inset-0" style={{ backgroundColor: '#2a2a2a' }}>
+              <div className="relative h-full w-full">
+                <Image
+                  src={getImageUrl(imageUrl)}
+                  alt={item.title}
+                  fill
+                  sizes="100vw"
+                  priority
+                  className="object-cover"
+                  unoptimized
+                />
+              </div>
             </div>
-          </div>
 
-          {/* Subtle Overlay to maintain premium feel */}
-          <div className="absolute inset-0 bg-black bg-opacity-20" />
-        </Link>
-      ))}
+            {/* Subtle Overlay to maintain premium feel */}
+            <div className="absolute inset-0 bg-black bg-opacity-20" />
+          </Link>
+        )
+      })}
 
       {/* Vertical Navigation Dots (Fixed) */}
       <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 flex gap-3 z-30">

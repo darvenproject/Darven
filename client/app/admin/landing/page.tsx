@@ -248,32 +248,39 @@ export default function AdminLandingPage() {
             Upload images for Ready Made, Stitch Your Own, and Fabric sections
           </p>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
             {sectionCategories.map((category) => {
               const existingImage = sectionImages.find(img => img.category === category.id)
               
               return (
                 <div key={category.id} className="bg-white rounded-lg shadow-md p-4 sm:p-6">
-                  <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-3">
+                  <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-4">
                     {category.title}
                   </h3>
                   
-                  {/* Preview */}
-                  {existingImage && (
-                    <div className="relative w-full h-40 sm:h-48 bg-gray-200 rounded-lg overflow-hidden mb-4">
-                      <img
-                        src={getImageUrl(existingImage.image_url)}
-                        alt={category.title}
-                        className="w-full h-full object-cover"
-                        onError={(e) => {
-                          e.currentTarget.src = '/placeholder.jpg'
-                        }}
-                      />
-                    </div>
-                  )}
+                  {/* Landscape Preview */}
+                  <div className="mb-3">
+                    <p className="text-xs text-gray-600 mb-1">Desktop (Landscape)</p>
+                    {existingImage ? (
+                      <div className="relative w-full h-40 sm:h-48 bg-gray-200 rounded-lg overflow-hidden">
+                        <img
+                          src={getImageUrl(existingImage.image_url)}
+                          alt={category.title}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            e.currentTarget.src = '/placeholder.jpg'
+                          }}
+                        />
+                      </div>
+                    ) : (
+                      <div className="relative w-full h-40 sm:h-48 bg-gray-200 rounded-lg overflow-hidden flex items-center justify-center">
+                        <FiImage className="w-12 h-12 text-gray-400" />
+                      </div>
+                    )}
+                  </div>
 
-                  {/* Upload Button */}
-                  <label className="block">
+                  {/* Landscape Upload Button */}
+                  <label className="block mb-4">
                     <input
                       type="file"
                       accept="image/*"
@@ -284,11 +291,54 @@ export default function AdminLandingPage() {
                       className="hidden"
                       disabled={loading}
                     />
-                    <div className="flex items-center justify-center gap-2 px-4 py-3 bg-gray-900 text-white rounded-lg cursor-pointer hover:bg-gray-800:bg-gray-100 transition-colors text-sm sm:text-base">
-                      <FiUpload className="w-4 h-4 sm:w-5 sm:h-5" />
-                      {uploadingCategory === category.id ? 'Uploading...' : existingImage ? 'Change Image' : 'Upload Image'}
+                    <div className="flex items-center justify-center gap-2 px-4 py-3 bg-blue-600 text-white rounded-lg cursor-pointer hover:bg-blue-700 transition-colors text-sm">
+                      <FiUpload className="w-4 h-4" />
+                      {uploadingCategory === category.id ? 'Uploading...' : existingImage ? 'Change Landscape' : 'Upload Landscape'}
                     </div>
                   </label>
+
+                  {/* Portrait Preview */}
+                  {existingImage && (
+                    <>
+                      <div className="mb-3">
+                        <p className="text-xs text-gray-600 mb-1">Mobile (Portrait)</p>
+                        <div className="relative w-full h-40 sm:h-48 bg-gray-200 rounded-lg overflow-hidden">
+                          {existingImage.portrait_image_url ? (
+                            <img
+                              src={getImageUrl(existingImage.portrait_image_url)}
+                              alt={`${category.title} Portrait`}
+                              className="w-full h-full object-cover"
+                              onError={(e) => {
+                                e.currentTarget.src = '/placeholder.jpg'
+                              }}
+                            />
+                          ) : (
+                            <div className="flex items-center justify-center h-full">
+                              <FiImage className="w-12 h-12 text-gray-400" />
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Portrait Upload Button */}
+                      <label className="block">
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0]
+                            if (file) handlePortraitUpload(existingImage.id, file)
+                          }}
+                          className="hidden"
+                          disabled={loading}
+                        />
+                        <div className="flex items-center justify-center gap-2 px-4 py-3 bg-gray-600 text-white rounded-lg cursor-pointer hover:bg-gray-700 transition-colors text-sm">
+                          <FiUpload className="w-4 h-4" />
+                          {existingImage.portrait_image_url ? 'Change Portrait' : 'Add Portrait'}
+                        </div>
+                      </label>
+                    </>
+                  )}
                 </div>
               )
             })}
