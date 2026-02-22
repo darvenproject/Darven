@@ -237,7 +237,7 @@ export default function DesktopLanding() {
 
       {/* Slide 5: Footer */}
       <div className="h-screen w-full snap-start snap-always relative bg-white">
-        <div className="container mx-auto px-6 lg:px-12 xl:px-24 h-full flex flex-col justify-center items-center text-black max-w-7xl">
+        <div className="container mx-auto px-6 lg:px-12 xl:px-24 h-full flex flex-col justify-center items-center text-black max-w-screen-2xl">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -249,7 +249,7 @@ export default function DesktopLanding() {
             <h2 className="text-5xl md:text-6xl font-bold mb-12 tracking-wider">DARVEN</h2>
             
             {/* Quick Links */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-16 mb-16 max-w-5xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-16 lg:gap-24 mb-16 max-w-6xl mx-auto">
               <div>
                 <h3 className="text-xl md:text-2xl font-semibold mb-6">Shop</h3>
                 <ul className="space-y-3 text-base md:text-lg">
