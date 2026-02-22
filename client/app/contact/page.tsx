@@ -32,19 +32,11 @@ export default function ContactPage() {
 
     try {
       const response = await apiClient.submitContactForm(formData)
-      
       setSubmitStatus({
         type: 'success',
         message: response.data.message || 'Thank you for contacting us! We will get back to you soon.'
       })
-      
-      // Reset form
-      setFormData({
-        name: '',
-        email: '',
-        phone: '',
-        message: ''
-      })
+      setFormData({ name: '', email: '', phone: '', message: '' })
     } catch (error: any) {
       setSubmitStatus({
         type: 'error',
@@ -57,40 +49,42 @@ export default function ContactPage() {
 
   return (
     <div className="min-h-screen bg-white">
-      <div className="max-w-4xl mx-auto px-6 lg:px-8 py-16">
-        <div className="text-center mb-12">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-16">
+        {/* Header */}
+        <div className="text-center mb-8 sm:mb-12">
           <a
             href="/"
-            className="inline-flex items-center gap-2 mb-6 text-sm font-light text-gray-600 hover:text-gray-900 transition-colors"
+            className="inline-flex items-center gap-2 mb-5 sm:mb-6 text-sm font-light text-gray-600 hover:text-gray-900 transition-colors"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
             </svg>
             Go to Home
           </a>
-          <h1 className="text-4xl md:text-5xl font-light tracking-wider text-gray-900 mb-4">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-light tracking-wider text-gray-900 mb-3 sm:mb-4">
             CONTACT US
           </h1>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+          <p className="text-sm sm:text-lg text-gray-600 max-w-2xl mx-auto px-2">
             Have a question or want to get in touch? Fill out the form below and we'll get back to you as soon as possible.
           </p>
         </div>
 
-        <div className="bg-white border-2 border-gray-200 rounded-2xl p-8 md:p-12 shadow-sm">
+        {/* Form Card */}
+        <div className="bg-white border-2 border-gray-200 rounded-2xl p-5 sm:p-8 md:p-12 shadow-sm">
           {submitStatus.type === 'success' && (
-            <div className="mb-8 p-4 bg-green-50 border-2 border-green-200 rounded-xl flex items-center gap-3">
-              <FiCheckCircle className="w-6 h-6 text-green-600 flex-shrink-0" />
-              <p className="text-green-800 font-medium">{submitStatus.message}</p>
+            <div className="mb-6 sm:mb-8 p-4 bg-green-50 border-2 border-green-200 rounded-xl flex items-center gap-3">
+              <FiCheckCircle className="w-5 h-5 sm:w-6 sm:h-6 text-green-600 flex-shrink-0" />
+              <p className="text-sm sm:text-base text-green-800 font-medium">{submitStatus.message}</p>
             </div>
           )}
 
           {submitStatus.type === 'error' && (
-            <div className="mb-8 p-4 bg-red-50 border-2 border-red-200 rounded-xl">
-              <p className="text-red-800 font-medium">{submitStatus.message}</p>
+            <div className="mb-6 sm:mb-8 p-4 bg-red-50 border-2 border-red-200 rounded-xl">
+              <p className="text-sm sm:text-base text-red-800 font-medium">{submitStatus.message}</p>
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6">
             {/* Name Field */}
             <div>
               <label htmlFor="name" className="block text-sm font-bold text-gray-900 mb-2">
@@ -98,7 +92,7 @@ export default function ContactPage() {
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                  <FiUser className="w-5 h-5 text-gray-400" />
+                  <FiUser className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
                 </div>
                 <input
                   type="text"
@@ -108,7 +102,7 @@ export default function ContactPage() {
                   onChange={handleChange}
                   required
                   minLength={2}
-                  className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:border-gray-900 focus:outline-none transition-colors text-gray-900"
+                  className="w-full pl-11 sm:pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:border-gray-900 focus:outline-none transition-colors text-gray-900 text-sm sm:text-base"
                   placeholder="Your full name"
                 />
               </div>
@@ -121,7 +115,7 @@ export default function ContactPage() {
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                  <FiMail className="w-5 h-5 text-gray-400" />
+                  <FiMail className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
                 </div>
                 <input
                   type="email"
@@ -130,7 +124,7 @@ export default function ContactPage() {
                   value={formData.email}
                   onChange={handleChange}
                   required
-                  className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:border-gray-900 focus:outline-none transition-colors text-gray-900"
+                  className="w-full pl-11 sm:pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:border-gray-900 focus:outline-none transition-colors text-gray-900 text-sm sm:text-base"
                   placeholder="your.email@example.com"
                 />
               </div>
@@ -143,7 +137,7 @@ export default function ContactPage() {
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                  <FiPhone className="w-5 h-5 text-gray-400" />
+                  <FiPhone className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
                 </div>
                 <input
                   type="tel"
@@ -153,7 +147,7 @@ export default function ContactPage() {
                   onChange={handleChange}
                   required
                   minLength={10}
-                  className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:border-gray-900 focus:outline-none transition-colors text-gray-900"
+                  className="w-full pl-11 sm:pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:border-gray-900 focus:outline-none transition-colors text-gray-900 text-sm sm:text-base"
                   placeholder="+92 300 1234567"
                 />
               </div>
@@ -166,7 +160,7 @@ export default function ContactPage() {
               </label>
               <div className="relative">
                 <div className="absolute top-3 left-0 pl-4 pointer-events-none">
-                  <FiMessageSquare className="w-5 h-5 text-gray-400" />
+                  <FiMessageSquare className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
                 </div>
                 <textarea
                   id="message"
@@ -175,8 +169,8 @@ export default function ContactPage() {
                   onChange={handleChange}
                   required
                   minLength={10}
-                  rows={6}
-                  className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:border-gray-900 focus:outline-none transition-colors text-gray-900 resize-none"
+                  rows={5}
+                  className="w-full pl-11 sm:pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:border-gray-900 focus:outline-none transition-colors text-gray-900 resize-none text-sm sm:text-base"
                   placeholder="Tell us how we can help you..."
                 />
               </div>
@@ -186,7 +180,7 @@ export default function ContactPage() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full bg-gray-900 text-white py-4 px-8 rounded-xl font-bold text-lg hover:bg-black hover:shadow-2xl hover:scale-105 disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:shadow-none transition-all active:scale-95 flex items-center justify-center gap-3"
+              className="w-full bg-gray-900 text-white py-4 px-8 rounded-xl font-bold text-base sm:text-lg hover:bg-black hover:shadow-2xl disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed transition-all active:scale-95 flex items-center justify-center gap-3"
             >
               {isSubmitting ? (
                 <>
@@ -195,7 +189,7 @@ export default function ContactPage() {
                 </>
               ) : (
                 <>
-                  <FiSend className="w-5 h-5" />
+                  <FiSend className="w-4 h-4 sm:w-5 sm:h-5" />
                   Send Message
                 </>
               )}
@@ -203,9 +197,9 @@ export default function ContactPage() {
           </form>
 
           {/* Contact Info */}
-          <div className="mt-12 pt-8 border-t-2 border-gray-200">
-            <h3 className="text-xl font-bold text-gray-900 mb-6">Other ways to reach us</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="mt-8 sm:mt-12 pt-6 sm:pt-8 border-t-2 border-gray-200">
+            <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-5 sm:mb-6">Other ways to reach us</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
               <div>
                 <h4 className="text-sm font-bold text-gray-900 mb-3 uppercase">Shop</h4>
                 <ul className="space-y-2">
@@ -227,11 +221,11 @@ export default function ContactPage() {
                   </li>
                   <li className="flex items-center gap-2 text-sm text-gray-600">
                     <FiMail className="w-4 h-4 flex-shrink-0" />
-                    <a href="mailto:shopdarven@gmail.com" className="hover:text-gray-900 transition-colors">
+                    <a href="mailto:shopdarven@gmail.com" className="hover:text-gray-900 transition-colors break-all">
                       shopdarven@gmail.com
                     </a>
                   </li>
-                  <li className="text-sm text-gray-600 pt-2">
+                  <li className="text-sm text-gray-600 pt-1">
                     <a href="https://www.instagram.com/shopdarven/" target="_blank" rel="noopener noreferrer" className="hover:text-gray-900 transition-colors">
                       Instagram: ShopDarven
                     </a>

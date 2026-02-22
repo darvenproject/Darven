@@ -19,11 +19,11 @@ def send_email(contact_data: ContactRequest):
     """Send email using SMTP"""
     try:
         # Email configuration from environment variables
-        smtp_server = os.getenv("SMTP_SERVER", "smtp.gmail.com")
+        smtp_server = os.getenv("SMTP_HOST", os.getenv("SMTP_SERVER", "smtp.gmail.com"))
         smtp_port = int(os.getenv("SMTP_PORT", "587"))
-        sender_email = os.getenv("SMTP_EMAIL")
+        sender_email = os.getenv("SMTP_USER", os.getenv("SMTP_EMAIL"))
         sender_password = os.getenv("SMTP_PASSWORD")
-        recipient_email = "shopdarven@gmail.com"
+        recipient_email = os.getenv("EMAIL_TO", "shopdarven@gmail.com")
         
         if not sender_email or not sender_password:
             logger.error("SMTP credentials not configured")

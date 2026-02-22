@@ -17,35 +17,37 @@ export default function AboutPage() {
 
   return (
     <div className="min-h-screen bg-white">
-      <div className="max-w-4xl mx-auto px-6 lg:px-8 py-16">
-        <div className="mb-8">
-          <Link 
-            href="/" 
-            className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors font-light"
+      {/* Back Button & Title */}
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-16">
+        <div className="mb-6 sm:mb-8">
+          <Link
+            href="/"
+            className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors font-light text-sm sm:text-base"
           >
-            <ArrowLeft className="w-5 h-5" strokeWidth={1.5} />
+            <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" strokeWidth={1.5} />
             <span>Back to Home</span>
           </Link>
         </div>
 
-        <h1 className="text-4xl md:text-5xl font-light tracking-wider text-gray-900 text-center mb-16">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-light tracking-wider text-gray-900 text-center mb-8 sm:mb-12">
           ABOUT US
         </h1>
-        
-        <div className="flex flex-col gap-8">
-          {images.map((image, index) => (
-            <div key={index} className="relative w-full">
-              <Image
-                src={image.src}
-                alt={image.alt}
-                width={1200}
-                height={800}
-                className="w-full h-auto rounded-lg"
-                sizes="100vw"
-              />
-            </div>
-          ))}
-        </div>
+      </div>
+
+      {/* Full-width Images */}
+      <div className="flex flex-col w-full">
+        {images.map((image, index) => (
+          <div key={index} className="relative w-full">
+            <Image
+              src={image.src}
+              alt={image.alt}
+              width={1600}
+              height={1067}
+              className="w-full h-auto block"
+              sizes="100vw"
+            />
+          </div>
+        ))}
       </div>
     </div>
   )
