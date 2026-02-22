@@ -50,25 +50,25 @@ export default function ReadyMadePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-white dark:bg-dark-bg">
-        <div className="animate-spin rounded-full h-16 w-16 border-4 border-gray-200 dark:border-gray-800 border-t-gray-900 dark:border-t-white"></div>
+      <div className="min-h-screen flex items-center justify-center bg-white">
+        <div className="animate-spin rounded-full h-16 w-16 border-4 border-gray-200 border-t-gray-900"></div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-white dark:bg-dark-bg">
+    <div className="min-h-screen bg-white">
       {/* Hero Header */}
-      <div className="border-b border-gray-200 dark:border-gray-800">
+      <div className="border-b border-gray-200">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-gray-900 dark:text-white mb-3 tracking-tight">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-gray-900 mb-3 tracking-tight">
             Ready Made Collection
           </h1>
         </div>
       </div>
 
       {/* Filter Tabs */}
-      <div className="border-b border-gray-200 dark:border-gray-800 py-1">
+      <div className="border-b border-gray-200 py-1">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-1">
           <div className="flex gap-2 sm:gap-3 overflow-x-auto pb-2 scrollbar-hide">
             {fabricCategories.map((category) => (
@@ -77,8 +77,8 @@ export default function ReadyMadePage() {
                 onClick={() => setSelectedCategory(category)}
                 className={`px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl font-bold whitespace-nowrap transition-all duration-300 ${
                   selectedCategory === category
-                    ? 'bg-gray-900 dark:bg-white text-white dark:text-gray-900 shadow-lg scale-105'
-                    : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
+                    ? 'bg-gray-900 text-white shadow-lg scale-105'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200:bg-gray-700'
                 }`}
               >
                 {category}
@@ -92,15 +92,15 @@ export default function ReadyMadePage() {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
         {filteredProducts.length === 0 ? (
           <div className="text-center py-20">
-            <div className="inline-flex items-center justify-center w-20 h-20 bg-gray-100 dark:bg-gray-800 rounded-full mb-6">
+            <div className="inline-flex items-center justify-center w-20 h-20 bg-gray-100 rounded-full mb-6">
               <svg className="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
               </svg>
             </div>
-            <p className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+            <p className="text-xl font-bold text-gray-900 mb-2">
               No products available
             </p>
-            <p className="text-gray-600 dark:text-gray-400">
+            <p className="text-gray-600">
               {selectedCategory === 'All' 
                 ? 'Check back soon for new arrivals'
                 : `No products in ${selectedCategory} category`
@@ -117,9 +117,9 @@ export default function ReadyMadePage() {
                 transition={{ delay: index * 0.05 }}
               >
                 <Link href={`/ready-made/${product.id}`}>
-                  <div className="group bg-white dark:bg-dark-surface rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-500 border-2 border-gray-200 dark:border-gray-800 hover:border-gray-900 dark:hover:border-white hover:-translate-y-2">
+                  <div className="group bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-500 border-2 border-gray-200 hover:border-gray-900:border-white hover:-translate-y-2">
                     {/* Image Container - Fixed Height */}
-                    <div className="relative h-[400px] overflow-hidden bg-gray-100 dark:bg-gray-900">
+                    <div className="relative h-[400px] overflow-hidden bg-gray-100">
                       <img
                         src={getImageUrl(product.images[0]) || '/placeholder.jpg'}
                         alt={product.name}
@@ -135,8 +135,8 @@ export default function ReadyMadePage() {
                       {/* Stock Badge */}
                       {product.stock === 0 && (
                         <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center">
-                          <div className="bg-white dark:bg-gray-900 px-6 py-3 rounded-xl">
-                            <span className="text-gray-900 dark:text-white font-black text-sm">Out of Stock</span>
+                          <div className="bg-white px-6 py-3 rounded-xl">
+                            <span className="text-gray-900 font-black text-sm">Out of Stock</span>
                           </div>
                         </div>
                       )}
@@ -146,35 +146,35 @@ export default function ReadyMadePage() {
                     </div>
                     
                     {/* Content */}
-                    <div className="p-4 bg-gray-50 dark:bg-dark-surface group-hover:bg-white dark:group-hover:bg-gray-800 transition-colors">
-                      <h3 className="text-base sm:text-lg font-black text-gray-900 dark:text-white mb-2 line-clamp-1 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors">
+                    <div className="p-4 bg-gray-50 group-hover:bg-white:bg-gray-800 transition-colors">
+                      <h3 className="text-base sm:text-lg font-black text-gray-900 mb-2 line-clamp-1 group-hover:text-gray-600:text-gray-300 transition-colors">
                         {product.name}
                       </h3>
                       
-                      <p className="text-sm text-gray-600 dark:text-gray-400 mb-3 line-clamp-2">
+                      <p className="text-sm text-gray-600 mb-3 line-clamp-2">
                         {product.description}
                       </p>
                       
                       {/* Price & Details */}
                       <div className="flex items-end justify-between mt-4">
                         <div>
-                          <span className="text-2xl font-black text-gray-900 dark:text-white">
+                          <span className="text-2xl font-black text-gray-900">
                             Rs {product.price.toLocaleString()}
                           </span>
                           <div className="flex items-center gap-2 mt-1">
-                            <span className="text-xs font-bold text-gray-500 dark:text-gray-400">
+                            <span className="text-xs font-bold text-gray-500">
                               {product.material}
                             </span>
-                            <span className="text-gray-300 dark:text-gray-700">•</span>
-                            <span className="text-xs font-bold text-gray-500 dark:text-gray-400">
+                            <span className="text-gray-300">•</span>
+                            <span className="text-xs font-bold text-gray-500">
                               {product.size}
                             </span>
                           </div>
                         </div>
 
                         {/* Arrow Icon */}
-                        <div className="w-10 h-10 bg-gray-200 dark:bg-gray-800 rounded-full flex items-center justify-center group-hover:bg-gray-900 dark:group-hover:bg-white transition-all group-hover:scale-110">
-                          <svg className="w-5 h-5 text-gray-900 dark:text-white group-hover:text-white dark:group-hover:text-gray-900 transition-colors group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center group-hover:bg-gray-900:bg-white transition-all group-hover:scale-110">
+                          <svg className="w-5 h-5 text-gray-900 group-hover:text-white:text-gray-900 transition-colors group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                           </svg>
                         </div>

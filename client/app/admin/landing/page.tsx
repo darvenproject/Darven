@@ -108,13 +108,13 @@ export default function AdminLandingPage() {
   ]
 
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-dark-bg">
-      <header className="bg-white dark:bg-dark-surface shadow-md sticky top-0 z-10">
+    <div className="min-h-screen bg-gray-100">
+      <header className="bg-white shadow-md sticky top-0 z-10">
         <div className="container mx-auto px-4 py-4 flex items-center gap-4">
-          <Link href="/admin/dashboard" className="p-2 hover:bg-gray-100 dark:hover:bg-dark-bg rounded-lg">
-            <FiArrowLeft className="w-6 h-6 text-gray-900 dark:text-white" />
+          <Link href="/admin/dashboard" className="p-2 hover:bg-gray-100:bg-dark-bg rounded-lg">
+            <FiArrowLeft className="w-6 h-6 text-gray-900" />
           </Link>
-          <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
             Landing Images
           </h1>
         </div>
@@ -123,10 +123,10 @@ export default function AdminLandingPage() {
       <div className="container mx-auto px-4 py-4 sm:py-8">
         {/* Hero Section Slideshow */}
         <div className="mb-6 sm:mb-8">
-          <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-3 sm:mb-4">
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-4">
             Hero Section Slideshow
           </h2>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+          <p className="text-sm text-gray-600 mb-4">
             Add multiple hero images for automatic slideshow (changes every 5 seconds)
           </p>
           
@@ -151,7 +151,7 @@ export default function AdminLandingPage() {
             </label>
 
             {/* Portrait Upload - Note */}
-            <div className="flex-1 flex items-center justify-center px-4 sm:px-6 py-3 sm:py-4 bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-lg border-2 border-dashed border-gray-400 dark:border-gray-600">
+            <div className="flex-1 flex items-center justify-center px-4 sm:px-6 py-3 sm:py-4 bg-gray-200 text-gray-600 rounded-lg border-2 border-dashed border-gray-400">
               <p className="text-xs sm:text-sm text-center">
                 Upload landscape first, then add portrait version below
               </p>
@@ -161,14 +161,14 @@ export default function AdminLandingPage() {
           {/* Hero Images List */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {heroImages.map((image, index) => (
-              <div key={image.id} className="bg-white dark:bg-dark-surface rounded-lg shadow-md p-4">
+              <div key={image.id} className="bg-white rounded-lg shadow-md p-4">
                 <div className="flex items-center justify-between mb-3">
-                  <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">
+                  <h3 className="text-base sm:text-lg font-semibold text-gray-900">
                     Hero Image {index + 1}
                   </h3>
                   <button
                     onClick={() => handleDeleteImage(image.id)}
-                    className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                    className="p-2 text-red-600 hover:bg-red-50:bg-red-900/20 rounded-lg transition-colors"
                     title="Delete image"
                   >
                     <FiTrash2 className="w-5 h-5" />
@@ -177,8 +177,8 @@ export default function AdminLandingPage() {
 
                 {/* Landscape Preview */}
                 <div className="mb-3">
-                  <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">Desktop (Landscape)</p>
-                  <div className="relative w-full h-32 sm:h-40 bg-gray-200 dark:bg-gray-700 rounded-lg overflow-hidden">
+                  <p className="text-xs text-gray-600 mb-1">Desktop (Landscape)</p>
+                  <div className="relative w-full h-32 sm:h-40 bg-gray-200 rounded-lg overflow-hidden">
                     <img
                       src={getImageUrl(image.image_url)}
                       alt={`Hero ${index + 1}`}
@@ -192,8 +192,8 @@ export default function AdminLandingPage() {
 
                 {/* Portrait Preview */}
                 <div className="mb-3">
-                  <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">Mobile (Portrait)</p>
-                  <div className="relative w-full h-32 sm:h-40 bg-gray-200 dark:bg-gray-700 rounded-lg overflow-hidden">
+                  <p className="text-xs text-gray-600 mb-1">Mobile (Portrait)</p>
+                  <div className="relative w-full h-32 sm:h-40 bg-gray-200 rounded-lg overflow-hidden">
                     {image.portrait_image_url ? (
                       <img
                         src={getImageUrl(image.portrait_image_url)}
@@ -233,7 +233,7 @@ export default function AdminLandingPage() {
           </div>
 
           {heroImages.length === 0 && (
-            <p className="text-gray-600 dark:text-gray-400 text-center py-6 sm:py-8 text-sm sm:text-base">
+            <p className="text-gray-600 text-center py-6 sm:py-8 text-sm sm:text-base">
               No hero images yet. Upload your first hero image above.
             </p>
           )}
@@ -241,10 +241,10 @@ export default function AdminLandingPage() {
 
         {/* Section Images */}
         <div>
-          <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-3 sm:mb-4">
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-4">
             Section Images
           </h2>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+          <p className="text-sm text-gray-600 mb-4">
             Upload images for Ready Made, Stitch Your Own, and Fabric sections
           </p>
 
@@ -253,14 +253,14 @@ export default function AdminLandingPage() {
               const existingImage = sectionImages.find(img => img.category === category.id)
               
               return (
-                <div key={category.id} className="bg-white dark:bg-dark-surface rounded-lg shadow-md p-4 sm:p-6">
-                  <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-3">
+                <div key={category.id} className="bg-white rounded-lg shadow-md p-4 sm:p-6">
+                  <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-3">
                     {category.title}
                   </h3>
                   
                   {/* Preview */}
                   {existingImage && (
-                    <div className="relative w-full h-40 sm:h-48 bg-gray-200 dark:bg-gray-700 rounded-lg overflow-hidden mb-4">
+                    <div className="relative w-full h-40 sm:h-48 bg-gray-200 rounded-lg overflow-hidden mb-4">
                       <img
                         src={getImageUrl(existingImage.image_url)}
                         alt={category.title}
@@ -284,7 +284,7 @@ export default function AdminLandingPage() {
                       className="hidden"
                       disabled={loading}
                     />
-                    <div className="flex items-center justify-center gap-2 px-4 py-3 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-lg cursor-pointer hover:bg-gray-800 dark:hover:bg-gray-100 transition-colors text-sm sm:text-base">
+                    <div className="flex items-center justify-center gap-2 px-4 py-3 bg-gray-900 text-white rounded-lg cursor-pointer hover:bg-gray-800:bg-gray-100 transition-colors text-sm sm:text-base">
                       <FiUpload className="w-4 h-4 sm:w-5 sm:h-5" />
                       {uploadingCategory === category.id ? 'Uploading...' : existingImage ? 'Change Image' : 'Upload Image'}
                     </div>

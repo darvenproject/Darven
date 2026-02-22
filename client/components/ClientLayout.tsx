@@ -12,7 +12,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
 
   return (
     <ThemeProvider>
-      <div className={`bg-white dark:bg-dark-bg ${!isAdminPage && 'transition-colors duration-300'} min-h-screen flex flex-col`} style={{ overflowX: 'hidden', overflowY: 'auto' }}>
+      <div className="bg-white min-h-screen flex flex-col" style={{ overflowX: 'hidden', overflowY: 'auto' }}>
         {!isAdminPage && <Header />}
         <main className={`flex-1 ${!isAdminPage ? 'pt-20' : ''}`} style={{ WebkitOverflowScrolling: 'touch', touchAction: 'pan-y pan-x' }}>{children}</main>
         {!isLandingPage && !isAdminPage && <Footer />}

@@ -6,7 +6,7 @@ import os
 import logging
 import traceback
 
-from api import admin, landing, ready_made, fabrics, custom, orders, sizes
+from api import admin, landing, ready_made, fabrics, custom, orders, sizes, contact
 from database import engine, Base
 
 # Configure logging
@@ -93,6 +93,7 @@ app.include_router(fabrics.router, prefix="/fabrics", tags=["fabrics"])
 app.include_router(custom.router, prefix="/custom-fabrics", tags=["custom"])
 app.include_router(orders.router, prefix="/orders", tags=["orders"])
 app.include_router(sizes.router, prefix="/sizes", tags=["sizes"])
+app.include_router(contact.router, tags=["contact"])
 
 @app.get("/")
 async def root():

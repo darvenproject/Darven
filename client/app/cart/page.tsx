@@ -24,20 +24,20 @@ export default function CartPage() {
 
   if (items.length === 0) {
     return (
-      <div className="min-h-screen flex items-center justify-center px-4 bg-white dark:bg-dark-bg">
+      <div className="min-h-screen flex items-center justify-center px-4 bg-white">
         <div className="text-center">
-          <div className="w-24 h-24 mx-auto mb-6 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center">
+          <div className="w-24 h-24 mx-auto mb-6 bg-gray-100 rounded-full flex items-center justify-center">
             <FiShoppingCart className="w-12 h-12 text-gray-400" />
           </div>
-          <h2 className="text-2xl sm:text-3xl font-black text-gray-900 dark:text-white mb-3 tracking-tight">
+          <h2 className="text-2xl sm:text-3xl font-black text-gray-900 mb-3 tracking-tight">
             Your cart is empty
           </h2>
-          <p className="text-gray-600 dark:text-gray-400 mb-8 text-sm sm:text-base">
+          <p className="text-gray-600 mb-8 text-sm sm:text-base">
             Add some items to get started!
           </p>
           <Link
             href="/"
-            className="inline-block bg-gray-900 dark:bg-white text-white dark:text-gray-900 py-3 px-8 rounded-xl font-bold hover:bg-black dark:hover:bg-gray-100 hover:scale-105 transition-all text-sm sm:text-base"
+            className="inline-block bg-gray-900 text-white py-3 px-8 rounded-xl font-bold hover:bg-black:bg-gray-100 hover:scale-105 transition-all text-sm sm:text-base"
           >
             Continue Shopping
           </Link>
@@ -47,14 +47,14 @@ export default function CartPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white dark:bg-dark-bg">
+    <div className="min-h-screen bg-white">
       {/* Header */}
-      <div className="border-b border-gray-200 dark:border-gray-800">
+      <div className="border-b border-gray-200">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-gray-900 dark:text-white tracking-tight">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-gray-900 tracking-tight">
             Shopping Cart
           </h1>
-          <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 mt-2">
+          <p className="text-sm sm:text-base text-gray-600 mt-2">
             {items.length} {items.length === 1 ? 'item' : 'items'} in your cart
           </p>
         </div>
@@ -68,11 +68,11 @@ export default function CartPage() {
             {items.map((item) => (
               <div
                 key={item.id}
-                className="bg-gray-50 dark:bg-dark-surface rounded-2xl p-4 sm:p-6 border-2 border-gray-200 dark:border-gray-800 hover:border-gray-300 dark:hover:border-gray-700 transition-all"
+                className="bg-gray-50 rounded-2xl p-4 sm:p-6 border-2 border-gray-200 hover:border-gray-300:border-gray-700 transition-all"
               >
                 <div className="flex gap-4">
                   {/* Image */}
-                  <div className="relative w-20 h-20 sm:w-28 sm:h-28 flex-shrink-0 rounded-xl overflow-hidden bg-gray-200 dark:bg-gray-800 border border-gray-300 dark:border-gray-700">
+                  <div className="relative w-20 h-20 sm:w-28 sm:h-28 flex-shrink-0 rounded-xl overflow-hidden bg-gray-200 border border-gray-300">
                     <img
                       src={item.image || '/placeholder.jpg'}
                       alt={item.name}
@@ -86,12 +86,12 @@ export default function CartPage() {
                   {/* Details */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between gap-2 mb-2">
-                      <h3 className="text-base sm:text-lg font-black text-gray-900 dark:text-white line-clamp-2">
+                      <h3 className="text-base sm:text-lg font-black text-gray-900 line-clamp-2">
                         {item.name}
                       </h3>
                       <button
                         onClick={() => removeItem(item.id)}
-                        className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors flex-shrink-0"
+                        className="p-2 text-red-600 hover:bg-red-50:bg-red-900/20 rounded-lg transition-colors flex-shrink-0"
                         title="Remove item"
                       >
                         <FiTrash2 className="w-5 h-5" />
@@ -101,7 +101,7 @@ export default function CartPage() {
                     {/* Item-specific details */}
                     <div className="mb-4">
                       {item.type === 'ready-made' && (
-                        <div className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
+                        <div className="text-sm text-gray-600 space-y-1">
                           <p className="flex items-center gap-2">
                             <FiPackage className="w-4 h-4" />
                             <span>Material: {item.details?.material}</span>
@@ -111,7 +111,7 @@ export default function CartPage() {
                       )}
 
                       {item.type === 'fabric' && (
-                        <div className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
+                        <div className="text-sm text-gray-600 space-y-1">
                           <p className="flex items-center gap-2">
                             <FiPackage className="w-4 h-4" />
                             <span>Material: {item.details?.material}</span>
@@ -122,7 +122,7 @@ export default function CartPage() {
                       )}
 
                       {item.type === 'custom' && (
-                        <div className="text-sm text-gray-600 dark:text-gray-400">
+                        <div className="text-sm text-gray-600">
                           <p className="flex items-center gap-2 mb-2">
                             <FiScissors className="w-4 h-4" />
                             <span className="font-bold">Custom Stitched Suit</span>
@@ -130,20 +130,21 @@ export default function CartPage() {
                           <p>Fabric: {item.details?.fabric}</p>
                           <p>Material: {item.details?.material}</p>
                           <p>Color: {item.details?.color}</p>
+                          <p>Fabric: {item.details?.meters || 4} meter{(item.details?.meters || 4) !== 1 ? 's' : ''}</p>
                           <details className="mt-3">
-                            <summary className="cursor-pointer hover:text-gray-900 dark:hover:text-white font-bold text-xs uppercase">
+                            <summary className="cursor-pointer hover:text-gray-900:text-white font-bold text-xs uppercase">
                               View Full Details →
                             </summary>
-                            <div className="mt-3 pl-4 space-y-2 text-xs border-l-2 border-gray-300 dark:border-gray-700">
+                            <div className="mt-3 pl-4 space-y-2 text-xs border-l-2 border-gray-300">
                               <div>
-                                <p className="font-bold text-gray-900 dark:text-white mb-1">Options:</p>
+                                <p className="font-bold text-gray-900 mb-1">Options:</p>
                                 <p>Cuffs: {item.details?.measurements?.cuffs === 'yes' ? 'Yes' : 'No'}</p>
                                 <p>Collar: {item.details?.measurements?.collarType === 'sherwani' ? 'Sherwani' : 'Shirt'}</p>
                                 <p>Bottom: {item.details?.measurements?.bottomWear === 'pajama' ? 'Pajama' : 'Shalwar'}</p>
                               </div>
 
                               <div>
-                                <p className="font-bold text-gray-900 dark:text-white mb-1">Kameez Measurements:</p>
+                                <p className="font-bold text-gray-900 mb-1">Kameez Measurements:</p>
                                 <p>Collar: {item.details?.measurements?.customCollar}"</p>
                                 <p>Shoulder: {item.details?.measurements?.customShoulder}"</p>
                                 <p>Chest: {item.details?.measurements?.customChest}"</p>
@@ -153,14 +154,14 @@ export default function CartPage() {
 
                               {item.details?.measurements?.bottomWear === 'shalwar' && (
                                 <div>
-                                  <p className="font-bold text-gray-900 dark:text-white mb-1">Shalwar:</p>
+                                  <p className="font-bold text-gray-900 mb-1">Shalwar:</p>
                                   <p>Length: {item.details?.measurements?.customShalwarLength}"</p>
                                 </div>
                               )}
 
                               {item.details?.measurements?.bottomWear === 'pajama' && (
                                 <div>
-                                  <p className="font-bold text-gray-900 dark:text-white mb-1">Pajama:</p>
+                                  <p className="font-bold text-gray-900 mb-1">Pajama:</p>
                                   <p>Length: {item.details?.measurements?.customPajamaLength}"</p>
                                   <p>Waist: {item.details?.measurements?.customWaist}"</p>
                                   <p>Thigh: {item.details?.measurements?.customThigh}"</p>
@@ -170,9 +171,9 @@ export default function CartPage() {
                           </details>
                           
                           {/* Stitching Cost Badge */}
-                          <div className="mt-3 inline-flex items-center gap-2 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
-                            <FiScissors className="w-3 h-3 text-blue-600 dark:text-blue-400" />
-                            <span className="text-xs font-bold text-blue-700 dark:text-blue-300">
+                          <div className="mt-3 inline-flex items-center gap-2 px-3 py-1.5 bg-blue-50 border border-blue-200 rounded-lg">
+                            <FiScissors className="w-3 h-3 text-blue-600" />
+                            <span className="text-xs font-bold text-blue-700">
                               Stitching: Rs 3,500
                             </span>
                           </div>
@@ -183,21 +184,21 @@ export default function CartPage() {
                     {/* Quantity & Price */}
                     <div className="flex items-center justify-between gap-4 flex-wrap">
                       {/* Quantity */}
-                      <div className="flex items-center gap-3 bg-white dark:bg-dark-bg rounded-xl p-1 border border-gray-200 dark:border-gray-700">
+                      <div className="flex items-center gap-3 bg-white rounded-xl p-1 border border-gray-200">
                         <button
                           onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                          className="w-8 h-8 flex items-center justify-center bg-gray-100 dark:bg-gray-800 rounded-lg hover:bg-gray-900 dark:hover:bg-white hover:text-white dark:hover:text-gray-900 transition-all"
+                          className="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-lg hover:bg-gray-900:bg-white hover:text-white:text-gray-900 transition-all"
                         >
                           <FiMinus className="w-4 h-4" />
                         </button>
 
-                        <span className="text-gray-900 dark:text-white font-black min-w-[24px] text-center">
+                        <span className="text-gray-900 font-black min-w-[24px] text-center">
                           {item.quantity}
                         </span>
 
                         <button
                           onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                          className="w-8 h-8 flex items-center justify-center bg-gray-100 dark:bg-gray-800 rounded-lg hover:bg-gray-900 dark:hover:bg-white hover:text-white dark:hover:text-gray-900 transition-all"
+                          className="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-lg hover:bg-gray-900:bg-white hover:text-white:text-gray-900 transition-all"
                         >
                           <FiPlus className="w-4 h-4" />
                         </button>
@@ -205,11 +206,11 @@ export default function CartPage() {
 
                       {/* Price */}
                       <div className="text-right">
-                        <p className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white">
+                        <p className="text-xl sm:text-2xl font-black text-gray-900">
                           Rs {(item.price * item.quantity).toLocaleString()}
                         </p>
                         {item.type === 'custom' && (
-                          <p className="text-xs text-gray-500 dark:text-gray-400">
+                          <p className="text-xs text-gray-500">
                             + Rs {(3500 * item.quantity).toLocaleString()} stitching
                           </p>
                         )}
@@ -223,19 +224,19 @@ export default function CartPage() {
 
           {/* Order Summary */}
           <div className="lg:col-span-1">
-            <div className="bg-gray-50 dark:bg-dark-surface rounded-2xl p-6 border-2 border-gray-200 dark:border-gray-800 lg:sticky lg:top-24">
-              <h2 className="text-2xl font-black text-gray-900 dark:text-white mb-6 tracking-tight">
+            <div className="bg-gray-50 rounded-2xl p-6 border-2 border-gray-200 lg:sticky lg:top-24">
+              <h2 className="text-2xl font-black text-gray-900 mb-6 tracking-tight">
                 Order Summary
               </h2>
 
               <div className="space-y-4 mb-6">
-                <div className="flex justify-between text-gray-600 dark:text-gray-400">
+                <div className="flex justify-between text-gray-600">
                   <span>Subtotal:</span>
                   <span className="font-bold">Rs {subtotal.toLocaleString()}</span>
                 </div>
 
                 {totalStitchingCost > 0 && (
-                  <div className="flex justify-between text-gray-600 dark:text-gray-400">
+                  <div className="flex justify-between text-gray-600">
                     <span className="flex items-center gap-2">
                       <FiScissors className="w-4 h-4" />
                       Stitching Cost:
@@ -244,7 +245,7 @@ export default function CartPage() {
                   </div>
                 )}
 
-                <div className="flex justify-between text-gray-600 dark:text-gray-400">
+                <div className="flex justify-between text-gray-600">
                   <span className="flex items-center gap-2">
                     <FiPackage className="w-4 h-4" />
                     Delivery:
@@ -252,10 +253,10 @@ export default function CartPage() {
                   <span className="font-bold">Rs {deliveryCharges.toLocaleString()}</span>
                 </div>
 
-                <div className="border-t-2 border-gray-200 dark:border-gray-700 pt-4">
+                <div className="border-t-2 border-gray-200 pt-4">
                   <div className="flex justify-between items-center">
-                    <span className="text-xl font-black text-gray-900 dark:text-white">Total:</span>
-                    <span className="text-3xl font-black text-gray-900 dark:text-white">
+                    <span className="text-xl font-black text-gray-900">Total:</span>
+                    <span className="text-3xl font-black text-gray-900">
                       Rs {total.toLocaleString()}
                     </span>
                   </div>
@@ -264,24 +265,24 @@ export default function CartPage() {
 
               <button
                 onClick={() => router.push('/checkout')}
-                className="w-full bg-gray-900 dark:bg-white text-white dark:text-gray-900 py-4 px-6 rounded-xl font-black text-lg hover:bg-black dark:hover:bg-gray-100 hover:scale-105 hover:shadow-2xl transition-all active:scale-95 mb-4"
+                className="w-full bg-gray-900 text-white py-4 px-6 rounded-xl font-black text-lg hover:bg-black:bg-gray-100 hover:scale-105 hover:shadow-2xl transition-all active:scale-95 mb-4"
               >
                 Proceed to Checkout
               </button>
 
               <Link
                 href="/"
-                className="block text-center text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white font-bold transition-colors"
+                className="block text-center text-gray-600 hover:text-gray-900:text-white font-bold transition-colors"
               >
                 ← Continue Shopping
               </Link>
 
               {/* Delivery Info */}
-              <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl">
-                <p className="text-sm text-blue-800 dark:text-blue-300 font-bold">
+              <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-xl">
+                <p className="text-sm text-blue-800 font-bold">
                   ✓ Free delivery on orders above Rs 10,000
                 </p>
-                <p className="text-xs text-blue-700 dark:text-blue-400 mt-1">
+                <p className="text-xs text-blue-700 mt-1">
                   Estimated delivery: 7 working days
                 </p>
               </div>

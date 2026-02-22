@@ -45,6 +45,34 @@ export default function MobileLanding() {
     return () => container.removeEventListener('scroll', handleScroll)
   }, [])
 
+  // Keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const totalSections = (heroImages.length > 0 ? 1 : 0) + sectionImages.length
+      
+      if (e.key === 'ArrowDown') {
+        e.preventDefault()
+        if (currentIndex < totalSections - 1) {
+          containerRef.current?.scrollTo({
+            top: (currentIndex + 1) * window.innerHeight,
+            behavior: 'smooth'
+          })
+        }
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault()
+        if (currentIndex > 0) {
+          containerRef.current?.scrollTo({
+            top: (currentIndex - 1) * window.innerHeight,
+            behavior: 'smooth'
+          })
+        }
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [currentIndex, heroImages.length, sectionImages.length])
+
   useEffect(() => {
     if (heroImages.length <= 1 || currentIndex !== 0) return
 

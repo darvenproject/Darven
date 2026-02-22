@@ -5,15 +5,15 @@ import { Mail, MapPin, Instagram, Facebook } from 'lucide-react'
 
 export default function Footer() {
   return (
-    <footer className="border-t border-gray-200 dark:border-gray-800 mt-20">
-      <div className="max-w-7xl mx-auto px-6 lg:px-8 py-8">
+    <footer className="border-t border-gray-200 mt-20">
+      <div className="w-full px-8 lg:px-12 xl:px-16 py-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand */}
           <div className="md:col-span-2">
-            <h3 className="text-2xl font-light tracking-wider text-gray-900 dark:text-white mb-3">
+            <h3 className="text-2xl font-light tracking-wider text-gray-900 mb-3">
               SHOPDARVEN
             </h3>
-            <p className="text-sm font-light text-gray-600 dark:text-gray-400 leading-relaxed max-w-md">
+            <p className="text-sm font-light text-gray-600 leading-relaxed max-w-md">
               Premium quality kurta pajama and shalwar kameez for the modern Pakistani gentleman. 
               We offer ready-made suits, custom stitching, and premium fabrics.
             </p>
@@ -21,28 +21,43 @@ export default function Footer() {
 
           {/* Quick Links */}
           <div>
-            <h4 className="text-sm font-light tracking-wide text-gray-900 dark:text-white mb-3 uppercase">
+            <h4 className="text-sm font-light tracking-wide text-gray-900 mb-3 uppercase">
               Shop
             </h4>
             <ul className="space-y-2">
               <li>
-                <Link href="/ready-made" className="text-sm font-light text-gray-600 dark:text-gray-400 hover:opacity-70 transition-opacity">
+                <Link href="/ready-made" className="text-sm font-light text-gray-600 hover:opacity-70 transition-opacity">
                   Ready Made
                 </Link>
               </li>
               <li>
-                <Link href="/stitch-your-own" className="text-sm font-light text-gray-600 dark:text-gray-400 hover:opacity-70 transition-opacity">
+                <Link href="/stitch-your-own" className="text-sm font-light text-gray-600 hover:opacity-70 transition-opacity">
                   Stitch Your Own
                 </Link>
               </li>
               <li>
-                <Link href="/fabric" className="text-sm font-light text-gray-600 dark:text-gray-400 hover:opacity-70 transition-opacity">
+                <Link href="/fabric" className="text-sm font-light text-gray-600 hover:opacity-70 transition-opacity">
                   Fabrics
                 </Link>
               </li>
               <li>
-                <Link href="/cart" className="text-sm font-light text-gray-600 dark:text-gray-400 hover:opacity-70 transition-opacity">
+                <Link href="/cart" className="text-sm font-light text-gray-600 hover:opacity-70 transition-opacity">
                   Cart
+                </Link>
+              </li>
+              <li>
+                <Link href="/about" className="text-sm font-light text-gray-600 hover:opacity-70 transition-opacity">
+                  About Us
+                </Link>
+              </li>
+              <li>
+                <Link href="/size-chart" className="text-sm font-light text-gray-600 hover:opacity-70 transition-opacity">
+                  Size Chart
+                </Link>
+              </li>
+              <li>
+                <Link href="/return-exchange-policy" className="text-sm font-light text-gray-600 hover:opacity-70 transition-opacity">
+                  Return & Exchange Policy
                 </Link>
               </li>
             </ul>
@@ -50,21 +65,26 @@ export default function Footer() {
 
           {/* Contact & Socials */}
           <div>
-            <h4 className="text-sm font-light tracking-wide text-gray-900 dark:text-white mb-3 uppercase">
+            <h4 className="text-sm font-light tracking-wide text-gray-900 mb-3 uppercase">
               Contact
             </h4>
             <ul className="space-y-2">
-              <li className="flex items-start gap-3 text-sm font-light text-gray-600 dark:text-gray-400">
+              <li>
+                <Link href="/contact" className="text-sm font-light text-gray-600 hover:opacity-70 transition-opacity">
+                  Contact Us
+                </Link>
+              </li>
+              <li className="flex items-start gap-3 text-sm font-light text-gray-600">
                 <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0" strokeWidth={1.5} />
                 <span>Karachi, Pakistan</span>
               </li>
-              <li className="flex items-center gap-3 text-sm font-light text-gray-600 dark:text-gray-400">
+              <li className="flex items-center gap-3 text-sm font-light text-gray-600">
                 <Mail className="w-4 h-4 flex-shrink-0" strokeWidth={1.5} />
                 <a href="mailto:shopdarven@gmail.com" className="hover:opacity-70 transition-opacity">
                   shopdarven@gmail.com
                 </a>
               </li>
-              <li className="flex items-center gap-3 text-sm font-light text-gray-600 dark:text-gray-400 pt-2">
+              <li className="flex items-center gap-3 text-sm font-light text-gray-600 pt-2">
                 <a 
                   href="https://www.instagram.com/shopdarven/" 
                   target="_blank" 
@@ -75,7 +95,7 @@ export default function Footer() {
                   <span>ShopDarven</span>
                 </a>
               </li>
-              <li className="flex items-center gap-3 text-sm font-light text-gray-600 dark:text-gray-400">
+              <li className="flex items-center gap-3 text-sm font-light text-gray-600">
                 <a 
                   href="https://www.facebook.com/profile.php?id=61580410082761" 
                   target="_blank" 
@@ -91,8 +111,8 @@ export default function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="border-t border-gray-200 dark:border-gray-800 mt-8 pt-6">
-          <p className="text-sm font-light text-gray-600 dark:text-gray-400 text-center">
+        <div className="border-t border-gray-200 mt-8 pt-6">
+          <p className="text-sm font-light text-gray-600 text-center">
             © {new Date().getFullYear()} ShopDarven. All rights reserved.
           </p>
         </div>

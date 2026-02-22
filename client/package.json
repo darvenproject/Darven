@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@cloudflare/next-on-pages": "^1.13.5",
+    "@next/swc-win32-x64-msvc": "^16.1.6",
     "axios": "1.6.8",
     "framer-motion": "10.18.0",
     "lucide-react": "^0.562.0",

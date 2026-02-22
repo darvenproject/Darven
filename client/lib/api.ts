@@ -119,6 +119,14 @@ export const apiClient = {
   verifyAdmin: () => api.get('/admin/verify'),
   getRevenue: () => api.get('/admin/revenue'),
   
+  // Contact Form
+  submitContactForm: (data: {
+    name: string
+    email: string
+    phone: string
+    message: string
+  }) => api.post('/contact', data),
+  
   // Expose api instance for direct use
   api: api,
 }
