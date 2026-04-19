@@ -1,0 +1,448 @@
+'use client'
+
+import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { FiPlus, FiEdit2, FiTrash2, FiArrowLeft } from 'react-icons/fi'
+import { apiClient, getImageUrl } from '@/lib/api'
+import Link from 'next/link'
+
+interface CustomFabric {
+  id: number
+  name: string
+  description: string
+  price: number
+  material: string
+  colors?: string[]
+  image_url: string
+}
+
+export default function AdminCustomFabricsPage() {
+  const router = useRouter()
+  const [fabrics, setFabrics] = useState<CustomFabric[]>([])
+  const [loading, setLoading] = useState(true)
+  const [showForm, setShowForm] = useState(false)
+  const [editingFabric, setEditingFabric] = useState<CustomFabric | null>(null)
+  const [formData, setFormData] = useState({
+    name: '',
+    description: '',
+    price: '',
+    material: ''
+  })
+  const [colors, setColors] = useState<string[]>([])
+  const [colorInput, setColorInput] = useState('')
+  const [file, setFile] = useState<File | null>(null)
+  const [previewUrl, setPreviewUrl] = useState<string>('')
+
+  useEffect(() => {
+    verifyAdmin()
+  }, [])
+
+  const verifyAdmin = async () => {
+    try {
+      await apiClient.api.get('/admin/verify')
+      fetchFabrics()
+    } catch (error) {
+      router.push('/login')
+    }
+  }
+
+  const fetchFabrics = async () => {
+    try {
+      const response = await apiClient.getCustomFabrics()
+      setFabrics(response.data)
+    } catch (error) {
+      console.error('Error fetching custom fabrics:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = e.target.files?.[0]
+    if (selectedFile) {
+      setFile(selectedFile)
+      setPreviewUrl(URL.createObjectURL(selectedFile))
+    }
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setLoading(true)
+
+    try {
+      const data = new FormData()
+      data.append('name', formData.name)
+      data.append('description', formData.description)
+      data.append('price', formData.price)
+      data.append('material', formData.material)
+      
+      if (colors.length > 0) {
+        data.append('colors', JSON.stringify(colors))
+      } else {
+        data.append('colors', JSON.stringify([]))
+      }
+
+      if (file) {
+        data.append('file', file)
+      }
+
+      if (editingFabric) {
+        await apiClient.api.put(`/custom-fabrics/${editingFabric.id}`, data)
+      } else {
+        await apiClient.api.post('/custom-fabrics', data)
+      }
+
+      setShowForm(false)
+      setEditingFabric(null)
+      setFormData({ name: '', description: '', price: '', material: '' })
+      setColors([])
+      setColorInput('')
+      setFile(null)
+      setPreviewUrl('')
+      await fetchFabrics()
+    } catch (error) {
+      console.error('Error saving custom fabric:', error)
+      alert('Failed to save custom fabric')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleEdit = (fabric: CustomFabric) => {
+    setEditingFabric(fabric)
+    setFormData({
+      name: fabric.name,
+      description: fabric.description,
+      price: fabric.price.toString(),
+      material: fabric.material
+    })
+    setColors(fabric.colors || [])
+    setPreviewUrl(getImageUrl(fabric.image_url))
+    setShowForm(true)
+  }
+
+  const handleDelete = async (id: number) => {
+    if (!confirm('Are you sure you want to delete this custom fabric option?')) return
+
+    try {
+      await apiClient.api.delete(`/custom-fabrics/${id}`)
+      fetchFabrics()
+    } catch (error) {
+      console.error('Error deleting custom fabric:', error)
+      alert('Failed to delete custom fabric')
+    }
+  }
+
+  if (loading && !showForm) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-white">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-100">
+      <header className="bg-white shadow-md sticky top-0 z-10">
+        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Link href="/admin/dashboard" className="p-2 hover:bg-gray-100:bg-dark-bg rounded-lg">
+              <FiArrowLeft className="w-6 h-6 text-gray-900" />
+            </Link>
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
+              Custom Stitch
+            </h1>
+          </div>
+          {!showForm && (
+            <button
+              onClick={() => setShowForm(true)}
+              className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800:bg-gray-100 transition-colors text-sm sm:text-base"
+            >
+              <FiPlus />
+              <span className="hidden sm:inline">Add Fabric</span>
+            </button>
+          )}
+        </div>
+      </header>
+
+      <div className="container mx-auto px-4 py-4 sm:py-8">
+        {showForm ? (
+          <div className="max-w-2xl mx-auto bg-white rounded-lg shadow-md p-4 sm:p-6">
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4 sm:mb-6">
+              {editingFabric ? 'Edit Custom Fabric' : 'Add New Custom Fabric'}
+            </h2>
+
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Fabric Name *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  className="w-full px-4 py-2 sm:py-3 rounded-lg border-2 border-gray-300 bg-white text-gray-900 focus:outline-none focus:border-gray-900:border-white"
+                  placeholder="e.g., Premium Cotton"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Description *
+                </label>
+                <textarea
+                  required
+                  rows={3}
+                  value={formData.description}
+                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  className="w-full px-4 py-2 sm:py-3 rounded-lg border-2 border-gray-300 bg-white text-gray-900 focus:outline-none focus:border-gray-900:border-white"
+                  placeholder="Describe the fabric quality and features"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Price (Rs) *
+                  </label>
+                  <input
+                    type="number"
+                    required
+                    value={formData.price}
+                    onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                    className="w-full px-4 py-2 sm:py-3 rounded-lg border-2 border-gray-300 bg-white text-gray-900 focus:outline-none focus:border-gray-900:border-white"
+                    placeholder="3000"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Full suit stitching price
+                  </p>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Material *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={formData.material}
+                    onChange={(e) => setFormData({ ...formData, material: e.target.value })}
+                    className="w-full px-4 py-2 sm:py-3 rounded-lg border-2 border-gray-300 bg-white text-gray-900 focus:outline-none focus:border-gray-900:border-white"
+                    placeholder="e.g., Cotton, Lawn"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Available Colors (Optional)
+                </label>
+                <div className="flex gap-2 mb-2">
+                  <input
+                    type="text"
+                    value={colorInput}
+                    onChange={(e) => setColorInput(e.target.value)}
+                    onKeyPress={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault()
+                        if (colorInput.trim() && !colors.includes(colorInput.trim())) {
+                          setColors([...colors, colorInput.trim()])
+                          setColorInput('')
+                        }
+                      }
+                    }}
+                    className="flex-1 px-4 py-2 rounded-lg border-2 border-gray-300 bg-white text-gray-900 focus:outline-none focus:border-gray-900:border-white"
+                    placeholder="Press Enter to add"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (colorInput.trim() && !colors.includes(colorInput.trim())) {
+                        setColors([...colors, colorInput.trim()])
+                        setColorInput('')
+                      }
+                    }}
+                    className="px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800:bg-gray-100 transition-colors whitespace-nowrap"
+                  >
+                    Add
+                  </button>
+                </div>
+                {colors.length > 0 && (
+                  <div className="flex flex-wrap gap-2 p-3 bg-gray-50 rounded-lg">
+                    {colors.map((color, index) => (
+                      <span
+                        key={index}
+                        className="inline-flex items-center gap-2 px-3 py-1 bg-white border border-gray-300 rounded-lg text-sm text-gray-900"
+                      >
+                        {color}
+                        <button
+                          type="button"
+                          onClick={() => setColors(colors.filter((_, i) => i !== index))}
+                          className="text-red-600 hover:text-red-800:text-red-300 font-bold"
+                        >
+                          ×
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                )}
+                <p className="text-xs text-gray-500 mt-1">
+                  Add colors that customers can choose from
+                </p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Fabric Image * {editingFabric && '(Leave empty to keep existing)'}
+                </label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  required={!editingFabric}
+                  onChange={handleFileChange}
+                  className="w-full px-4 py-2 sm:py-3 rounded-lg border-2 border-gray-300 bg-white text-gray-900"
+                />
+                {previewUrl && (
+                  <div className="mt-4 relative h-48 w-full rounded-lg overflow-hidden bg-gray-100">
+                    <img
+                      src={previewUrl}
+                      alt="Preview"
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        e.currentTarget.src = '/placeholder.jpg'
+                      }}
+                    />
+                  </div>
+                )}
+              </div>
+
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-4">
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="flex-1 bg-gray-900 text-white py-3 px-4 rounded-lg font-bold hover:bg-gray-800:bg-gray-100 transition-colors disabled:opacity-50"
+                >
+                  {loading ? 'Saving...' : editingFabric ? 'Update Fabric' : 'Add Fabric'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowForm(false)
+                    setEditingFabric(null)
+                    setFormData({ name: '', description: '', price: '', material: '' })
+                    setColors([])
+                    setColorInput('')
+                    setFile(null)
+                    setPreviewUrl('')
+                  }}
+                  className="px-6 py-3 border-2 border-gray-300 text-gray-900 rounded-lg hover:bg-gray-100:bg-dark-bg transition-colors"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        ) : (
+          <>
+            <div className="mb-4 sm:mb-6 bg-blue-50 border border-blue-200 rounded-lg p-3 sm:p-4">
+              <p className="text-sm sm:text-base text-blue-800">
+                <strong>Note:</strong> These options appear on the "Stitch Your Own" page.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+              {fabrics.map((fabric) => (
+                <div key={fabric.id} className="bg-white rounded-lg shadow-md overflow-hidden">
+                  <div className="relative h-48 bg-gray-100">
+                    <img
+                      src={getImageUrl(fabric.image_url)}
+                      alt={fabric.name}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        e.currentTarget.src = '/placeholder.jpg'
+                      }}
+                    />
+                  </div>
+                  <div className="p-4">
+                    <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-2 line-clamp-1">
+                      {fabric.name}
+                    </h3>
+                    <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+                      {fabric.description}
+                    </p>
+                    <div className="mb-3">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <span className="text-lg sm:text-xl font-bold text-gray-900">
+                            Rs {fabric.price.toLocaleString()}
+                          </span>
+                          <p className="text-xs text-gray-500">
+                            {fabric.material}
+                          </p>
+                        </div>
+                      </div>
+                      {fabric.colors && fabric.colors.length > 0 && (
+                        <div className="mt-2">
+                          <p className="text-xs text-gray-500 mb-1">
+                            Colors ({fabric.colors.length}):
+                          </p>
+                          <div className="flex flex-wrap gap-1">
+                            {fabric.colors.slice(0, 5).map((color, idx) => (
+                              <span
+                                key={idx}
+                                className="text-xs px-2 py-1 bg-gray-100 text-gray-700 rounded"
+                              >
+                                {color}
+                              </span>
+                            ))}
+                            {fabric.colors.length > 5 && (
+                              <span className="text-xs px-2 py-1 text-gray-500">
+                                +{fabric.colors.length - 5}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => handleEdit(fabric)}
+                        className="flex-1 flex items-center justify-center gap-1 sm:gap-2 px-3 sm:px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
+                      >
+                        <FiEdit2 className="w-4 h-4" />
+                        <span className="hidden sm:inline">Edit</span>
+                      </button>
+                      <button
+                        onClick={() => handleDelete(fabric.id)}
+                        className="flex-1 flex items-center justify-center gap-1 sm:gap-2 px-3 sm:px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm"
+                      >
+                        <FiTrash2 className="w-4 h-4" />
+                        <span className="hidden sm:inline">Delete</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {fabrics.length === 0 && (
+              <div className="text-center py-12 sm:py-20">
+                <p className="text-gray-600 text-lg sm:text-xl mb-4">
+                  No custom fabric options yet
+                </p>
+                <button
+                  onClick={() => setShowForm(true)}
+                  className="inline-flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-3 bg-gray-900 text-white rounded-lg hover:bg-gray-800:bg-gray-100 transition-colors"
+                >
+                  <FiPlus />
+                  Add Your First Fabric
+                </button>
+              </div>
+            )}
+          </>
+        )}
+      </div>
+    </div>
+  )
+}
