@@ -12,7 +12,7 @@ export default function ModernHeader() {
   const pathname = usePathname();
   const isHomePage = pathname === '/';
 
-  const [isScrolled, setIsScrolled] = useState(false);
+  const [scrollY, setScrollY] = useState(0);
   const [isPastFifthSection, setIsPastFifthSection] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -21,42 +21,36 @@ export default function ModernHeader() {
 
   useEffect(() => {
     setIsPastFifthSection(false);
-    setIsScrolled(false);
+    setScrollY(0);
 
-    if (!isHomePage) return;
+    const handleScroll = () => {
+      const y = window.scrollY;
+      setScrollY(y);
 
-    const getSections = () => {
-      // Try selectors in order until we get 5+
+      if (!isHomePage) return;
+
+      // Find 5th visible section
       const attempts = [
         'main > section',
         'main > div > section',
         'main > *',
-        'body > div > section',
         'section',
       ];
+
       for (const sel of attempts) {
         const found = Array.from(document.querySelectorAll(sel)).filter(
-          (el) => (el as HTMLElement).offsetHeight > 100  // ignore tiny/hidden elements
-        );
-        if (found.length >= 5) return found as HTMLElement[];
+          (el) => (el as HTMLElement).offsetHeight > 100
+        ) as HTMLElement[];
+
+        if (found.length >= 5) {
+          const triggerAt = found[4].offsetTop - 80;
+          setIsPastFifthSection(y >= triggerAt);
+          return;
+        }
       }
-      return null;
-    };
 
-    const handleScroll = () => {
-      const scrollY = window.scrollY;
-      setIsScrolled(scrollY > 20);
-
-      const sections = getSections();
-
-      if (sections && sections.length >= 5) {
-        const fifthSection = sections[4];
-        const triggerAt = fifthSection.offsetTop - 80; // 80px = header height
-        setIsPastFifthSection(scrollY >= triggerAt);
-      } else {
-        // Fallback: use 4 viewport heights
-        setIsPastFifthSection(scrollY >= window.innerHeight * 4);
-      }
+      // Fallback
+      setIsPastFifthSection(y >= window.innerHeight * 4);
     };
 
     handleScroll();
@@ -64,17 +58,31 @@ export default function ModernHeader() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [isHomePage, pathname]);
 
-  useEffect(() => {
-    setIsMobileMenuOpen(false);
-  }, [pathname]);
+  useEffect(() => { setIsMobileMenuOpen(false); }, [pathname]);
 
   useEffect(() => {
     document.body.style.overflow = isMobileMenuOpen ? 'hidden' : 'unset';
     return () => { document.body.style.overflow = 'unset'; };
   }, [isMobileMenuOpen]);
 
-  // Transparent = home page AND not yet at 5th section
-  const isTransparent = isHomePage && !isPastFifthSection;
+  // At very top of home page: fully transparent with blur
+  // Scrolled on home (before 5th section): slight white tint + blur
+  // Past 5th section OR other pages: solid white + blur
+  const atTop = isHomePage && scrollY < 10 && !isPastFifthSection;
+  const isScrolledOnHome = isHomePage && scrollY >= 10 && !isPastFifthSection;
+  const isSolid = !isHomePage || isPastFifthSection;
+
+  const getBg = () => {
+    if (atTop) return 'rgba(255,255,255,0)';
+    if (isScrolledOnHome) return `rgba(255,255,255,${Math.min((scrollY - 10) / 200, 0.7)})`;
+    return 'rgba(255,255,255,0.92)';
+  };
+
+  const getBorderColor = () => {
+    if (atTop) return 'rgba(0,0,0,0)';
+    if (isScrolledOnHome) return `rgba(0,0,0,${Math.min((scrollY - 10) / 300, 0.08)})`;
+    return 'rgba(0,0,0,0.08)';
+  };
 
   const navLinks = [
     { href: '/', label: 'Home' },
@@ -84,11 +92,8 @@ export default function ModernHeader() {
     { href: '/about', label: 'About' },
   ];
 
-  const iconColor = isTransparent ? '#ffffff' : '#000000';
-
   return (
     <>
-      {/* ── Header ── */}
       <header
         style={{
           position: 'fixed',
@@ -96,23 +101,24 @@ export default function ModernHeader() {
           left: 0,
           right: 0,
           zIndex: 50,
-          transition: 'background-color 0.5s ease, border-color 0.5s ease, padding 0.3s ease',
-          backgroundColor: isTransparent ? 'transparent' : '#ffffff',
-          borderBottom: isTransparent ? '1px solid transparent' : '1px solid #e5e7eb',
-          paddingTop: isScrolled && !isTransparent ? '0.5rem' : '0.75rem',
-          paddingBottom: isScrolled && !isTransparent ? '0.5rem' : '0.75rem',
+          backdropFilter: 'blur(16px)',
+          WebkitBackdropFilter: 'blur(16px)',
+          backgroundColor: getBg(),
+          borderBottom: `1px solid ${getBorderColor()}`,
+          transition: 'background-color 0.4s ease, border-color 0.4s ease',
+          paddingTop: isSolid && scrollY > 20 ? '0.5rem' : '0.75rem',
+          paddingBottom: isSolid && scrollY > 20 ? '0.5rem' : '0.75rem',
         }}
       >
         <div className="w-full px-8 lg:px-12 xl:px-16">
           <div className="flex items-center justify-between h-16">
 
-            {/* Hamburger */}
+            {/* Hamburger — always black */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               aria-label="Toggle menu"
               style={{
-                color: iconColor,
-                transition: 'color 0.5s ease',
+                color: '#000000',
                 padding: '0.5rem',
                 borderRadius: '9999px',
                 background: 'transparent',
@@ -129,7 +135,7 @@ export default function ModernHeader() {
               }
             </button>
 
-            {/* Logo — centered absolutely */}
+            {/* Logo — centered */}
             <div style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)' }}>
               <Link href="/" className="block hover:opacity-80 transition-opacity duration-300">
                 <Image
@@ -138,24 +144,18 @@ export default function ModernHeader() {
                   height={60}
                   width={180}
                   priority
-                  style={{
-                    height: '3.5rem',
-                    width: 'auto',
-                    transition: 'filter 0.5s ease',
-                    filter: isTransparent ? 'brightness(0) invert(1)' : 'none',
-                  }}
+                  style={{ height: '3.5rem', width: 'auto' }}
                 />
               </Link>
             </div>
 
-            {/* Cart */}
+            {/* Cart — always black */}
             <Link
               href="/cart"
               aria-label="Shopping cart"
               style={{
                 position: 'relative',
-                color: iconColor,
-                transition: 'color 0.5s ease',
+                color: '#000000',
                 padding: '0.5rem',
                 borderRadius: '9999px',
                 display: 'flex',
@@ -178,9 +178,8 @@ export default function ModernHeader() {
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  backgroundColor: isTransparent ? '#ffffff' : '#000000',
-                  color: isTransparent ? '#000000' : '#ffffff',
-                  transition: 'background-color 0.5s ease, color 0.5s ease',
+                  backgroundColor: '#000000',
+                  color: '#ffffff',
                 }}>
                   {cartCount}
                 </span>
@@ -204,7 +203,7 @@ export default function ModernHeader() {
         }}
       />
 
-      {/* Slide-in menu panel */}
+      {/* Slide-in menu */}
       <div
         style={{
           position: 'fixed',
@@ -233,7 +232,6 @@ export default function ModernHeader() {
                   textDecoration: 'none',
                   padding: '0.5rem 0',
                   borderBottom: pathname === link.href ? '2px solid #000000' : 'none',
-                  transition: 'opacity 0.2s ease',
                 }}
               >
                 {link.label}
