@@ -29,7 +29,6 @@ export default function ModernHeader() {
 
       if (!isHomePage) return;
 
-      // Find 5th visible section
       const attempts = [
         'main > section',
         'main > div > section',
@@ -43,13 +42,10 @@ export default function ModernHeader() {
         ) as HTMLElement[];
 
         if (found.length >= 5) {
-          const triggerAt = found[4].offsetTop - 80;
-          setIsPastFifthSection(y >= triggerAt);
+          setIsPastFifthSection(y >= found[4].offsetTop - 80);
           return;
         }
       }
-
-      // Fallback
       setIsPastFifthSection(y >= window.innerHeight * 4);
     };
 
@@ -65,24 +61,22 @@ export default function ModernHeader() {
     return () => { document.body.style.overflow = 'unset'; };
   }, [isMobileMenuOpen]);
 
-  // At very top of home page: fully transparent with blur
-  // Scrolled on home (before 5th section): slight white tint + blur
-  // Past 5th section OR other pages: solid white + blur
-  const atTop = isHomePage && scrollY < 10 && !isPastFifthSection;
-  const isScrolledOnHome = isHomePage && scrollY >= 10 && !isPastFifthSection;
-  const isSolid = !isHomePage || isPastFifthSection;
+  // On home page: transparent until 5th section
+  // On other pages or past 5th section: frosted white
+  const isTransparent = isHomePage && !isPastFifthSection;
 
-  const getBg = () => {
-    if (atTop) return 'rgba(255,255,255,0)';
-    if (isScrolledOnHome) return `rgba(255,255,255,${Math.min((scrollY - 10) / 200, 0.7)})`;
-    return 'rgba(255,255,255,0.92)';
-  };
+  // Fade in white as user scrolls (0 at top, up to 0.9 after 150px)
+  const whiteFill = isTransparent
+    ? Math.min(scrollY / 150, 0.85)
+    : 0.92;
 
-  const getBorderColor = () => {
-    if (atTop) return 'rgba(0,0,0,0)';
-    if (isScrolledOnHome) return `rgba(0,0,0,${Math.min((scrollY - 10) / 300, 0.08)})`;
-    return 'rgba(0,0,0,0.08)';
-  };
+  const bgColor = isTransparent && scrollY < 5
+    ? 'rgba(255,255,255,0)'       // fully transparent at top
+    : `rgba(255,255,255,${whiteFill})`;
+
+  const borderColor = isTransparent && scrollY < 5
+    ? 'rgba(0,0,0,0)'
+    : `rgba(0,0,0,${Math.min(whiteFill * 0.1, 0.08)})`;
 
   const navLinks = [
     { href: '/', label: 'Home' },
@@ -101,24 +95,23 @@ export default function ModernHeader() {
           left: 0,
           right: 0,
           zIndex: 50,
-          backdropFilter: 'blur(16px)',
-          WebkitBackdropFilter: 'blur(16px)',
-          backgroundColor: getBg(),
-          borderBottom: `1px solid ${getBorderColor()}`,
-          transition: 'background-color 0.4s ease, border-color 0.4s ease',
-          paddingTop: isSolid && scrollY > 20 ? '0.5rem' : '0.75rem',
-          paddingBottom: isSolid && scrollY > 20 ? '0.5rem' : '0.75rem',
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
+          backgroundColor: bgColor,
+          borderBottom: `1px solid ${borderColor}`,
+          transition: 'background-color 0.3s ease, border-color 0.3s ease',
+          paddingTop: !isTransparent && scrollY > 20 ? '0.5rem' : '0.75rem',
+          paddingBottom: !isTransparent && scrollY > 20 ? '0.5rem' : '0.75rem',
         }}
       >
         <div className="w-full px-8 lg:px-12 xl:px-16">
           <div className="flex items-center justify-between h-16">
 
-            {/* Hamburger — always black */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               aria-label="Toggle menu"
               style={{
-                color: '#000000',
+                color: '#000',
                 padding: '0.5rem',
                 borderRadius: '9999px',
                 background: 'transparent',
@@ -135,7 +128,6 @@ export default function ModernHeader() {
               }
             </button>
 
-            {/* Logo — centered */}
             <div style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)' }}>
               <Link href="/" className="block hover:opacity-80 transition-opacity duration-300">
                 <Image
@@ -149,13 +141,12 @@ export default function ModernHeader() {
               </Link>
             </div>
 
-            {/* Cart — always black */}
             <Link
               href="/cart"
               aria-label="Shopping cart"
               style={{
                 position: 'relative',
-                color: '#000000',
+                color: '#000',
                 padding: '0.5rem',
                 borderRadius: '9999px',
                 display: 'flex',
@@ -178,8 +169,8 @@ export default function ModernHeader() {
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  backgroundColor: '#000000',
-                  color: '#ffffff',
+                  backgroundColor: '#000',
+                  color: '#fff',
                 }}>
                   {cartCount}
                 </span>
@@ -228,10 +219,10 @@ export default function ModernHeader() {
                 style={{
                   fontSize: '1.125rem',
                   fontWeight: 500,
-                  color: '#000000',
+                  color: '#000',
                   textDecoration: 'none',
                   padding: '0.5rem 0',
-                  borderBottom: pathname === link.href ? '2px solid #000000' : 'none',
+                  borderBottom: pathname === link.href ? '2px solid #000' : 'none',
                 }}
               >
                 {link.label}
