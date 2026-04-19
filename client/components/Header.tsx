@@ -20,44 +20,46 @@ export default function ModernHeader() {
   const cartCount = items.reduce((acc, item) => acc + item.quantity, 0);
 
   useEffect(() => {
-    // Reset on page change
     setIsPastFifthSection(false);
     setIsScrolled(false);
 
     if (!isHomePage) return;
 
+    const getSections = () => {
+      // Try selectors in order until we get 5+
+      const attempts = [
+        'main > section',
+        'main > div > section',
+        'main > *',
+        'body > div > section',
+        'section',
+      ];
+      for (const sel of attempts) {
+        const found = Array.from(document.querySelectorAll(sel)).filter(
+          (el) => (el as HTMLElement).offsetHeight > 100  // ignore tiny/hidden elements
+        );
+        if (found.length >= 5) return found as HTMLElement[];
+      }
+      return null;
+    };
+
     const handleScroll = () => {
       const scrollY = window.scrollY;
       setIsScrolled(scrollY > 20);
 
-      // Try multiple selectors in priority order to find 5+ sections
-      const selectors = [
-        'main > section',
-        'main > div > section',
-        '[data-section]',
-        'main > *',
-      ];
-
-      let sections: NodeListOf<Element> | null = null;
-      for (const sel of selectors) {
-        const found = document.querySelectorAll(sel);
-        if (found.length >= 5) {
-          sections = found;
-          break;
-        }
-      }
+      const sections = getSections();
 
       if (sections && sections.length >= 5) {
-        const fifthSection = sections[4] as HTMLElement;
-        const offsetTop = fifthSection.offsetTop;
-        setIsPastFifthSection(scrollY + 80 >= offsetTop);
+        const fifthSection = sections[4];
+        const triggerAt = fifthSection.offsetTop - 80; // 80px = header height
+        setIsPastFifthSection(scrollY >= triggerAt);
       } else {
-        // Fallback: 4 viewport heights
+        // Fallback: use 4 viewport heights
         setIsPastFifthSection(scrollY >= window.innerHeight * 4);
       }
     };
 
-    handleScroll(); // run on mount
+    handleScroll();
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, [isHomePage, pathname]);
@@ -71,12 +73,8 @@ export default function ModernHeader() {
     return () => { document.body.style.overflow = 'unset'; };
   }, [isMobileMenuOpen]);
 
-  // Transparent only on homepage BEFORE 5th section
+  // Transparent = home page AND not yet at 5th section
   const isTransparent = isHomePage && !isPastFifthSection;
-
-  const iconColor = isTransparent ? 'text-white' : 'text-black';
-  const hoverBg = isTransparent ? 'hover:bg-white/10' : 'hover:bg-black/5';
-  const buttonClass = `flex items-center justify-center p-2 rounded-full transition-all duration-300 ease-out hover:scale-110 hover:-translate-y-0.5 active:scale-95 ${hoverBg} ${iconColor}`;
 
   const navLinks = [
     { href: '/', label: 'Home' },
@@ -86,15 +84,21 @@ export default function ModernHeader() {
     { href: '/about', label: 'About' },
   ];
 
+  const iconColor = isTransparent ? '#ffffff' : '#000000';
+
   return (
     <>
+      {/* ── Header ── */}
       <header
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-in-out ${
-          isTransparent
-            ? 'bg-transparent border-transparent shadow-none'
-            : 'bg-white border-b border-gray-200 shadow-sm'
-        }`}
         style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          zIndex: 50,
+          transition: 'background-color 0.5s ease, border-color 0.5s ease, padding 0.3s ease',
+          backgroundColor: isTransparent ? 'transparent' : '#ffffff',
+          borderBottom: isTransparent ? '1px solid transparent' : '1px solid #e5e7eb',
           paddingTop: isScrolled && !isTransparent ? '0.5rem' : '0.75rem',
           paddingBottom: isScrolled && !isTransparent ? '0.5rem' : '0.75rem',
         }}
@@ -103,65 +107,118 @@ export default function ModernHeader() {
           <div className="flex items-center justify-between h-16">
 
             {/* Hamburger */}
-            <div className="flex items-center justify-start">
-              <button
-                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className={buttonClass}
-                aria-label="Toggle menu"
-              >
-                {isMobileMenuOpen
-                  ? <X className="w-6 h-6" strokeWidth={1.5} />
-                  : <Menu className="w-6 h-6" strokeWidth={1.5} />
-                }
-              </button>
-            </div>
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              aria-label="Toggle menu"
+              style={{
+                color: iconColor,
+                transition: 'color 0.5s ease',
+                padding: '0.5rem',
+                borderRadius: '9999px',
+                background: 'transparent',
+                border: 'none',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              {isMobileMenuOpen
+                ? <X className="w-6 h-6" strokeWidth={1.5} />
+                : <Menu className="w-6 h-6" strokeWidth={1.5} />
+              }
+            </button>
 
-            {/* Logo */}
-            <div className="absolute left-1/2 -translate-x-1/2">
-              <Link href="/" className="block transition-opacity duration-300 hover:opacity-80">
+            {/* Logo — centered absolutely */}
+            <div style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)' }}>
+              <Link href="/" className="block hover:opacity-80 transition-opacity duration-300">
                 <Image
                   src={logoLight}
                   alt="DARVEN"
                   height={60}
                   width={180}
                   priority
-                  className={`h-14 w-auto transition-all duration-500 ${
-                    isTransparent ? 'brightness-0 invert' : ''
-                  }`}
+                  style={{
+                    height: '3.5rem',
+                    width: 'auto',
+                    transition: 'filter 0.5s ease',
+                    filter: isTransparent ? 'brightness(0) invert(1)' : 'none',
+                  }}
                 />
               </Link>
             </div>
 
             {/* Cart */}
-            <div className="flex items-center justify-end space-x-2">
-              <Link href="/cart" className={`relative ${buttonClass}`} aria-label="Shopping cart">
-                <ShoppingCart className="w-6 h-6" strokeWidth={1.5} />
-                {cartCount > 0 && (
-                  <span className={`absolute top-0 right-0 text-[10px] rounded-full w-4 h-4 flex items-center justify-center font-bold translate-x-1 -translate-y-1 ${
-                    isTransparent ? 'bg-white text-black' : 'bg-black text-white'
-                  }`}>
-                    {cartCount}
-                  </span>
-                )}
-              </Link>
-            </div>
+            <Link
+              href="/cart"
+              aria-label="Shopping cart"
+              style={{
+                position: 'relative',
+                color: iconColor,
+                transition: 'color 0.5s ease',
+                padding: '0.5rem',
+                borderRadius: '9999px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <ShoppingCart className="w-6 h-6" strokeWidth={1.5} />
+              {cartCount > 0 && (
+                <span style={{
+                  position: 'absolute',
+                  top: 0,
+                  right: 0,
+                  transform: 'translate(4px, -4px)',
+                  fontSize: '10px',
+                  fontWeight: 700,
+                  borderRadius: '9999px',
+                  width: '1rem',
+                  height: '1rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  backgroundColor: isTransparent ? '#ffffff' : '#000000',
+                  color: isTransparent ? '#000000' : '#ffffff',
+                  transition: 'background-color 0.5s ease, color 0.5s ease',
+                }}>
+                  {cartCount}
+                </span>
+              )}
+            </Link>
           </div>
         </div>
       </header>
 
       {/* Backdrop */}
       <div
-        className={`fixed inset-0 z-40 bg-black/50 transition-opacity duration-300 ${
-          isMobileMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
-        }`}
         onClick={() => setIsMobileMenuOpen(false)}
+        style={{
+          position: 'fixed',
+          inset: 0,
+          zIndex: 40,
+          backgroundColor: 'rgba(0,0,0,0.5)',
+          opacity: isMobileMenuOpen ? 1 : 0,
+          pointerEvents: isMobileMenuOpen ? 'auto' : 'none',
+          transition: 'opacity 0.3s ease',
+        }}
       />
 
-      {/* Menu Panel */}
+      {/* Slide-in menu panel */}
       <div
-        className={`fixed top-0 left-0 bottom-0 z-40 w-80 max-w-[85vw] bg-white border-r border-gray-200 transform transition-transform duration-300 ease-out ${
-          isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
-        }`}
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          bottom: 0,
+          zIndex: 40,
+          width: '20rem',
+          maxWidth: '85vw',
+          backgroundColor: '#ffffff',
+          borderRight: '1px solid #e5e7eb',
+          transform: isMobileMenuOpen ? 'translateX(0)' : 'translateX(-100%)',
+          transition: 'transform 0.3s ease',
+        }}
       >
         <div className="flex flex-col h-full pt-24 px-6">
           <nav className="flex flex-col space-y-6">
@@ -169,9 +226,15 @@ export default function ModernHeader() {
               <Link
                 key={link.href}
                 href={link.href}
-                className={`text-lg font-medium transition-all duration-300 hover:opacity-70 py-2 text-black ${
-                  pathname === link.href ? 'border-b-2 border-black' : ''
-                }`}
+                style={{
+                  fontSize: '1.125rem',
+                  fontWeight: 500,
+                  color: '#000000',
+                  textDecoration: 'none',
+                  padding: '0.5rem 0',
+                  borderBottom: pathname === link.href ? '2px solid #000000' : 'none',
+                  transition: 'opacity 0.2s ease',
+                }}
               >
                 {link.label}
               </Link>
