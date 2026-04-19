@@ -6,100 +6,105 @@ import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { ShoppingCart, Menu, X } from 'lucide-react';
 import { useCartStore } from '@/store/cartStore';
-import logoLight from '@/assets/logo_bg_light.png';
+import logo from '../assets/logo_bg_light.png';
 
 export default function ModernHeader() {
   const pathname = usePathname();
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isAtFooter, setIsAtFooter] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  
   const items = useCartStore((state) => state.items);
   const cartCount = items.reduce((acc, item) => acc + item.quantity, 0);
 
+  const isHomePage = pathname === '/';
+
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
+      // 1. Logic for "Scrolled" state (triggers after 20px)
+      const currentScroll = window.scrollY;
+      setIsScrolled(currentScroll > 20);
+
+      // 2. Logic for "Footer" detection
+      // We check if the user has reached the bottom of the page
+      const windowHeight = window.innerHeight;
+      const documentHeight = document.documentElement.scrollHeight;
+      setIsAtFooter(currentScroll + windowHeight >= documentHeight - 120);
     };
+
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Close mobile menu when route changes
-  useEffect(() => {
-    setIsMobileMenuOpen(false);
-  }, [pathname]);
+  // Visual Logic: Should the navbar be white?
+  // It turns white if: it's not the home page OR it's scrolled OR it's at the footer
+  const shouldBeWhite = !isHomePage || isScrolled || isAtFooter;
 
-  // Prevent body scroll when mobile menu is open
-  useEffect(() => {
-    if (isMobileMenuOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
-    }
-    return () => {
-      document.body.style.overflow = 'unset';
-    };
-  }, [isMobileMenuOpen]);
+  const headerClasses = `fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-in-out ${
+    shouldBeWhite 
+      ? "bg-white border-b border-gray-200 shadow-sm" 
+      : "bg-transparent border-transparent"
+  }`;
 
-  const buttonHoverEffect = "hover:scale-110 hover:-translate-y-0.5 active:scale-95 p-2 rounded-full transition-all duration-300 ease-out hover:bg-black/5";
+  const textColor = shouldBeWhite ? "text-black" : "text-white";
+  
+  // Hover effect adapts based on background transparency
+  const buttonHoverEffect = `flex items-center justify-center p-2 rounded-full transition-all duration-300 hover:scale-110 active:scale-95 ${
+    shouldBeWhite ? "hover:bg-black/5" : "hover:bg-white/20"
+  }`;
 
   const navLinks = [
     { href: '/', label: 'Home' },
     { href: '/ready-made', label: 'Ready-Made' },
     { href: '/fabric', label: 'Fabric' },
-    { href: '/stitch-your-own', label: 'Stitch Your Own Suit' },
+    { href: '/stitch-your-own', label: 'Stitch Your Own' },
   ];
-
-  const isActiveLink = (href: string) => pathname === href;
 
   return (
     <>
       <header 
-        className="fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b bg-white border-gray-200"
+        className={headerClasses}
         style={{
-          paddingTop: isScrolled ? '0.5rem' : '0.75rem',
-          paddingBottom: isScrolled ? '0.5rem' : '0.75rem',
+          paddingTop: isScrolled ? '0.5rem' : '1rem',
+          paddingBottom: isScrolled ? '0.5rem' : '1rem',
         }}
       >
-        <div className="w-full px-8 lg:px-12 xl:px-16">
+        <div className="w-full px-6 lg:px-12 xl:px-16">
           <div className="flex items-center justify-between h-16">
-            {/* Left - Menu Button (visible on all screens) */}
-            <div className="flex items-center justify-start">
+            
+            {/* Left: Mobile Toggle */}
+            <div className="flex items-center">
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className={`flex items-center justify-center ${buttonHoverEffect} text-black`}
+                className={`${buttonHoverEffect} ${textColor}`}
                 aria-label="Toggle menu"
               >
-                {isMobileMenuOpen ? (
-                  <X className="w-6 h-6" strokeWidth={1.5} />
-                ) : (
-                  <Menu className="w-6 h-6" strokeWidth={1.5} />
-                )}
+                {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
               </button>
             </div>
 
-            {/* Center - Logo */}
+            {/* Center: Logo */}
             <div className="absolute left-1/2 transform -translate-x-1/2">
-              <Link 
-                href="/" 
-                className="transition-all duration-300 hover:opacity-80 block"
-              >
+              <Link href="/" className="transition-all duration-300 hover:opacity-80 block">
                 <Image 
-                  src={logoLight}
+                  src={logo} 
                   alt="SHOPDARVEN"
                   height={60} 
                   width={180}
                   priority
-                  className="h-14 w-auto transition-all duration-300" 
+                  // Inverts the logo to white when on a transparent background
+                  className={`h-12 md:h-14 w-auto transition-all duration-500 ${
+                    !shouldBeWhite ? "brightness-0 invert" : ""
+                  }`} 
                 />
               </Link>
             </div>
 
-            {/* Right Actions */}
-            <div className="flex items-center justify-end space-x-2">
+            {/* Right: Cart */}
+            <div className="flex items-center">
               <Link
                 href="/cart"
-                className={`relative flex items-center justify-center ${buttonHoverEffect} text-black`}
-                aria-label="Shopping cart"
+                className={`relative ${buttonHoverEffect} ${textColor}`}
               >
                 <ShoppingCart className="w-6 h-6" strokeWidth={1.5} />
                 {cartCount > 0 && (
@@ -113,34 +118,39 @@ export default function ModernHeader() {
         </div>
       </header>
 
-      {/* Menu Overlay */}
+      {/* Background Overlay for Mobile Menu */}
       <div
-        className={`fixed inset-0 z-40 transition-opacity duration-300 bg-black/50 ${
-          isMobileMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+        className={`fixed inset-0 z-[55] bg-black/40 transition-opacity duration-300 ${
+          isMobileMenuOpen ? "opacity-100" : "opacity-0 pointer-events-none"
         }`}
         onClick={() => setIsMobileMenuOpen(false)}
       />
 
-      {/* Menu Panel */}
+      {/* Mobile Sidebar */}
       <div
-        className={`fixed top-0 left-0 bottom-0 z-40 w-80 max-w-[85vw] bg-white border-r border-gray-200 transform transition-transform duration-300 ease-out ${
-          isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
+        className={`fixed top-0 left-0 bottom-0 z-[60] w-[300px] bg-white transform transition-transform duration-500 ease-out ${
+          isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        <div className="flex flex-col h-full pt-24 px-6">
-          <nav className="flex flex-col space-y-6">
+        <div className="flex flex-col h-full p-8 pt-24">
+          <nav className="flex flex-col space-y-8">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className={`text-lg font-medium transition-all duration-300 hover:opacity-70 py-2 text-black ${
-                  isActiveLink(link.href) ? 'border-b-2 border-black' : ''
+                onClick={() => setIsMobileMenuOpen(false)}
+                className={`text-2xl font-light tracking-wide text-black transition-all hover:pl-3 ${
+                  pathname === link.href ? "font-medium border-l-2 border-black pl-3" : ""
                 }`}
               >
                 {link.label}
               </Link>
             ))}
           </nav>
+          
+          <div className="mt-auto pt-10 border-t border-gray-100">
+             <p className="text-xs text-gray-400 uppercase tracking-widest">© Darven 2026</p>
+          </div>
         </div>
       </div>
     </>

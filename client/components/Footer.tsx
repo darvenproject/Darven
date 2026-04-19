@@ -25,41 +25,13 @@ export default function Footer() {
               Shop
             </h4>
             <ul className="space-y-2">
-              <li>
-                <Link href="/ready-made" className="text-sm font-light text-gray-600 hover:opacity-70 transition-opacity">
-                  Ready Made
-                </Link>
-              </li>
-              <li>
-                <Link href="/stitch-your-own" className="text-sm font-light text-gray-600 hover:opacity-70 transition-opacity">
-                  Stitch Your Own
-                </Link>
-              </li>
-              <li>
-                <Link href="/fabric" className="text-sm font-light text-gray-600 hover:opacity-70 transition-opacity">
-                  Fabrics
-                </Link>
-              </li>
-              <li>
-                <Link href="/cart" className="text-sm font-light text-gray-600 hover:opacity-70 transition-opacity">
-                  Cart
-                </Link>
-              </li>
-              <li>
-                <Link href="/about" className="text-sm font-light text-gray-600 hover:opacity-70 transition-opacity">
-                  About Us
-                </Link>
-              </li>
-              <li>
-                <Link href="/size-chart" className="text-sm font-light text-gray-600 hover:opacity-70 transition-opacity">
-                  Size Chart
-                </Link>
-              </li>
-              <li>
-                <Link href="/return-exchange-policy" className="text-sm font-light text-gray-600 hover:opacity-70 transition-opacity">
-                  Return & Exchange Policy
-                </Link>
-              </li>
+              <li><Link href="/ready-made" className="text-sm font-light text-gray-600 hover:opacity-70 transition-opacity">Ready Made</Link></li>
+              <li><Link href="/stitch-your-own" className="text-sm font-light text-gray-600 hover:opacity-70 transition-opacity">Stitch Your Own</Link></li>
+              <li><Link href="/fabric" className="text-sm font-light text-gray-600 hover:opacity-70 transition-opacity">Fabrics</Link></li>
+              <li><Link href="/cart" className="text-sm font-light text-gray-600 hover:opacity-70 transition-opacity">Cart</Link></li>
+              <li><Link href="/about" className="text-sm font-light text-gray-600 hover:opacity-70 transition-opacity">About Us</Link></li>
+              <li><Link href="/size-chart" className="text-sm font-light text-gray-600 hover:opacity-70 transition-opacity">Size Chart</Link></li>
+              <li><Link href="/return-exchange-policy" className="text-sm font-light text-gray-600 hover:opacity-70 transition-opacity">Return & Exchange Policy</Link></li>
             </ul>
           </div>
 
@@ -69,11 +41,7 @@ export default function Footer() {
               Contact
             </h4>
             <ul className="space-y-2">
-              <li>
-                <Link href="/contact" className="text-sm font-light text-gray-600 hover:opacity-70 transition-opacity">
-                  Contact Us
-                </Link>
-              </li>
+              <li><Link href="/contact" className="text-sm font-light text-gray-600 hover:opacity-70 transition-opacity">Contact Us</Link></li>
               <li className="flex items-start gap-3 text-sm font-light text-gray-600">
                 <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0" strokeWidth={1.5} />
                 <span>Karachi, Pakistan</span>
@@ -85,23 +53,13 @@ export default function Footer() {
                 </a>
               </li>
               <li className="flex items-center gap-3 text-sm font-light text-gray-600 pt-2">
-                <a 
-                  href="https://www.instagram.com/shopdarven/" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="hover:opacity-70 transition-opacity flex items-center gap-3"
-                >
+                <a href="https://www.instagram.com/shopdarven/" target="_blank" rel="noopener noreferrer" className="hover:opacity-70 transition-opacity flex items-center gap-3">
                   <Instagram className="w-4 h-4" strokeWidth={1.5} />
                   <span>ShopDarven</span>
                 </a>
               </li>
               <li className="flex items-center gap-3 text-sm font-light text-gray-600">
-                <a 
-                  href="https://www.facebook.com/profile.php?id=61580410082761" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="hover:opacity-70 transition-opacity flex items-center gap-3"
-                >
+                <a href="https://www.facebook.com/profile.php?id=61580410082761" target="_blank" rel="noopener noreferrer" className="hover:opacity-70 transition-opacity flex items-center gap-3">
                   <Facebook className="w-4 h-4" strokeWidth={1.5} />
                   <span>ShopDarven</span>
                 </a>
