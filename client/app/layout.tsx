@@ -2,9 +2,9 @@ import './globals.css'
 import type { Metadata } from 'next'
 import { Outfit } from 'next/font/google'
 import ClientLayout from '@/components/ClientLayout'
+import ModernHeader from '@/components/Header' // Added import for the new header
+import { ScrollProvider } from '@/context/ScrollContext' // Added import for ScrollProvider
 
-// Outfit is a very modern, geometric font that looks high-end
-// Weights 700 (Bold) and 900 (Black) provide that thick, luxurious feel
 const outfit = Outfit({ 
   subsets: ['latin'],
   weight: ['300', '400', '500', '700', '900'],
@@ -142,9 +142,11 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
         />
       </head>
-      {/* Applying outfit.className globally with antialiased rendering */}
       <body className={`${outfit.className} antialiased`}>
-        <ClientLayout>{children}</ClientLayout>
+        <ScrollProvider>
+          <ModernHeader />
+          <ClientLayout>{children}</ClientLayout>
+        </ScrollProvider>
       </body>
     </html>
   )
