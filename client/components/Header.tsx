@@ -10,227 +10,122 @@ import logoLight from '@/assets/logo_bg_light.png';
 
 export default function ModernHeader() {
   const pathname = usePathname();
-  const isHomePage = pathname === '/';
-
-  const [scrollY, setScrollY] = useState(0);
-  const [isPastFifthSection, setIsPastFifthSection] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
   const items = useCartStore((state) => state.items);
   const cartCount = items.reduce((acc, item) => acc + item.quantity, 0);
 
   useEffect(() => {
-    setScrollY(0);
-    setIsPastFifthSection(false);
-
-    // Your home page uses a custom scroll container (h-screen overflow-y-scroll)
-    // Window scroll is always 0 — we must find and listen to THAT container
-    const getScrollContainer = (): HTMLElement | null => {
-      // The DesktopLanding / MobileLanding container is the first
-      // h-screen overflow-y-scroll element on the page
-      const candidates = Array.from(
-        document.querySelectorAll('[class*="overflow-y-scroll"], [class*="overflow-y-auto"]')
-      ) as HTMLElement[];
-
-      return candidates.find(
-        (el) => el.scrollHeight > el.clientHeight && el.clientHeight >= window.innerHeight * 0.9
-      ) || null;
-    };
-
-    let container: HTMLElement | null = null;
-
     const handleScroll = () => {
-      if (!container) container = getScrollContainer();
-      if (!container) return;
-
-      const y = container.scrollTop;
-      setScrollY(y);
-
-      if (!isHomePage) return;
-
-      // 5th slide = index 4 in the snap container = 4 * 100vh
-      // (1 hero + 3 categories + 1 footer, footer is slide 5)
-      const vh = container.clientHeight;
-      const fifthSectionTop = vh * 4; // 0-indexed: slide 5 starts at 4 * vh
-      setIsPastFifthSection(y >= fifthSectionTop - 80);
+      setIsScrolled(window.scrollY > 20);
     };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
-    // Retry finding container — it may not exist on first render
-    const init = () => {
-      container = getScrollContainer();
-      if (container) {
-        container.addEventListener('scroll', handleScroll, { passive: true });
-        handleScroll(); // set initial state
-      } else {
-        // Retry after short delay if container not mounted yet
-        setTimeout(init, 200);
-      }
-    };
-
-    init();
-
-    return () => {
-      if (container) container.removeEventListener('scroll', handleScroll);
-    };
-  }, [isHomePage, pathname]);
-
-  useEffect(() => { setIsMobileMenuOpen(false); }, [pathname]);
-
+  // Close mobile menu when route changes
   useEffect(() => {
-    document.body.style.overflow = isMobileMenuOpen ? 'hidden' : 'unset';
-    return () => { document.body.style.overflow = 'unset'; };
+    setIsMobileMenuOpen(false);
+  }, [pathname]);
+
+  // Prevent body scroll when mobile menu is open
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
   }, [isMobileMenuOpen]);
 
-  // Transparent on home page until 5th section (footer)
-  const isTransparent = isHomePage && !isPastFifthSection;
-
-  // Smoothly fade white in as user scrolls (fully clear at top, 85% white after 150px)
-  const whiteFill = isTransparent
-    ? Math.min(scrollY / 150, 0.82)
-    : 0.92;
-
-  const bgColor = isTransparent && scrollY < 8
-    ? 'rgba(255,255,255,0)'
-    : `rgba(255,255,255,${whiteFill})`;
-
-  const borderAlpha = isTransparent && scrollY < 8
-    ? 0
-    : Math.min(whiteFill * 0.12, 0.1);
+  const buttonHoverEffect = "hover:scale-110 hover:-translate-y-0.5 active:scale-95 p-2 rounded-full transition-all duration-300 ease-out hover:bg-black/5";
 
   const navLinks = [
     { href: '/', label: 'Home' },
     { href: '/ready-made', label: 'Ready-Made' },
     { href: '/fabric', label: 'Fabric' },
     { href: '/stitch-your-own', label: 'Stitch Your Own Suit' },
-    { href: '/about', label: 'About' },
   ];
+
+  const isActiveLink = (href: string) => pathname === href;
 
   return (
     <>
-      <header
+      <header 
+        className="fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b bg-white border-gray-200"
         style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          zIndex: 50,
-          backdropFilter: 'blur(20px)',
-          WebkitBackdropFilter: 'blur(20px)',
-          backgroundColor: bgColor,
-          borderBottom: `1px solid rgba(0,0,0,${borderAlpha})`,
-          transition: 'background-color 0.35s ease, border-color 0.35s ease',
-          paddingTop: !isTransparent && scrollY > 20 ? '0.5rem' : '0.75rem',
-          paddingBottom: !isTransparent && scrollY > 20 ? '0.5rem' : '0.75rem',
+          paddingTop: isScrolled ? '0.5rem' : '0.75rem',
+          paddingBottom: isScrolled ? '0.5rem' : '0.75rem',
         }}
       >
         <div className="w-full px-8 lg:px-12 xl:px-16">
           <div className="flex items-center justify-between h-16">
+            {/* Left - Menu Button (visible on all screens) */}
+            <div className="flex items-center justify-start">
+              <button
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className={`flex items-center justify-center ${buttonHoverEffect} text-black`}
+                aria-label="Toggle menu"
+              >
+                {isMobileMenuOpen ? (
+                  <X className="w-6 h-6" strokeWidth={1.5} />
+                ) : (
+                  <Menu className="w-6 h-6" strokeWidth={1.5} />
+                )}
+              </button>
+            </div>
 
-            {/* Hamburger */}
-            <button
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              aria-label="Toggle menu"
-              style={{
-                color: '#000',
-                padding: '0.5rem',
-                borderRadius: '9999px',
-                background: 'transparent',
-                border: 'none',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              {isMobileMenuOpen
-                ? <X className="w-6 h-6" strokeWidth={1.5} />
-                : <Menu className="w-6 h-6" strokeWidth={1.5} />
-              }
-            </button>
-
-            {/* Logo */}
-            <div style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)' }}>
-              <Link href="/" className="block hover:opacity-80 transition-opacity duration-300">
-                <Image
+            {/* Center - Logo */}
+            <div className="absolute left-1/2 transform -translate-x-1/2">
+              <Link 
+                href="/" 
+                className="transition-all duration-300 hover:opacity-80 block"
+              >
+                <Image 
                   src={logoLight}
-                  alt="DARVEN"
-                  height={60}
+                  alt="SHOPDARVEN"
+                  height={60} 
                   width={180}
                   priority
-                  style={{ height: '3.5rem', width: 'auto' }}
+                  className="h-14 w-auto transition-all duration-300" 
                 />
               </Link>
             </div>
 
-            {/* Cart */}
-            <Link
-              href="/cart"
-              aria-label="Shopping cart"
-              style={{
-                position: 'relative',
-                color: '#000',
-                padding: '0.5rem',
-                borderRadius: '9999px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <ShoppingCart className="w-6 h-6" strokeWidth={1.5} />
-              {cartCount > 0 && (
-                <span style={{
-                  position: 'absolute',
-                  top: 0,
-                  right: 0,
-                  transform: 'translate(4px, -4px)',
-                  fontSize: '10px',
-                  fontWeight: 700,
-                  borderRadius: '9999px',
-                  width: '1rem',
-                  height: '1rem',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  backgroundColor: '#000',
-                  color: '#fff',
-                }}>
-                  {cartCount}
-                </span>
-              )}
-            </Link>
+            {/* Right Actions */}
+            <div className="flex items-center justify-end space-x-2">
+              <Link
+                href="/cart"
+                className={`relative flex items-center justify-center ${buttonHoverEffect} text-black`}
+                aria-label="Shopping cart"
+              >
+                <ShoppingCart className="w-6 h-6" strokeWidth={1.5} />
+                {cartCount > 0 && (
+                  <span className="absolute top-0 right-0 text-[10px] rounded-full w-4 h-4 flex items-center justify-center font-bold transform translate-x-1 -translate-y-1 bg-black text-white">
+                    {cartCount}
+                  </span>
+                )}
+              </Link>
+            </div>
           </div>
         </div>
       </header>
 
-      {/* Backdrop */}
+      {/* Menu Overlay */}
       <div
+        className={`fixed inset-0 z-40 transition-opacity duration-300 bg-black/50 ${
+          isMobileMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+        }`}
         onClick={() => setIsMobileMenuOpen(false)}
-        style={{
-          position: 'fixed',
-          inset: 0,
-          zIndex: 40,
-          backgroundColor: 'rgba(0,0,0,0.5)',
-          opacity: isMobileMenuOpen ? 1 : 0,
-          pointerEvents: isMobileMenuOpen ? 'auto' : 'none',
-          transition: 'opacity 0.3s ease',
-        }}
       />
 
-      {/* Slide-in menu */}
+      {/* Menu Panel */}
       <div
-        style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          bottom: 0,
-          zIndex: 40,
-          width: '20rem',
-          maxWidth: '85vw',
-          backgroundColor: '#ffffff',
-          borderRight: '1px solid #e5e7eb',
-          transform: isMobileMenuOpen ? 'translateX(0)' : 'translateX(-100%)',
-          transition: 'transform 0.3s ease',
-        }}
+        className={`fixed top-0 left-0 bottom-0 z-40 w-80 max-w-[85vw] bg-white border-r border-gray-200 transform transition-transform duration-300 ease-out ${
+          isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}
       >
         <div className="flex flex-col h-full pt-24 px-6">
           <nav className="flex flex-col space-y-6">
@@ -238,14 +133,9 @@ export default function ModernHeader() {
               <Link
                 key={link.href}
                 href={link.href}
-                style={{
-                  fontSize: '1.125rem',
-                  fontWeight: 500,
-                  color: '#000',
-                  textDecoration: 'none',
-                  padding: '0.5rem 0',
-                  borderBottom: pathname === link.href ? '2px solid #000' : 'none',
-                }}
+                className={`text-lg font-medium transition-all duration-300 hover:opacity-70 py-2 text-black ${
+                  isActiveLink(link.href) ? 'border-b-2 border-black' : ''
+                }`}
               >
                 {link.label}
               </Link>
