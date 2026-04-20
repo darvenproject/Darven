@@ -134,7 +134,12 @@ export default function Header() {
                   height={60}
                   width={180}
                   priority
-                  style={{ height: '3.5rem', width: 'auto' }} // Removed mixBlendMode
+                  style={{ 
+                    height: '3.5rem', 
+                    width: 'auto',                  
+                    mixBlendMode: 'multiply',
+                    filter: 'contrast(1.2) brightness(1.1)' 
+                  }}
                 />
               </Link>
             </div>
