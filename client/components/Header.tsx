@@ -1,21 +1,22 @@
 'use client'
 
-import React, { useEffect, useState, useRef } from 'react'
+import React, { useEffect, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { ShoppingCart, Menu, X } from 'lucide-react'
 import { useCartStore } from '@/store/cartStore'
+import { useScrollContainer } from '@/context/ScrollContext'
 import logoLight from '@/assets/logo_bg_light.png'
 
-export default function Header() {
+export default function ModernHeader() {
   const pathname = usePathname()
   const isHomePage = pathname === '/'
+  const { scrollContainerRef } = useScrollContainer()
 
   const [scrollY, setScrollY] = useState(0)
   const [isPastFifthSection, setIsPastFifthSection] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-  const cleanupRef = useRef<(() => void) | null>(null)
 
   const items = useCartStore((state) => state.items)
   const cartCount = items.reduce((acc, item) => acc + item.quantity, 0)
@@ -24,42 +25,22 @@ export default function Header() {
     setScrollY(0)
     setIsPastFifthSection(false)
 
-    if (cleanupRef.current) {
-      cleanupRef.current()
-      cleanupRef.current = null
-    }
-
     if (!isHomePage) return
 
-    const attach = () => {
-      // DesktopLanding / MobileLanding must have id="snap-container"
-      const container = document.getElementById('snap-container')
+    const container = scrollContainerRef.current
+    if (!container) return
 
-      if (!container) {
-        const timer = setTimeout(attach, 100)
-        cleanupRef.current = () => clearTimeout(timer)
-        return
-      }
-
-      const handleScroll = () => {
-        const y = container.scrollTop
-        setScrollY(y)
-        // Footer is slide 5 — starts at 4 × 100vh
-        setIsPastFifthSection(y >= container.clientHeight * 4 - 80)
-      }
-
-      handleScroll()
-      container.addEventListener('scroll', handleScroll, { passive: true })
-      cleanupRef.current = () => container.removeEventListener('scroll', handleScroll)
+    const handleScroll = () => {
+      const y = container.scrollTop
+      setScrollY(y)
+      // 5th slide (footer) starts at 4 * viewport height
+      setIsPastFifthSection(y >= container.clientHeight * 4 - 80)
     }
 
-    // Small delay to ensure landing page has mounted
-    const timer = setTimeout(attach, 50)
-    return () => {
-      clearTimeout(timer)
-      if (cleanupRef.current) cleanupRef.current()
-    }
-  }, [isHomePage, pathname])
+    handleScroll()
+    container.addEventListener('scroll', handleScroll, { passive: true })
+    return () => container.removeEventListener('scroll', handleScroll)
+  }, [isHomePage, pathname, scrollContainerRef])
 
   useEffect(() => { setIsMobileMenuOpen(false) }, [pathname])
 
@@ -70,10 +51,9 @@ export default function Header() {
 
   const isTransparent = isHomePage && !isPastFifthSection
 
+  // Fade in white as user scrolls: 0 → 0.85 over first 150px
   const whiteFill = isTransparent ? Math.min(scrollY / 150, 0.85) : 0.92
-  const bgColor = isTransparent && scrollY < 8
-    ? 'rgba(255,255,255,0)'
-    : `rgba(255,255,255,${whiteFill})`
+  const bgColor = isTransparent && scrollY < 8 ? 'rgba(255,255,255,0)' : `rgba(255,255,255,${whiteFill})`
   const borderAlpha = isTransparent && scrollY < 8 ? 0 : Math.min(whiteFill * 0.12, 0.1)
 
   const navLinks = [
@@ -139,7 +119,7 @@ export default function Header() {
         style={{ position: 'fixed', inset: 0, zIndex: 40, backgroundColor: 'rgba(0,0,0,0.5)', opacity: isMobileMenuOpen ? 1 : 0, pointerEvents: isMobileMenuOpen ? 'auto' : 'none', transition: 'opacity 0.3s ease' }}
       />
 
-      {/* Slide-in menu */}
+      {/* Menu */}
       <div
         style={{ position: 'fixed', top: 0, left: 0, bottom: 0, zIndex: 40, width: '20rem', maxWidth: '85vw', backgroundColor: '#fff', borderRight: '1px solid #e5e7eb', transform: isMobileMenuOpen ? 'translateX(0)' : 'translateX(-100%)', transition: 'transform 0.3s ease' }}
       >

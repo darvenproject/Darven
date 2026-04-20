@@ -12,27 +12,9 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
 
   return (
     <ThemeProvider>
-      <div
-        className="bg-white min-h-screen flex flex-col"
-        style={{
-          overflowX: 'hidden',
-          // On landing page the snap container handles its own scroll — don't interfere
-          overflowY: isLandingPage ? 'hidden' : 'auto',
-        }}
-      >
+      <div className="bg-white min-h-screen flex flex-col" style={{ overflowX: 'hidden', overflowY: 'auto' }}>
         {!isAdminPage && <Header />}
-        <main
-          className="flex-1"
-          style={{
-            // Landing page: NO top padding — hero must sit under the transparent header
-            // All other pages: pt-20 (80px) to clear the fixed header
-            paddingTop: isLandingPage || isAdminPage ? '0' : '5rem',
-            WebkitOverflowScrolling: 'touch',
-            touchAction: 'pan-y pan-x',
-          }}
-        >
-          {children}
-        </main>
+        <main className={`flex-1 ${!isAdminPage ? 'pt-20' : ''}`} style={{ WebkitOverflowScrolling: 'touch', touchAction: 'pan-y pan-x' }}>{children}</main>
         {!isLandingPage && !isAdminPage && <Footer />}
       </div>
     </ThemeProvider>
