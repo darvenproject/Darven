@@ -129,17 +129,12 @@ export default function Header() {
             <div style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)', background: 'transparent' }}>
               <Link href="/" className="block hover:opacity-80 transition-opacity duration-300">
                 <Image
-                  src={logoLight}
+                  src="/logo_transparent.png"  
                   alt="DARVEN"
                   height={60}
                   width={180}
                   priority
-                  style={{ 
-                    height: '3.5rem', 
-                    width: 'auto',                  
-                    mixBlendMode: 'multiply',
-                    filter: 'contrast(1.2) brightness(1.1)' 
-                  }}
+                  style={{ height: '3.5rem', width: 'auto', background: 'transparent', mixBlendMode: 'multiply' }}
                 />
               </Link>
             </div>
