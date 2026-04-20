@@ -256,7 +256,7 @@ export default function DesktopLanding() {
       {/* Nav Controls */}
       <div className="fixed bottom-8 right-8 flex flex-col gap-3 z-40">
         {currentSlideIndex > 0 && (
-          <button onClick={handlePrevSlide} className="p-2.5 bg-gray-800 bg-opacity-70 hover:bg-opacity-90 text-white rounded-full transition-all" aria-label="Previous slide">
+          <button onClick={handlePrevSlide} className="p-2.5 bg-white bg-opacity-90 hover:bg-opacity-100 text-black rounded-full transition-all" aria-label="Previous slide">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
             </svg>
@@ -271,7 +271,7 @@ export default function DesktopLanding() {
           />
         ))}
         {currentSlideIndex < totalSlides - 1 && (
-          <button onClick={handleNextSlide} className="p-2.5 bg-gray-800 bg-opacity-70 hover:bg-opacity-90 text-white rounded-full transition-all" aria-label="Next slide">
+          <button onClick={handleNextSlide} className="p-2.5 bg-white bg-opacity-90 hover:bg-opacity-100 text-black rounded-full transition-all" aria-label="Next slide">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
             </svg>
