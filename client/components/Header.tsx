@@ -129,13 +129,14 @@ export default function Header() {
             {/* Logo */}
             <div style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)' }}>
               <Link href="/" className="block hover:opacity-80 transition-opacity duration-300">
-                <img
+                <Image
                   src="/logo_transparent.png"
                   alt="DARVEN"
+                  height={60}
+                  width={180}
                   style={{
                     height: '3.5rem',
-                    width: 'auto',
-                    display: 'block'
+                    width: 'auto'
                   }}
                 />
               </Link>
