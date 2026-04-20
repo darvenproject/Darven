@@ -129,13 +129,30 @@ export default function Header() {
             {/* Logo */}
             <div style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)' }}>
               <Link href="/" className="block hover:opacity-80 transition-opacity duration-300">
-                <Image
-                  src={logoLight}
-                  alt="DARVEN"
-                  height={60}
-                  width={180}
-                  priority
-                />
+                
+                {/* Wrapper to kill any background issues */}
+                <div
+                  style={{
+                    background: 'transparent',
+                    lineHeight: 0, // removes inline gap
+                  }}
+                >
+                  <Image
+                    src={logoLight} // IMPORTANT: use imported image
+                    alt="DARVEN"
+                    height={60}
+                    width={180}
+                    priority
+                    style={{
+                      height: '3.5rem',
+                      width: 'auto',
+                      display: 'block',
+                      backgroundColor: 'transparent',
+                      mixBlendMode: 'normal', // prevents weird blending
+                    }}
+                  />
+                </div>
+
               </Link>
             </div>
 
