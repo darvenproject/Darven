@@ -129,19 +129,13 @@ export default function Header() {
             {/* Logo */}
             <div style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)' }}>
               <Link href="/" className="block hover:opacity-80 transition-opacity duration-300">
-                <Image
-                  src="/logo_transparent.png"  // Correct path for public folder
+                <img
+                  src="/logo_transparent.png"
                   alt="DARVEN"
-                  height={60}
-                  width={180}
-                  priority
-                  unoptimized // Prevents Next.js optimization from flattening the alpha channel
-                  style={{ 
-                    height: '3.5rem', 
-                    width: 'auto', 
-                    backgroundColor: 'transparent',
-                    // If the logo is black and you need it white for the dark hero background:
-                    filter: isTransparent ? 'invert(1) brightness(2)' : 'none'
+                  style={{
+                    height: '3.5rem',
+                    width: 'auto',
+                    display: 'block'
                   }}
                 />
               </Link>
