@@ -72,7 +72,8 @@ export default function Header() {
   const menuBlur = isHomePage ? 'blur(24px)' : 'none'
   const menuBorder = isHomePage ? '1px solid rgba(255,255,255,0.2)' : '1px solid #e5e7eb'
   const menuTextColor = isHomePage ? '#ffffff' : '#000000'
-  const menuActiveColor = isHomePage ? 'rgba(255,255,255,0.8)' : 'rgba(0,0,0,0.08)'
+  const menuActiveColor = isHomePage ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.05)'
+  const iconColor = (isTransparent || (isMobileMenuOpen && isHomePage)) ? '#ffffff' : '#000000';
 
   const navLinks = [
     { href: '/', label: 'Home' },
@@ -106,7 +107,7 @@ export default function Header() {
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               aria-label="Toggle menu"
               style={{
-                color: '#000',
+                color: iconColor, // <--- Dynamic color
                 padding: '0.5rem',
                 borderRadius: '9999px',
                 background: 'transparent',
@@ -115,15 +116,16 @@ export default function Header() {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
+                zIndex: 60, // Ensure it stays on top of the menu
+                transition: 'color 0.3s ease',
               }}
             >
               {isMobileMenuOpen
-                ? <X className="w-6 h-6" strokeWidth={1.5} />
-                : <Menu className="w-6 h-6" strokeWidth={1.5} />
+                ? <X className="w-6 h-6" strokeWidth={2} /> 
+                : <Menu className="w-6 h-6" strokeWidth={2} />
               }
             </button>
 
-            {/* Logo */}
             <div style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)', background: 'transparent' }}>
               <Link href="/" className="block hover:opacity-80 transition-opacity duration-300">
                 <Image
@@ -132,7 +134,7 @@ export default function Header() {
                   height={60}
                   width={180}
                   priority
-                  style={{ height: '3.5rem', width: 'auto', mixBlendMode: 'multiply' }}
+                  style={{ height: '3.5rem', width: 'auto' }} // Removed mixBlendMode
                 />
               </Link>
             </div>
@@ -141,11 +143,35 @@ export default function Header() {
             <Link
               href="/cart"
               aria-label="Shopping cart"
-              style={{ position: 'relative', color: '#000', padding: '0.5rem', borderRadius: '9999px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              style={{ 
+                position: 'relative', 
+                color: iconColor, // <--- Dynamic color
+                padding: '0.5rem', 
+                borderRadius: '9999px', 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center',
+                transition: 'color 0.3s ease',
+              }}
             >
-              <ShoppingCart className="w-6 h-6" strokeWidth={1.5} />
+              <ShoppingCart className="w-6 h-6" strokeWidth={2} />
               {cartCount > 0 && (
-                <span style={{ position: 'absolute', top: 0, right: 0, transform: 'translate(4px,-4px)', fontSize: '10px', fontWeight: 700, borderRadius: '9999px', width: '1rem', height: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#000', color: '#fff' }}>
+                <span style={{ 
+                  position: 'absolute', 
+                  top: 0, 
+                  right: 0, 
+                  transform: 'translate(4px,-4px)', 
+                  fontSize: '10px', 
+                  fontWeight: 700, 
+                  borderRadius: '9999px', 
+                  width: '1rem', 
+                  height: '1rem', 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'center', 
+                  backgroundColor: isTransparent ? '#fff' : '#000', // Dot flips color too
+                  color: isTransparent ? '#000' : '#fff' 
+                }}>
                   {cartCount}
                 </span>
               )}
@@ -187,13 +213,15 @@ export default function Header() {
                 href={link.href}
                 style={{
                   fontSize: '1.125rem',
-                  fontWeight: 500,
+                  fontWeight: 600, // Increased weight for better visibility
                   color: menuTextColor,
                   textDecoration: 'none',
                   padding: '0.75rem 1rem',
                   borderRadius: '0.5rem',
                   backgroundColor: pathname === link.href ? menuActiveColor : 'transparent',
-                  transition: 'background-color 0.2s ease',
+                  // Add textShadow to help white text pop against light backgrounds
+                  textShadow: isHomePage ? '0px 1px 4px rgba(0,0,0,0.3)' : 'none',
+                  transition: 'all 0.2s ease',
                 }}
               >
                 {link.label}
