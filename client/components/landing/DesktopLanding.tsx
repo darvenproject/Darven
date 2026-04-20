@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { apiClient, getImageUrl } from '@/lib/api'
 import { useScrollContainer } from '@/context/ScrollContext'
+import logoLight from '@/assets/logo_bg_light.png'
 
 interface LandingImage {
   id?: number
