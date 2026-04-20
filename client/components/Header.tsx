@@ -21,7 +21,6 @@ export default function Header() {
   const cartCount = items.reduce((acc, item) => acc + item.quantity, 0)
 
   useEffect(() => {
-    // Reset on every route change
     setScrollY(0)
     setIsPastFifthSection(false)
     if (cleanupRef.current) { cleanupRef.current(); cleanupRef.current = null }
@@ -30,26 +29,21 @@ export default function Header() {
 
     const attach = () => {
       const container = document.getElementById('snap-container') as HTMLElement | null
-
       if (!container) {
-        // Container not mounted yet — retry in 100ms
         const t = setTimeout(attach, 100)
         cleanupRef.current = () => clearTimeout(t)
         return
       }
-
       const onScroll = () => {
         const y = container.scrollTop
         setScrollY(y)
         setIsPastFifthSection(y >= container.clientHeight * 4 - 80)
       }
-
-      onScroll() // set correct initial state immediately
+      onScroll()
       container.addEventListener('scroll', onScroll, { passive: true })
       cleanupRef.current = () => container.removeEventListener('scroll', onScroll)
     }
 
-    // Wait one tick for the landing page to mount and set id="snap-container"
     const t = setTimeout(attach, 50)
     return () => {
       clearTimeout(t)
@@ -66,11 +60,19 @@ export default function Header() {
 
   const isTransparent = isHomePage && !isPastFifthSection
 
-  const whiteFill = isTransparent ? Math.min(scrollY / 150, 0.85) : 0.92
-  const bgColor = isTransparent && scrollY < 8
-    ? 'rgba(255,255,255,0)'
-    : `rgba(255,255,255,${whiteFill})`
-  const borderAlpha = isTransparent && scrollY < 8 ? 0 : Math.min(whiteFill * 0.12, 0.1)
+  // Navbar: fully transparent on home (no blur, no bg), white on other pages / footer slide
+  const headerBg = isTransparent ? 'rgba(255,255,255,0)' : 'rgba(255,255,255,0.92)'
+  const headerBorder = isTransparent ? 'rgba(0,0,0,0)' : 'rgba(0,0,0,0.08)'
+  const headerBlur = isTransparent ? 'none' : 'blur(20px)'
+
+  // Menu panel: frosted glass on home page, solid white on other pages
+  const menuBg = isHomePage
+    ? 'rgba(255,255,255,0.15)'
+    : 'rgba(255,255,255,1)'
+  const menuBlur = isHomePage ? 'blur(24px)' : 'none'
+  const menuBorder = isHomePage ? '1px solid rgba(255,255,255,0.2)' : '1px solid #e5e7eb'
+  const menuTextColor = isHomePage ? '#ffffff' : '#000000'
+  const menuActiveColor = isHomePage ? 'rgba(255,255,255,0.8)' : 'rgba(0,0,0,0.08)'
 
   const navLinks = [
     { href: '/', label: 'Home' },
@@ -87,39 +89,55 @@ export default function Header() {
           position: 'fixed',
           top: 0, left: 0, right: 0,
           zIndex: 50,
-          backdropFilter: 'blur(20px)',
-          WebkitBackdropFilter: 'blur(20px)',
-          backgroundColor: bgColor,
-          borderBottom: `1px solid rgba(0,0,0,${borderAlpha})`,
-          transition: 'background-color 0.35s ease, border-color 0.35s ease',
-          paddingTop: !isTransparent && scrollY > 20 ? '0.5rem' : '0.75rem',
-          paddingBottom: !isTransparent && scrollY > 20 ? '0.5rem' : '0.75rem',
+          backdropFilter: headerBlur,
+          WebkitBackdropFilter: headerBlur,
+          backgroundColor: headerBg,
+          borderBottom: `1px solid ${headerBorder}`,
+          transition: 'background-color 0.4s ease, border-color 0.4s ease, backdrop-filter 0.4s ease',
+          paddingTop: '0.75rem',
+          paddingBottom: '0.75rem',
         }}
       >
         <div className="w-full px-8 lg:px-12 xl:px-16">
           <div className="flex items-center justify-between h-16">
 
+            {/* Hamburger */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               aria-label="Toggle menu"
-              style={{ color: '#000', padding: '0.5rem', borderRadius: '9999px', background: 'transparent', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              style={{
+                color: '#000',
+                padding: '0.5rem',
+                borderRadius: '9999px',
+                background: 'transparent',
+                border: 'none',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
             >
-              {isMobileMenuOpen ? <X className="w-6 h-6" strokeWidth={1.5} /> : <Menu className="w-6 h-6" strokeWidth={1.5} />}
+              {isMobileMenuOpen
+                ? <X className="w-6 h-6" strokeWidth={1.5} />
+                : <Menu className="w-6 h-6" strokeWidth={1.5} />
+              }
             </button>
 
+            {/* Logo */}
             <div style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)', background: 'transparent' }}>
               <Link href="/" className="block hover:opacity-80 transition-opacity duration-300">
                 <Image
-                  src="/logo_transparent.png"  
+                  src={logoLight}
                   alt="DARVEN"
                   height={60}
                   width={180}
                   priority
-                  style={{ height: '3.5rem', width: 'auto', background: 'transparent', mixBlendMode: 'multiply' }}
+                  style={{ height: '3.5rem', width: 'auto', mixBlendMode: 'multiply' }}
                 />
               </Link>
             </div>
 
+            {/* Cart */}
             <Link
               href="/cart"
               aria-label="Shopping cart"
@@ -136,21 +154,47 @@ export default function Header() {
         </div>
       </header>
 
-      {/* Backdrop */}
+      {/* Backdrop — darker on home for contrast with glass menu */}
       <div
         onClick={() => setIsMobileMenuOpen(false)}
-        style={{ position: 'fixed', inset: 0, zIndex: 40, backgroundColor: 'rgba(0,0,0,0.5)', opacity: isMobileMenuOpen ? 1 : 0, pointerEvents: isMobileMenuOpen ? 'auto' : 'none', transition: 'opacity 0.3s ease' }}
+        style={{
+          position: 'fixed', inset: 0, zIndex: 40,
+          backgroundColor: isHomePage ? 'rgba(0,0,0,0.3)' : 'rgba(0,0,0,0.5)',
+          opacity: isMobileMenuOpen ? 1 : 0,
+          pointerEvents: isMobileMenuOpen ? 'auto' : 'none',
+          transition: 'opacity 0.3s ease',
+        }}
       />
 
-      {/* Slide-in menu */}
-      <div style={{ position: 'fixed', top: 0, left: 0, bottom: 0, zIndex: 40, width: '20rem', maxWidth: '85vw', backgroundColor: '#fff', borderRight: '1px solid #e5e7eb', transform: isMobileMenuOpen ? 'translateX(0)' : 'translateX(-100%)', transition: 'transform 0.3s ease' }}>
+      {/* Slide-in menu — frosted glass on home, solid white elsewhere */}
+      <div
+        style={{
+          position: 'fixed', top: 0, left: 0, bottom: 0, zIndex: 40,
+          width: '20rem', maxWidth: '85vw',
+          backgroundColor: menuBg,
+          backdropFilter: menuBlur,
+          WebkitBackdropFilter: menuBlur,
+          borderRight: menuBorder,
+          transform: isMobileMenuOpen ? 'translateX(0)' : 'translateX(-100%)',
+          transition: 'transform 0.3s ease, background-color 0.4s ease',
+        }}
+      >
         <div className="flex flex-col h-full pt-24 px-6">
-          <nav className="flex flex-col space-y-6">
+          <nav className="flex flex-col space-y-2">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                style={{ fontSize: '1.125rem', fontWeight: 500, color: '#000', textDecoration: 'none', padding: '0.5rem 0', borderBottom: pathname === link.href ? '2px solid #000' : 'none' }}
+                style={{
+                  fontSize: '1.125rem',
+                  fontWeight: 500,
+                  color: menuTextColor,
+                  textDecoration: 'none',
+                  padding: '0.75rem 1rem',
+                  borderRadius: '0.5rem',
+                  backgroundColor: pathname === link.href ? menuActiveColor : 'transparent',
+                  transition: 'background-color 0.2s ease',
+                }}
               >
                 {link.label}
               </Link>
