@@ -186,7 +186,7 @@ export default function DesktopLanding() {
         </Link>
       ))}
 
-      {/* Slide 5: Footer */}
+            {/* Slide 5: Footer */}
       <div className="h-screen w-full snap-start snap-always bg-white flex items-center justify-center">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -195,37 +195,41 @@ export default function DesktopLanding() {
           viewport={{ once: false, amount: 0.3 }}
           className="text-center w-full px-6 lg:px-12 xl:px-24 max-w-screen-2xl mx-auto text-black"
         >
-          <h2 className="text-5xl md:text-6xl font-bold mb-12 tracking-wider">DARVEN</h2>
+          {/* Main Logo/Title */}
+          <h2 className="text-5xl md:text-6xl font-bold mb-16 tracking-wider">DARVEN</h2>
 
-          <div className="grid grid-cols-2 gap-16 lg:gap-24 mb-16 max-w-4xl mx-auto text-left">
-            {/* Shop */}
-            <div>
-              <h3 className="text-xl font-semibold mb-6">Shop</h3>
-              <ul className="space-y-3 text-base">
+          {/* Centered Columns Container */}
+          <div className="flex flex-row justify-center gap-16 md:gap-32 lg:gap-48 mb-20 text-left">
+            
+            {/* Shop Column */}
+            <div className="flex flex-col">
+              <h3 className="text-xl font-semibold mb-6 uppercase tracking-tight">Shop</h3>
+              <ul className="space-y-3 text-base whitespace-nowrap">
                 <li><Link href="/ready-made" className="hover:text-gray-500 transition-colors">Ready Made</Link></li>
                 <li><Link href="/stitch-your-own" className="hover:text-gray-500 transition-colors">Stitch Your Own</Link></li>
                 <li><Link href="/fabric" className="hover:text-gray-500 transition-colors">Fabrics</Link></li>
                 <li><Link href="/cart" className="hover:text-gray-500 transition-colors">Cart</Link></li>
                 <li><Link href="/about" className="hover:text-gray-500 transition-colors">About Us</Link></li>
                 <li><Link href="/size-chart" className="hover:text-gray-500 transition-colors">Size Chart</Link></li>
-                <li><Link href="/return-exchange-policy" className="hover:text-gray-500 transition-colors">Return &amp; Exchange Policy</Link></li>
+                <li><Link href="/return-exchange-policy" className="hover:text-gray-500 transition-colors text-sm md:text-base">Return & Policy</Link></li>
               </ul>
             </div>
 
-            {/* Contact */}
-            <div>
-              <h3 className="text-xl font-semibold mb-6">Contact</h3>
-              <ul className="space-y-3 text-base">
+            {/* Contact Column */}
+            <div className="flex flex-col">
+              <h3 className="text-xl font-semibold mb-6 uppercase tracking-tight">Contact</h3>
+              <ul className="space-y-3 text-base mb-6">
                 <li><Link href="/contact" className="hover:text-gray-500 transition-colors">Contact Us</Link></li>
-                <li className="text-gray-600">Karachi, Pakistan</li>
+                <li className="text-gray-600 whitespace-nowrap">Karachi, Pakistan</li>
                 <li>
                   <a href="mailto:shopdarven@gmail.com" className="text-gray-600 hover:text-gray-400 transition-colors">
                     shopdarven@gmail.com
                   </a>
                 </li>
               </ul>
-              {/* Instagram + Facebook only — no duplicates, no Twitter, no Mail icon */}
-              <div className="flex items-center gap-5 mt-6">
+
+              {/* Social Icons - Aligned with Contact Text */}
+              <div className="flex items-center gap-5 mt-auto">
                 <a href="https://www.instagram.com/shopdarven/" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="hover:text-gray-500 transition-colors hover:scale-110 transform duration-200">
                   <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/>
@@ -240,8 +244,9 @@ export default function DesktopLanding() {
             </div>
           </div>
 
-          <div className="border-t border-gray-300 pt-8 max-w-4xl mx-auto w-full">
-            <p className="text-gray-500 text-base">© {new Date().getFullYear()} DARVEN. All rights reserved.</p>
+          {/* Bottom Copyright Bar */}
+          <div className="border-t border-gray-200 pt-8 max-w-4xl mx-auto w-full">
+            <p className="text-gray-400 text-sm tracking-widest uppercase">© {new Date().getFullYear()} DARVEN. All rights reserved.</p>
           </div>
         </motion.div>
       </div>
