@@ -82,7 +82,13 @@ export default function DesktopLanding() {
   }
 
   const scrollToSlide = (slideIndex: number) => {
-    scrollContainerRef.current?.scrollTo({ top: slideIndex * window.innerHeight, behavior: 'smooth' })
+    const container = scrollContainerRef.current
+    if (!container) return
+
+    container.scrollTo({
+      top: slideIndex * window.innerHeight,
+      behavior: 'smooth'
+    })
   }
   const handlePrevSlide = () => { if (currentSlideIndex > 0) scrollToSlide(currentSlideIndex - 1) }
   const handleNextSlide = () => { if (currentSlideIndex < totalSlides - 1) scrollToSlide(currentSlideIndex + 1) }
@@ -126,16 +132,19 @@ export default function DesktopLanding() {
             <>
               <button
                 onClick={() => setCurrentHeroIndex((prev) => (prev === 0 ? heroImages.length - 1 : prev - 1))}
-                className="absolute left-4 top-1/2 -translate-y-1/2 p-3 bg-black bg-opacity-50 hover:bg-opacity-70 text-white rounded-full transition-all z-30"
+                /* Changed bg-black to bg-white and text-white to text-black */
+                className="absolute left-4 top-1/2 -translate-y-1/2 p-3 bg-white bg-opacity-70 hover:bg-opacity-90 text-black rounded-full transition-all z-30 shadow-lg"
                 aria-label="Previous hero"
               >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                 </svg>
               </button>
+              
               <button
                 onClick={() => setCurrentHeroIndex((prev) => (prev === heroImages.length - 1 ? 0 : prev + 1))}
-                className="absolute right-4 top-1/2 -translate-y-1/2 p-3 bg-black bg-opacity-50 hover:bg-opacity-70 text-white rounded-full transition-all z-30"
+                /* Changed bg-black to bg-white and text-white to text-black */
+                className="absolute right-4 top-1/2 -translate-y-1/2 p-3 bg-white bg-opacity-70 hover:bg-opacity-90 text-black rounded-full transition-all z-30 shadow-lg"
                 aria-label="Next hero"
               >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -163,7 +172,7 @@ export default function DesktopLanding() {
       {sectionImages.map((item, index) => (
         <Link
           key={`${item.category}-${index}`}
-          href={item.link!}
+          href={item.link || '#'}
           className="h-screen w-full snap-start snap-always block relative"
         >
           <motion.div
