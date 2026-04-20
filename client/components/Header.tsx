@@ -6,7 +6,7 @@ import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { ShoppingCart, Menu, X } from 'lucide-react'
 import { useCartStore } from '@/store/cartStore'
-import logoLight from '@/assets/logo_bg_light.png'
+import logoLight from '@/assets/logo_transparent.png'
 
 export default function Header() {
   const pathname = usePathname()
