@@ -107,15 +107,15 @@ export default function Header() {
               {isMobileMenuOpen ? <X className="w-6 h-6" strokeWidth={1.5} /> : <Menu className="w-6 h-6" strokeWidth={1.5} />}
             </button>
 
-            <div style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)' }}>
+            <div style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)', background: 'transparent' }}>
               <Link href="/" className="block hover:opacity-80 transition-opacity duration-300">
-                <Image 
+                <Image
                   src="/logo_transparent.png"  
-                  alt="DARVEN" 
-                  height={60} 
-                  width={180} 
-                  priority 
-                  style={{ height: '3.5rem', width: 'auto' }} 
+                  alt="DARVEN"
+                  height={60}
+                  width={180}
+                  priority
+                  style={{ height: '3.5rem', width: 'auto', background: 'transparent', mixBlendMode: 'multiply' }}
                 />
               </Link>
             </div>
