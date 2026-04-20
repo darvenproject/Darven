@@ -8,7 +8,7 @@ import { ShoppingCart, Menu, X } from 'lucide-react'
 import { useCartStore } from '@/store/cartStore'
 import logoLight from '@/assets/logo_bg_light.png'
 
-export default function ModernHeader() {
+export default function Header() {
   const pathname = usePathname()
   const isHomePage = pathname === '/'
 
@@ -24,7 +24,6 @@ export default function ModernHeader() {
     setScrollY(0)
     setIsPastFifthSection(false)
 
-    // Clean up previous listener
     if (cleanupRef.current) {
       cleanupRef.current()
       cleanupRef.current = null
@@ -32,15 +31,11 @@ export default function ModernHeader() {
 
     if (!isHomePage) return
 
-    // Find the snap scroll container — retry until it exists
     const attach = () => {
-      // The landing page container: h-screen + overflow-y-scroll + snap-y
-      const container = document.querySelector(
-        '.snap-y.snap-mandatory'
-      ) as HTMLElement | null
+      // DesktopLanding / MobileLanding must have id="snap-container"
+      const container = document.getElementById('snap-container')
 
       if (!container) {
-        // Not mounted yet — retry in 100ms
         const timer = setTimeout(attach, 100)
         cleanupRef.current = () => clearTimeout(timer)
         return
@@ -49,18 +44,19 @@ export default function ModernHeader() {
       const handleScroll = () => {
         const y = container.scrollTop
         setScrollY(y)
-        // Footer (slide 5) starts at 4 × viewport height
+        // Footer is slide 5 — starts at 4 × 100vh
         setIsPastFifthSection(y >= container.clientHeight * 4 - 80)
       }
 
-      handleScroll() // set initial state immediately
+      handleScroll()
       container.addEventListener('scroll', handleScroll, { passive: true })
       cleanupRef.current = () => container.removeEventListener('scroll', handleScroll)
     }
 
-    attach()
-
+    // Small delay to ensure landing page has mounted
+    const timer = setTimeout(attach, 50)
     return () => {
+      clearTimeout(timer)
       if (cleanupRef.current) cleanupRef.current()
     }
   }, [isHomePage, pathname])
@@ -72,10 +68,8 @@ export default function ModernHeader() {
     return () => { document.body.style.overflow = 'unset' }
   }, [isMobileMenuOpen])
 
-  // Transparent on home page until footer slide
   const isTransparent = isHomePage && !isPastFifthSection
 
-  // Smoothly fade white in as user scrolls (fully clear at top → 85% white after 150px)
   const whiteFill = isTransparent ? Math.min(scrollY / 150, 0.85) : 0.92
   const bgColor = isTransparent && scrollY < 8
     ? 'rgba(255,255,255,0)'
@@ -109,73 +103,28 @@ export default function ModernHeader() {
         <div className="w-full px-8 lg:px-12 xl:px-16">
           <div className="flex items-center justify-between h-16">
 
-            {/* Hamburger */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               aria-label="Toggle menu"
-              style={{
-                color: '#000',
-                padding: '0.5rem',
-                borderRadius: '9999px',
-                background: 'transparent',
-                border: 'none',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
+              style={{ color: '#000', padding: '0.5rem', borderRadius: '9999px', background: 'transparent', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
             >
-              {isMobileMenuOpen
-                ? <X className="w-6 h-6" strokeWidth={1.5} />
-                : <Menu className="w-6 h-6" strokeWidth={1.5} />
-              }
+              {isMobileMenuOpen ? <X className="w-6 h-6" strokeWidth={1.5} /> : <Menu className="w-6 h-6" strokeWidth={1.5} />}
             </button>
 
-            {/* Logo */}
             <div style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)' }}>
               <Link href="/" className="block hover:opacity-80 transition-opacity duration-300">
-                <Image
-                  src={logoLight}
-                  alt="DARVEN"
-                  height={60}
-                  width={180}
-                  priority
-                  style={{ height: '3.5rem', width: 'auto' }}
-                />
+                <Image src={logoLight} alt="DARVEN" height={60} width={180} priority style={{ height: '3.5rem', width: 'auto' }} />
               </Link>
             </div>
 
-            {/* Cart */}
             <Link
               href="/cart"
               aria-label="Shopping cart"
-              style={{
-                position: 'relative',
-                color: '#000',
-                padding: '0.5rem',
-                borderRadius: '9999px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
+              style={{ position: 'relative', color: '#000', padding: '0.5rem', borderRadius: '9999px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
             >
               <ShoppingCart className="w-6 h-6" strokeWidth={1.5} />
               {cartCount > 0 && (
-                <span style={{
-                  position: 'absolute',
-                  top: 0, right: 0,
-                  transform: 'translate(4px,-4px)',
-                  fontSize: '10px',
-                  fontWeight: 700,
-                  borderRadius: '9999px',
-                  width: '1rem',
-                  height: '1rem',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  backgroundColor: '#000',
-                  color: '#fff',
-                }}>
+                <span style={{ position: 'absolute', top: 0, right: 0, transform: 'translate(4px,-4px)', fontSize: '10px', fontWeight: 700, borderRadius: '9999px', width: '1rem', height: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#000', color: '#fff' }}>
                   {cartCount}
                 </span>
               )}
@@ -187,25 +136,12 @@ export default function ModernHeader() {
       {/* Backdrop */}
       <div
         onClick={() => setIsMobileMenuOpen(false)}
-        style={{
-          position: 'fixed', inset: 0, zIndex: 40,
-          backgroundColor: 'rgba(0,0,0,0.5)',
-          opacity: isMobileMenuOpen ? 1 : 0,
-          pointerEvents: isMobileMenuOpen ? 'auto' : 'none',
-          transition: 'opacity 0.3s ease',
-        }}
+        style={{ position: 'fixed', inset: 0, zIndex: 40, backgroundColor: 'rgba(0,0,0,0.5)', opacity: isMobileMenuOpen ? 1 : 0, pointerEvents: isMobileMenuOpen ? 'auto' : 'none', transition: 'opacity 0.3s ease' }}
       />
 
       {/* Slide-in menu */}
       <div
-        style={{
-          position: 'fixed', top: 0, left: 0, bottom: 0, zIndex: 40,
-          width: '20rem', maxWidth: '85vw',
-          backgroundColor: '#fff',
-          borderRight: '1px solid #e5e7eb',
-          transform: isMobileMenuOpen ? 'translateX(0)' : 'translateX(-100%)',
-          transition: 'transform 0.3s ease',
-        }}
+        style={{ position: 'fixed', top: 0, left: 0, bottom: 0, zIndex: 40, width: '20rem', maxWidth: '85vw', backgroundColor: '#fff', borderRight: '1px solid #e5e7eb', transform: isMobileMenuOpen ? 'translateX(0)' : 'translateX(-100%)', transition: 'transform 0.3s ease' }}
       >
         <div className="flex flex-col h-full pt-24 px-6">
           <nav className="flex flex-col space-y-6">
@@ -213,14 +149,7 @@ export default function ModernHeader() {
               <Link
                 key={link.href}
                 href={link.href}
-                style={{
-                  fontSize: '1.125rem',
-                  fontWeight: 500,
-                  color: '#000',
-                  textDecoration: 'none',
-                  padding: '0.5rem 0',
-                  borderBottom: pathname === link.href ? '2px solid #000' : 'none',
-                }}
+                style={{ fontSize: '1.125rem', fontWeight: 500, color: '#000', textDecoration: 'none', padding: '0.5rem 0', borderBottom: pathname === link.href ? '2px solid #000' : 'none' }}
               >
                 {link.label}
               </Link>
