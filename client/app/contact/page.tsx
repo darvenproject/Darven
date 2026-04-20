@@ -224,8 +224,8 @@ export default function ContactPage() {
                   {/* Email */}
                   <li className="flex items-center gap-3 text-sm text-gray-600">
                     <FiMail className="w-5 h-5 text-gray-900 flex-shrink-0" />
-                    <a href="mailto:shopdarven@gmail.com" className="hover:text-black transition-colors break-all font-medium">
-                      shopdarven@gmail.com
+                    <a href="mailto:contact@shopdarven.pk" className="hover:text-black transition-colors break-all font-medium">
+                      contact@shopdarven.pk
                     </a>
                   </li>
 
