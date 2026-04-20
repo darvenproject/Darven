@@ -48,8 +48,8 @@ export default function Footer() {
               </li>
               <li className="flex items-center gap-3 text-sm font-light text-gray-600">
                 <Mail className="w-4 h-4 flex-shrink-0" strokeWidth={1.5} />
-                <a href="mailto:shopdarven@gmail.com" className="hover:opacity-70 transition-opacity">
-                  shopdarven@gmail.com
+                <a href="mailto:info@shopdarven.pk" className="hover:opacity-70 transition-opacity">
+                  info@shopdarven.pk
                 </a>
               </li>
               <li className="flex items-center gap-3 text-sm font-light text-gray-600 pt-2">

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { FiMail, FiPhone, FiUser, FiMessageSquare, FiSend, FiCheckCircle } from 'react-icons/fi'
+import { FiMail, FiPhone, FiUser, FiMessageSquare, FiSend, FiCheckCircle, FiInstagram, FiFacebook } from 'react-icons/fi'
 import { apiClient } from '@/lib/api'
 
 export default function ContactPage() {
@@ -213,26 +213,45 @@ export default function ContactPage() {
                 </ul>
               </div>
               <div>
-                <h4 className="text-sm font-bold text-gray-900 mb-3 uppercase">Contact</h4>
-                <ul className="space-y-2">
-                  <li className="flex items-start gap-2 text-sm text-gray-600">
-                    <FiPhone className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                <h4 className="text-sm font-bold text-gray-900 mb-4 uppercase tracking-widest">Contact</h4>
+                <ul className="space-y-4">
+                  {/* Location */}
+                  <li className="flex items-start gap-3 text-sm text-gray-600">
+                    <FiPhone className="w-5 h-5 mt-0.5 text-gray-900 flex-shrink-0" />
                     <span>Karachi, Pakistan</span>
                   </li>
-                  <li className="flex items-center gap-2 text-sm text-gray-600">
-                    <FiMail className="w-4 h-4 flex-shrink-0" />
-                    <a href="mailto:shopdarven@gmail.com" className="hover:text-gray-900 transition-colors break-all">
+
+                  {/* Email */}
+                  <li className="flex items-center gap-3 text-sm text-gray-600">
+                    <FiMail className="w-5 h-5 text-gray-900 flex-shrink-0" />
+                    <a href="mailto:shopdarven@gmail.com" className="hover:text-black transition-colors break-all font-medium">
                       shopdarven@gmail.com
                     </a>
                   </li>
-                  <li className="text-sm text-gray-600 pt-1">
-                    <a href="https://www.instagram.com/shopdarven/" target="_blank" rel="noopener noreferrer" className="hover:text-gray-900 transition-colors">
-                      Instagram: ShopDarven
+
+                  {/* Instagram */}
+                  <li className="flex items-center gap-3 text-sm text-gray-600">
+                    <FiInstagram className="w-5 h-5 text-gray-900 flex-shrink-0" />
+                    <a 
+                      href="https://www.instagram.com/shopdarven/" 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      className="hover:text-black transition-colors font-medium"
+                    >
+                      @shopdarven
                     </a>
                   </li>
-                  <li className="text-sm text-gray-600">
-                    <a href="https://www.facebook.com/profile.php?id=61580410082761" target="_blank" rel="noopener noreferrer" className="hover:text-gray-900 transition-colors">
-                      Facebook: ShopDarven
+
+                  {/* Facebook */}
+                  <li className="flex items-center gap-3 text-sm text-gray-600">
+                    <FiFacebook className="w-5 h-5 text-gray-900 flex-shrink-0" />
+                    <a 
+                      href="https://www.facebook.com/profile.php?id=61580410082761" 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      className="hover:text-black transition-colors font-medium"
+                    >
+                      Darven Official
                     </a>
                   </li>
                 </ul>
