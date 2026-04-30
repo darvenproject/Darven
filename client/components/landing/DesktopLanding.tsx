@@ -180,7 +180,7 @@ export default function DesktopLanding() {
       )}
 
       {/* Slide 2: New Collection */}
-      <Link
+      {/* <Link
         href="/new-collection"
         className="h-screen w-full snap-start snap-always block relative"
       >
@@ -217,10 +217,10 @@ export default function DesktopLanding() {
             <div className="absolute inset-0 bg-gray-900" />
           )}
 
-          <div className="absolute inset-0 bg-black bg-opacity-30 group-hover:bg-opacity-20 transition-all duration-300 z-10" />
+          <div className="absolute inset-0 bg-black bg-opacity-30 group-hover:bg-opacity-20 transition-all duration-300 z-10" /> */}
 
           {/* New Collection Label */}
-          <div className="absolute inset-0 flex flex-col items-center justify-center z-20 pointer-events-none">
+          {/* <div className="absolute inset-0 flex flex-col items-center justify-center z-20 pointer-events-none">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -239,10 +239,10 @@ export default function DesktopLanding() {
                 Shop Now
               </p>
             </motion.div>
-          </div>
+          </div> */}
 
           {/* Slide indicators for new collection (if multiple images) */}
-          {newCollectionImages.length > 1 && (
+          {/* {newCollectionImages.length > 1 && (
             <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-2 z-20">
               {newCollectionImages.map((_, i) => (
                 <div
@@ -255,7 +255,7 @@ export default function DesktopLanding() {
             </div>
           )}
         </motion.div>
-      </Link>
+      </Link> */}
 
       {/* Slides 3–5: Categories */}
       {sectionImages.map((item, index) => (
