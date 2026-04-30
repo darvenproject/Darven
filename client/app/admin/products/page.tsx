@@ -48,10 +48,14 @@ export default function AdminProductsPage() {
 
   const verifyAdmin = async () => {
     try {
-      await apiClient.api.get('/admin/verify')
+      await apiClient.verifyAdmin()
       fetchProducts()
-    } catch (error) {
-      router.push('/login')
+    } catch (error: any) {
+      if (error?.response?.status === 401) {
+        router.push('/login')
+      } else {
+        fetchProducts()
+      }
     }
   }
 
@@ -59,7 +63,7 @@ export default function AdminProductsPage() {
     try {
       const [readyMadeRes, newCollectionRes] = await Promise.all([
         apiClient.getReadyMadeProducts(),
-        apiClient.api.get('/new-collection')
+        apiClient.getNewCollectionProducts()
       ])
       setProducts(readyMadeRes.data)
       setNewCollectionProducts(newCollectionRes.data)
@@ -91,13 +95,13 @@ export default function AdminProductsPage() {
 
       if (editingProduct) {
         if (isNewCollection) {
-          await apiClient.api.put(`/new-collection/${editingProduct.id}`, data)
+          await apiClient.updateNewCollectionProduct(editingProduct.id.toString(), data)
         } else {
           await apiClient.updateReadyMadeProduct(editingProduct.id.toString(), data)
         }
       } else {
         if (isNewCollection) {
-          await apiClient.api.post('/new-collection', data)
+          await apiClient.createNewCollectionProduct(data)
         } else {
           await apiClient.createReadyMadeProduct(data)
         }
@@ -139,7 +143,7 @@ export default function AdminProductsPage() {
     if (!confirm('Are you sure you want to delete this product?')) return
     try {
       if (fromNewCollection) {
-        await apiClient.api.delete(`/new-collection/${id}`)
+        await apiClient.deleteNewCollectionProduct(id.toString())
       } else {
         await apiClient.deleteReadyMadeProduct(id.toString())
       }
@@ -180,48 +184,46 @@ export default function AdminProductsPage() {
             </Link>
             <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Manage Products</h1>
           </div>
-          {!showForm && (
-            <button
-              onClick={handleAddNew}
-              className="flex items-center gap-2 px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-700 transition-colors text-sm sm:text-base"
-            >
-              <FiPlus className="w-4 h-4" />
-              <span>Add Product</span>
-            </button>
-          )}
+
+          {/* Add Product button — always visible, resets form if clicked while open */}
+          <button
+            onClick={handleAddNew}
+            className="flex items-center gap-2 px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-700 transition-colors text-sm sm:text-base"
+          >
+            <FiPlus className="w-4 h-4" />
+            <span>Add Product</span>
+          </button>
         </div>
 
-        {/* Tabs */}
-        {!showForm && (
-          <div className="container mx-auto px-4 pb-0 flex gap-0 border-t border-gray-100">
-            <button
-              onClick={() => setActiveTab('ready-made')}
-              className={`px-5 py-3 text-sm font-semibold border-b-2 transition-colors ${
-                activeTab === 'ready-made'
-                  ? 'border-gray-900 text-gray-900'
-                  : 'border-transparent text-gray-400 hover:text-gray-600'
-              }`}
-            >
-              Ready Made
-              <span className="ml-2 text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">
-                {products.length}
-              </span>
-            </button>
-            <button
-              onClick={() => setActiveTab('new-collection')}
-              className={`px-5 py-3 text-sm font-semibold border-b-2 transition-colors ${
-                activeTab === 'new-collection'
-                  ? 'border-gray-900 text-gray-900'
-                  : 'border-transparent text-gray-400 hover:text-gray-600'
-              }`}
-            >
-              New Collection
-              <span className="ml-2 text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">
-                {newCollectionProducts.length}
-              </span>
-            </button>
-          </div>
-        )}
+        {/* Tabs — always visible */}
+        <div className="container mx-auto px-4 pb-0 flex gap-0 border-t border-gray-100">
+          <button
+            onClick={() => { setActiveTab('ready-made'); setShowForm(false) }}
+            className={`px-5 py-3 text-sm font-semibold border-b-2 transition-colors ${
+              activeTab === 'ready-made'
+                ? 'border-gray-900 text-gray-900'
+                : 'border-transparent text-gray-400 hover:text-gray-600'
+            }`}
+          >
+            Ready Made
+            <span className="ml-2 text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">
+              {products.length}
+            </span>
+          </button>
+          <button
+            onClick={() => { setActiveTab('new-collection'); setShowForm(false) }}
+            className={`px-5 py-3 text-sm font-semibold border-b-2 transition-colors ${
+              activeTab === 'new-collection'
+                ? 'border-gray-900 text-gray-900'
+                : 'border-transparent text-gray-400 hover:text-gray-600'
+            }`}
+          >
+            New Collection
+            <span className="ml-2 text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">
+              {newCollectionProducts.length}
+            </span>
+          </button>
+        </div>
       </header>
 
       <div className="container mx-auto px-4 py-4 sm:py-8">
@@ -362,7 +364,7 @@ export default function AdminProductsPage() {
                       }
                     }}
                     className="flex-1 px-4 py-2 rounded-lg border-2 border-gray-300 bg-white text-gray-900 focus:outline-none focus:border-gray-900"
-                    placeholder="Press Enter to add"
+                    placeholder="Type color and press Enter"
                   />
                   <button
                     type="button"
