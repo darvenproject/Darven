@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { FiPackage, FiDollarSign, FiShoppingBag, FiImage, FiLogOut, FiMenu, FiX, FiHome, FiTrendingUp, FiClock, FiCheckCircle, FiXCircle, FiEye, FiTrash2 } from 'react-icons/fi'
+import { FiPackage, FiPrinter, FiCopy, FiDollarSign, FiShoppingBag, FiImage, FiLogOut, FiMenu, FiX, FiHome, FiTrendingUp, FiClock, FiCheckCircle, FiXCircle, FiEye, FiTrash2 } from 'react-icons/fi'
 import { apiClient } from '@/lib/api'
 
 interface OrderItem {
@@ -29,6 +29,7 @@ interface Order {
   subtotal: number
   delivery_charges: number
   total: number
+  admin_notes?: string;
   status: string
   created_at: string
 }
@@ -342,6 +343,31 @@ export default function AdminDashboard() {
         </div>
 
         {/* Quick Actions - Now removed as navigation is in sidebar */}
+        {/* Search and Filters */}
+        <div className="bg-white p-4 rounded-xl shadow-sm mb-6 flex flex-col md:flex-row gap-4 items-center">
+          <div className="relative flex-1 w-full">
+            <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
+              <FiEye /> {/* Replace with FiSearch if you import it */}
+            </span>
+            <input
+              type="text"
+              placeholder="Search by name or phone..."
+              className="block w-full pl-10 pr-3 py-2 border border-gray-200 rounded-lg focus:ring-blue-500 focus:border-blue-500 text-sm"
+              onChange={(e) => {
+                const term = e.target.value.toLowerCase();
+                // You'll need to create a 'filteredOrders' state and update it here
+              }}
+            />
+          </div>
+          <div className="flex gap-2 w-full md:w-auto">
+            <select className="bg-gray-50 border border-gray-200 text-gray-700 text-sm rounded-lg p-2.5">
+              <option value="">All Statuses</option>
+              <option value="pending">Pending</option>
+              <option value="completed">Completed</option>
+            </select>
+          </div>
+        </div>
+
 
         {/* Orders Table */}
         <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
@@ -472,69 +498,131 @@ export default function AdminDashboard() {
       {/* Order Details Modal */}
       {showOrderModal && selectedOrder && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fadeIn">
-          <div className="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl animate-slideUp">
-            <div className="sticky top-0 bg-gradient-to-r from-blue-600 to-purple-600 p-6 flex justify-between items-center z-10">
+          <div className="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl animate-slideUp print:max-h-none print:shadow-none">
+            <div className="sticky top-0 bg-gradient-to-r from-blue-600 to-purple-600 p-6 flex justify-between items-center z-10 print:hidden">
               <div>
                 <h2 className="text-2xl font-bold text-white">
                   Order #{selectedOrder.id}
                 </h2>
                 <p className="text-blue-100 text-sm mt-1">Complete order information</p>
               </div>
-              <button
-                onClick={closeModal}
-                className="w-10 h-10 flex items-center justify-center rounded-full bg-white/20 hover:bg-white/30 text-white hover:rotate-90"
-              >
-                <FiX className="w-6 h-6" />
-              </button>
+              
+              <div className="flex items-center gap-3">
+                {/* Print Invoice Button */}
+                <button
+                  onClick={() => window.print()}
+                  className="flex items-center gap-2 px-4 py-2 bg-white/20 hover:bg-white/30 text-white rounded-lg transition-all font-medium text-sm border border-white/10"
+                >
+                  <FiPrinter className="w-4 h-4" />
+                  Print Invoice
+                </button>
+
+                {/* Close Button */}
+                <button
+                  onClick={closeModal}
+                  className="w-10 h-10 flex items-center justify-center rounded-full bg-white/20 hover:bg-white/30 text-white transition-transform hover:rotate-90"
+                >
+                  <FiX className="w-6 h-6" />
+                </button>
+              </div>
             </div>
 
             <div className="p-6">
-              {/* Customer Information */}
-              <div className="mb-6">
-                <div className="flex items-center gap-2 mb-4">
-                  <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold">
+
+            {/* Customer Information */}
+            <div className="mb-6">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                  <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold shadow-sm">
                     {selectedOrder.customer_name.charAt(0).toUpperCase()}
                   </div>
                   <div>
                     <h3 className="text-lg font-semibold text-gray-900">
                       Customer Information
                     </h3>
-                    <p className="text-sm text-gray-500">Delivery details</p>
+                    <p className="text-sm text-gray-500">Delivery & Tailoring Details</p>
                   </div>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-gradient-to-br from-gray-50 to-gray-100 p-5 rounded-xl border border-gray-200">
-                  <div>
-                    <p className="text-sm text-gray-600">Name</p>
-                    <p className="font-medium text-gray-900">{selectedOrder.customer_name}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-600">Phone</p>
+                <span className="px-3 py-1 bg-blue-50 text-blue-700 text-xs font-medium rounded-full border border-blue-100">
+                  Verified Buyer
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-gradient-to-br from-gray-50 to-white p-5 rounded-xl border border-gray-200 shadow-sm">
+                {/* Name */}
+                <div className="group relative">
+                  <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Name</p>
+                  <p className="font-medium text-gray-900">{selectedOrder.customer_name}</p>
+                </div>
+
+                {/* Phone with Copy Action */}
+                <div className="group relative">
+                  <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Phone</p>
+                  <div className="flex items-center gap-2">
                     <p className="font-medium text-gray-900">{selectedOrder.phone}</p>
+                    <button 
+                      onClick={() => navigator.clipboard.writeText(selectedOrder.phone)}
+                      className="text-gray-400 hover:text-blue-600 transition-colors"
+                      title="Copy Phone Number"
+                    >
+                      <FiCopy className="w-3.5 h-3.5" />
+                    </button>
                   </div>
+                </div>
+
+                {/* Address with Copy Action */}
+                <div className="md:col-span-2 group relative">
+                  <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Delivery Address</p>
+                  <div className="flex items-start justify-between">
+                    <p className="font-medium text-gray-900 leading-relaxed">{selectedOrder.address}</p>
+                    <button 
+                      onClick={() => navigator.clipboard.writeText(selectedOrder.address)}
+                      className="text-gray-400 hover:text-blue-600 mt-1 transition-colors"
+                      title="Copy Address"
+                    >
+                      <FiCopy className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </div>
+                
+
+                {/* Location Details */}
+                <div>
+                  <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">City / State</p>
+                  <p className="font-medium text-gray-900">{selectedOrder.city}, {selectedOrder.state}</p>
+                </div>
+
+                <div>
+                  <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Postal Code</p>
+                  <p className="font-medium text-gray-900">{selectedOrder.postal_code || "N/A"}</p>
+                </div>
+
+                {selectedOrder.landmark && (
                   <div className="md:col-span-2">
-                    <p className="text-sm text-gray-600">Address</p>
-                    <p className="font-medium text-gray-900">{selectedOrder.address}</p>
+                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Landmark</p>
+                    <p className="font-medium text-gray-900">{selectedOrder.landmark}</p>
                   </div>
-                  <div>
-                    <p className="text-sm text-gray-600">City</p>
-                    <p className="font-medium text-gray-900">{selectedOrder.city}</p>
+                )}
+
+                {/* Admin/Tailor Notes Section */}
+                <div className="md:col-span-2 mt-2 pt-4 border-t border-gray-100">
+                  <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 block">
+                    Order Notes (Internal)
+                  </label>
+                  <textarea 
+                    className="w-full p-3 text-sm bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:bg-white outline-none transition-all"
+                    placeholder="Add stitching measurements or courier tracking notes..."
+                    rows={2}
+                    defaultValue={selectedOrder.admin_notes || ""}
+                  />
+                  <div className="flex justify-end mt-2">
+                    <button className="text-xs font-medium bg-gray-900 text-white px-4 py-1.5 rounded-md hover:bg-gray-800 transition-colors">
+                      Save Note
+                    </button>
                   </div>
-                  <div>
-                    <p className="text-sm text-gray-600">State</p>
-                    <p className="font-medium text-gray-900">{selectedOrder.state}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-600">Postal Code</p>
-                    <p className="font-medium text-gray-900">{selectedOrder.postal_code}</p>
-                  </div>
-                  {selectedOrder.landmark && (
-                    <div>
-                      <p className="text-sm text-gray-600">Landmark</p>
-                      <p className="font-medium text-gray-900">{selectedOrder.landmark}</p>
-                    </div>
-                  )}
                 </div>
               </div>
+            </div>
 
               {/* Order Items */}
               <div className="mb-6">

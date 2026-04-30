@@ -41,9 +41,6 @@ api.interceptors.request.use((config) => {
     }
   }
   
-  // Set Content-Type based on data type
-  // If it's FormData, let axios set the boundary automatically
-  // Otherwise, use application/json
   if (!(config.data instanceof FormData)) {
     config.headers['Content-Type'] = 'application/json'
   }
@@ -53,7 +50,6 @@ api.interceptors.request.use((config) => {
   return Promise.reject(error)
 })
 
-// Log response errors
 api.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -62,7 +58,6 @@ api.interceptors.response.use(
   }
 )
 
-// API functions
 export const apiClient = {
   // Landing page images
   getLandingImages: () => api.get('/landing-images'),
@@ -88,6 +83,19 @@ export const apiClient = {
       headers: { 'Content-Type': 'multipart/form-data' },
     }),
   deleteReadyMadeProduct: (id: string) => api.delete(`/ready-made/${id}`),
+
+  // New Collection Products
+  getNewCollectionProducts: () => api.get('/new-collection'),
+  getNewCollectionProduct: (id: string) => api.get(`/new-collection/${id}`),
+  createNewCollectionProduct: (formData: FormData) =>
+    api.post('/new-collection', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    }),
+  updateNewCollectionProduct: (id: string, formData: FormData) =>
+    api.put(`/new-collection/${id}`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    }),
+  deleteNewCollectionProduct: (id: string) => api.delete(`/new-collection/${id}`),
 
   // Fabrics
   getFabrics: () => api.get('/fabrics'),

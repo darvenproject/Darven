@@ -2,6 +2,7 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import JSONResponse
+from api import new_collection
 import os
 import logging
 import traceback
@@ -94,6 +95,7 @@ app.include_router(custom.router, prefix="/custom-fabrics", tags=["custom"])
 app.include_router(orders.router, prefix="/orders", tags=["orders"])
 app.include_router(sizes.router, prefix="/sizes", tags=["sizes"])
 app.include_router(contact.router, tags=["contact"])
+app.include_router(new_collection.router, prefix="/new-collection", tags=["new-collection"])
 
 @app.get("/")
 async def root():

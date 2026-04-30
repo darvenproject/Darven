@@ -12,11 +12,11 @@ class LandingImage(Base):
     __tablename__ = "landing_images"
     
     id = Column(Integer, primary_key=True, index=True)
-    category = Column(String, index=True)  # ready-made, stitch-your-own, fabric, hero (hero can have multiple)
+    category = Column(String, index=True)
     image_url = Column(String)
-    portrait_image_url = Column(String, nullable=True)  # For mobile view
+    portrait_image_url = Column(String, nullable=True)
     title = Column(String)
-    link = Column(String, nullable=True)  # Nullable for hero section
+    link = Column(String, nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
@@ -28,10 +28,27 @@ class ReadyMadeProduct(Base):
     description = Column(Text)
     price = Column(Float)
     material = Column(String)
-    fabric_category = Column(String, nullable=True, index=True)  # Wash n Wear, Boski, Soft Cotton, Giza Moon Cotton
+    fabric_category = Column(String, nullable=True, index=True)
     size = Column(String)
-    colors = Column(JSON, nullable=True)  # Array of available colors
-    images = Column(JSON)  # List of image URLs
+    colors = Column(JSON, nullable=True)
+    images = Column(JSON)
+    stock = Column(Integer, default=0)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+
+# NEW: New Collection Product — same structure as ReadyMadeProduct, separate table
+class NewCollectionProduct(Base):
+    __tablename__ = "new_collection_products"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, index=True)
+    description = Column(Text)
+    price = Column(Float)
+    material = Column(String)
+    fabric_category = Column(String, nullable=True, index=True)
+    size = Column(String)
+    colors = Column(JSON, nullable=True)
+    images = Column(JSON)
     stock = Column(Integer, default=0)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
@@ -44,9 +61,9 @@ class Fabric(Base):
     description = Column(Text)
     price_per_meter = Column(Float)
     material = Column(String)
-    fabric_category = Column(String, nullable=True, index=True)  # Wash n Wear, Boski, Soft Cotton, Giza Moon Cotton
-    colors = Column(JSON, nullable=True)  # Array of available colors
-    images = Column(JSON)  # List of image URLs
+    fabric_category = Column(String, nullable=True, index=True)
+    colors = Column(JSON, nullable=True)
+    images = Column(JSON)
     stock_meters = Column(Float, default=0)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
@@ -59,7 +76,7 @@ class CustomFabric(Base):
     description = Column(Text)
     price = Column(Float)
     material = Column(String)
-    colors = Column(JSON, nullable=True)  # Array of available colors
+    colors = Column(JSON, nullable=True)
     image_url = Column(String)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
@@ -75,7 +92,7 @@ class Order(Base):
     city = Column(String)
     state = Column(String)
     landmark = Column(String, nullable=True)
-    items = Column(JSON)  # List of order items with details
+    items = Column(JSON)
     subtotal = Column(Float)
     delivery_charges = Column(Float, default=200.0)
     total = Column(Float)
@@ -103,11 +120,11 @@ class KameezSize(Base):
     
     id = Column(Integer, primary_key=True, index=True)
     size = Column(SQLEnum(SizeType), unique=True, index=True)
-    collar = Column(Float)  # inches
-    shoulder = Column(Float)  # inches
-    chest = Column(Float)  # inches
-    sleeves = Column(Float)  # inches
-    length = Column(Float)  # inches
+    collar = Column(Float)
+    shoulder = Column(Float)
+    chest = Column(Float)
+    sleeves = Column(Float)
+    length = Column(Float)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
@@ -116,7 +133,7 @@ class ShalwarSize(Base):
     
     id = Column(Integer, primary_key=True, index=True)
     size = Column(SQLEnum(SizeType), unique=True, index=True)
-    length = Column(Float)  # inches
+    length = Column(Float)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
@@ -125,8 +142,8 @@ class PajamaSize(Base):
     
     id = Column(Integer, primary_key=True, index=True)
     size = Column(SQLEnum(SizeType), unique=True, index=True)
-    length = Column(Float)  # inches
-    waist = Column(Float)  # inches
-    hips = Column(Float)  # inches
+    length = Column(Float)
+    waist = Column(Float)
+    hips = Column(Float)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())

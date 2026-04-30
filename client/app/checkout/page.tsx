@@ -49,14 +49,15 @@ export default function CheckoutPage() {
     }
   }, [mounted, items.length, showSuccess, router])
 
+  // Calculation Logic
   const subtotal = getTotalPrice()
-  
-  // Calculate stitching cost
   const customItems = items.filter(item => item.type === 'custom')
   const totalStitchingCost = customItems.reduce((total, item) => total + (3500 * item.quantity), 0)
   
-  const deliveryCharges = 200
-  const total = subtotal + totalStitchingCost + deliveryCharges
+  // Dynamic Delivery: Free over Rs 10,000
+  const orderValue = subtotal + totalStitchingCost
+  const deliveryCharges = orderValue >= 10000 ? 0 : 200
+  const total = orderValue + deliveryCharges
 
   const handleInputChange = (field: keyof CustomerDetails, value: string) => {
     setDetails({ ...details, [field]: value })
@@ -89,7 +90,6 @@ export default function CheckoutPage() {
       setShowSuccess(true)
       clearCart()
 
-      // Redirect to home after 5 seconds
       setTimeout(() => {
         router.push('/')
       }, 5000)
@@ -113,12 +113,10 @@ export default function CheckoutPage() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-white px-4">
         <div className="text-center max-w-lg mx-auto">
-          {/* Success Icon */}
           <div className="w-28 h-28 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-8 animate-bounce">
             <FiCheck className="w-16 h-16 text-white" strokeWidth={3} />
           </div>
 
-          {/* Main Message */}
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-gray-900 mb-4 tracking-tight">
             Order Placed Successfully!
           </h2>
@@ -127,12 +125,10 @@ export default function CheckoutPage() {
             Thank you for your order
           </p>
 
-          {/* Order Details */}
           <div className="bg-gray-50 rounded-2xl p-6 sm:p-8 border-2 border-gray-200 mb-8 text-left">
             <h3 className="text-lg font-black text-gray-900 mb-4">
               What happens next?
             </h3>
-            
             <div className="space-y-4">
               <div className="flex items-start gap-3">
                 <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
@@ -155,16 +151,6 @@ export default function CheckoutPage() {
               </div>
 
               <div className="flex items-start gap-3">
-                <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <span className="text-white text-xs font-bold">3</span>
-                </div>
-                <div>
-                  <p className="font-bold text-gray-900">Updates via WhatsApp</p>
-                  <p className="text-sm text-gray-600">We'll keep you updated about your order status</p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-3">
                 <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
                   <FiPackage className="w-3 h-3 text-white" />
                 </div>
@@ -176,11 +162,8 @@ export default function CheckoutPage() {
             </div>
           </div>
 
-          {/* Additional Info */}
           <div className="bg-blue-50 border border-blue-200 rounded-xl p-6 mb-8">
-            <p className="text-sm font-bold text-blue-800 mb-2">
-              📱 Stay Connected
-            </p>
+            <p className="text-sm font-bold text-blue-800 mb-2">📱 Stay Connected</p>
             <p className="text-sm text-blue-700">
               We will keep updating you about your order via WhatsApp on the number you provided.
             </p>
@@ -194,13 +177,10 @@ export default function CheckoutPage() {
     )
   }
 
-  if (items.length === 0) {
-    return null
-  }
+  if (items.length === 0) return null
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Header */}
       <div className="border-b border-gray-200">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-gray-900 tracking-tight">
@@ -224,103 +204,85 @@ export default function CheckoutPage() {
 
               <form onSubmit={handleSubmit} className="space-y-5">
                 <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">
-                    Full Name *
-                  </label>
+                  <label className="block text-sm font-bold text-gray-700 mb-2">Full Name *</label>
                   <input
                     type="text"
                     required
                     value={details.customer_name}
                     onChange={(e) => handleInputChange('customer_name', e.target.value)}
-                    className="w-full px-4 py-3 rounded-xl border-2 border-gray-300 bg-white text-gray-900 focus:outline-none focus:border-gray-900:border-white transition-all"
+                    className="w-full px-4 py-3 rounded-xl border-2 border-gray-300 bg-white text-gray-900 focus:outline-none focus:border-gray-900 transition-all"
                     placeholder="Enter your full name"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">
-                    Phone Number (WhatsApp) *
-                  </label>
+                  <label className="block text-sm font-bold text-gray-700 mb-2">Phone Number (WhatsApp) *</label>
                   <input
                     type="tel"
                     required
                     value={details.phone}
                     onChange={(e) => handleInputChange('phone', e.target.value)}
-                    className="w-full px-4 py-3 rounded-xl border-2 border-gray-300 bg-white text-gray-900 focus:outline-none focus:border-gray-900:border-white transition-all"
+                    className="w-full px-4 py-3 rounded-xl border-2 border-gray-300 bg-white text-gray-900 focus:outline-none focus:border-gray-900 transition-all"
                     placeholder="+92 300 1234567"
                   />
-                  <p className="text-xs text-gray-500 mt-1">
-                    We'll send order updates on WhatsApp
-                  </p>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">
-                    Complete Address *
-                  </label>
+                  <label className="block text-sm font-bold text-gray-700 mb-2">Complete Address *</label>
                   <textarea
                     required
                     rows={3}
                     value={details.address}
                     onChange={(e) => handleInputChange('address', e.target.value)}
-                    className="w-full px-4 py-3 rounded-xl border-2 border-gray-300 bg-white text-gray-900 focus:outline-none focus:border-gray-900:border-white transition-all"
+                    className="w-full px-4 py-3 rounded-xl border-2 border-gray-300 bg-white text-gray-900 focus:outline-none focus:border-gray-900 transition-all"
                     placeholder="House/Flat no., Street, Area"
                   />
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-bold text-gray-700 mb-2">
-                      City *
-                    </label>
+                    <label className="block text-sm font-bold text-gray-700 mb-2">City *</label>
                     <input
                       type="text"
                       required
                       value={details.city}
                       onChange={(e) => handleInputChange('city', e.target.value)}
-                      className="w-full px-4 py-3 rounded-xl border-2 border-gray-300 bg-white text-gray-900 focus:outline-none focus:border-gray-900:border-white transition-all"
+                      className="w-full px-4 py-3 rounded-xl border-2 border-gray-300 bg-white text-gray-900 focus:outline-none focus:border-gray-900 transition-all"
                       placeholder="Karachi"
                     />
                   </div>
-
                   <div>
-                    <label className="block text-sm font-bold text-gray-700 mb-2">
-                      State/Province *
-                    </label>
+                    <label className="block text-sm font-bold text-gray-700 mb-2">State/Province *</label>
                     <input
                       type="text"
                       required
                       value={details.state}
                       onChange={(e) => handleInputChange('state', e.target.value)}
-                      className="w-full px-4 py-3 rounded-xl border-2 border-gray-300 bg-white text-gray-900 focus:outline-none focus:border-gray-900:border-white transition-all"
+                      className="w-full px-4 py-3 rounded-xl border-2 border-gray-300 bg-white text-gray-900 focus:outline-none focus:border-gray-900 transition-all"
                       placeholder="Sindh"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">
-                    Postal Code *
-                  </label>
+                  <label className="block text-sm font-bold text-gray-700 mb-2">Postal Code *</label>
                   <input
                     type="text"
                     required
                     value={details.postal_code}
                     onChange={(e) => handleInputChange('postal_code', e.target.value)}
-                    className="w-full px-4 py-3 rounded-xl border-2 border-gray-300 bg-white text-gray-900 focus:outline-none focus:border-gray-900:border-white transition-all"
+                    className="w-full px-4 py-3 rounded-xl border-2 border-gray-300 bg-white text-gray-900 focus:outline-none focus:border-gray-900 transition-all"
                     placeholder="54000"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">
-                    Nearby Landmark (Optional)
-                  </label>
+                  <label className="block text-sm font-bold text-gray-700 mb-2">Nearby Landmark (Optional)</label>
                   <input
                     type="text"
                     value={details.landmark}
                     onChange={(e) => handleInputChange('landmark', e.target.value)}
-                    className="w-full px-4 py-3 rounded-xl border-2 border-gray-300 bg-white text-gray-900 focus:outline-none focus:border-gray-900:border-white transition-all"
+                    className="w-full px-4 py-3 rounded-xl border-2 border-gray-300 bg-white text-gray-900 focus:outline-none focus:border-gray-900 transition-all"
                     placeholder="e.g., Near Main Market"
                   />
                 </div>
@@ -328,7 +290,7 @@ export default function CheckoutPage() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-gray-900 text-white py-4 px-6 rounded-xl font-black text-lg hover:bg-black:bg-gray-100 hover:scale-105 hover:shadow-2xl transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 mt-6"
+                  className="w-full bg-gray-900 text-white py-4 px-6 rounded-xl font-black text-lg hover:bg-black hover:scale-105 hover:shadow-2xl transition-all disabled:opacity-50 disabled:cursor-not-allowed mt-6"
                 >
                   {loading ? 'Placing Order...' : 'Place Order'}
                 </button>
@@ -339,11 +301,8 @@ export default function CheckoutPage() {
           {/* Order Summary */}
           <div className="lg:col-span-1">
             <div className="bg-gray-50 rounded-2xl p-6 border-2 border-gray-200 sticky top-24">
-              <h2 className="text-2xl font-black text-gray-900 mb-6 tracking-tight">
-                Order Summary
-              </h2>
+              <h2 className="text-2xl font-black text-gray-900 mb-6 tracking-tight">Order Summary</h2>
 
-              {/* Items */}
               <div className="space-y-4 mb-6 max-h-64 overflow-y-auto">
                 {items.map((item) => (
                   <div key={item.id} className="flex gap-3">
@@ -355,19 +314,12 @@ export default function CheckoutPage() {
                       />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-bold text-gray-900 line-clamp-1">
-                        {item.name}
-                      </p>
-                      <p className="text-xs text-gray-600">
-                        Qty: {item.quantity}
-                      </p>
-                      <p className="text-sm font-black text-gray-900">
-                        Rs {(item.price * item.quantity).toLocaleString()}
-                      </p>
+                      <p className="text-sm font-bold text-gray-900 line-clamp-1">{item.name}</p>
+                      <p className="text-xs text-gray-600">Qty: {item.quantity}</p>
+                      <p className="text-sm font-black text-gray-900">Rs {(item.price * item.quantity).toLocaleString()}</p>
                       {item.type === 'custom' && (
                         <p className="text-xs text-blue-600 flex items-center gap-1">
-                          <FiScissors className="w-3 h-3" />
-                          +Rs {(3500 * item.quantity).toLocaleString()}
+                          <FiScissors className="w-3 h-3" /> +Rs {(3500 * item.quantity).toLocaleString()}
                         </p>
                       )}
                     </div>
@@ -375,7 +327,6 @@ export default function CheckoutPage() {
                 ))}
               </div>
 
-              {/* Price Breakdown */}
               <div className="border-t-2 border-gray-200 pt-4 space-y-3">
                 <div className="flex justify-between text-gray-600">
                   <span>Subtotal:</span>
@@ -384,40 +335,29 @@ export default function CheckoutPage() {
 
                 {totalStitchingCost > 0 && (
                   <div className="flex justify-between text-gray-600">
-                    <span className="flex items-center gap-2">
-                      <FiScissors className="w-4 h-4" />
-                      Stitching:
-                    </span>
+                    <span className="flex items-center gap-2"><FiScissors className="w-4 h-4" /> Stitching:</span>
                     <span className="font-bold">Rs {totalStitchingCost.toLocaleString()}</span>
                   </div>
                 )}
 
                 <div className="flex justify-between text-gray-600">
-                  <span className="flex items-center gap-2">
-                    <FiPackage className="w-4 h-4" />
-                    Delivery:
+                  <span className="flex items-center gap-2"><FiPackage className="w-4 h-4" /> Delivery:</span>
+                  <span className="font-bold">
+                    {deliveryCharges === 0 ? 'FREE' : `Rs ${deliveryCharges.toLocaleString()}`}
                   </span>
-                  <span className="font-bold">Rs {deliveryCharges.toLocaleString()}</span>
                 </div>
 
                 <div className="border-t-2 border-gray-200 pt-3">
                   <div className="flex justify-between items-center">
                     <span className="text-xl font-black text-gray-900">Total:</span>
-                    <span className="text-3xl font-black text-gray-900">
-                      Rs {total.toLocaleString()}
-                    </span>
+                    <span className="text-3xl font-black text-gray-900">Rs {total.toLocaleString()}</span>
                   </div>
                 </div>
               </div>
 
-              {/* Delivery Info */}
               <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-xl">
-                <p className="text-sm font-bold text-blue-800 mb-1">
-                  ✓ Estimated delivery: 7 working days
-                </p>
-                <p className="text-xs text-blue-700">
-                  We'll send updates via WhatsApp
-                </p>
+                <p className="text-sm font-bold text-blue-800">✓ Cash on Delivery</p>
+                <p className="text-xs text-blue-700 mt-1">Delivery in 7 working days</p>
               </div>
             </div>
           </div>

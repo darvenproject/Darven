@@ -19,8 +19,10 @@ export default function CartPage() {
   const customItems = items.filter(item => item.type === 'custom')
   const totalStitchingCost = customItems.reduce((total, item) => total + (3500 * item.quantity), 0)
   
-  const deliveryCharges = 200
-  const total = subtotal + totalStitchingCost + deliveryCharges
+  // Logic: Free delivery on orders above Rs 10,000
+  const orderValue = subtotal + totalStitchingCost
+  const deliveryCharges = orderValue >= 10000 ? 0 : 200
+  const total = orderValue + deliveryCharges
 
   if (items.length === 0) {
     return (
@@ -37,7 +39,7 @@ export default function CartPage() {
           </p>
           <Link
             href="/"
-            className="inline-block bg-gray-900 text-white py-3 px-8 rounded-xl font-bold hover:bg-black:bg-gray-100 hover:scale-105 transition-all text-sm sm:text-base"
+            className="inline-block bg-gray-900 text-white py-3 px-8 rounded-xl font-bold hover:bg-gray-800 hover:scale-105 transition-all text-sm sm:text-base"
           >
             Continue Shopping
           </Link>
@@ -68,7 +70,7 @@ export default function CartPage() {
             {items.map((item) => (
               <div
                 key={item.id}
-                className="bg-gray-50 rounded-2xl p-4 sm:p-6 border-2 border-gray-200 hover:border-gray-300:border-gray-700 transition-all"
+                className="bg-gray-50 rounded-2xl p-4 sm:p-6 border-2 border-gray-200 hover:border-gray-700 transition-all"
               >
                 <div className="flex gap-4">
                   {/* Image */}
@@ -91,7 +93,7 @@ export default function CartPage() {
                       </h3>
                       <button
                         onClick={() => removeItem(item.id)}
-                        className="p-2 text-red-600 hover:bg-red-50:bg-red-900/20 rounded-lg transition-colors flex-shrink-0"
+                        className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors flex-shrink-0"
                         title="Remove item"
                       >
                         <FiTrash2 className="w-5 h-5" />
@@ -121,6 +123,17 @@ export default function CartPage() {
                         </div>
                       )}
 
+                      {(item.type as string) === 'new-collection' && (
+                        <div className="text-sm text-gray-600 space-y-1">
+                          <p className="flex items-center gap-2">
+                            <FiPackage className="w-4 h-4" />
+                            <span>Collection: {item.details?.collectionName || 'New Arrival'}</span>
+                          </p>
+                          {item.details?.size && <p>Size: {item.details.size}</p>}
+                          {item.details?.color && <p>Color: {item.details.color}</p>}                         
+                        </div>
+                      )}
+
                       {item.type === 'custom' && (
                         <div className="text-sm text-gray-600">
                           <p className="flex items-center gap-2 mb-2">
@@ -132,7 +145,7 @@ export default function CartPage() {
                           <p>Color: {item.details?.color}</p>
                           <p>Fabric: {item.details?.meters || 4} meter{(item.details?.meters || 4) !== 1 ? 's' : ''}</p>
                           <details className="mt-3">
-                            <summary className="cursor-pointer hover:text-gray-900:text-white font-bold text-xs uppercase">
+                            <summary className="cursor-pointer hover:text-gray-900 font-bold text-xs uppercase">
                               View Full Details →
                             </summary>
                             <div className="mt-3 pl-4 space-y-2 text-xs border-l-2 border-gray-300">
@@ -187,7 +200,7 @@ export default function CartPage() {
                       <div className="flex items-center gap-3 bg-white rounded-xl p-1 border border-gray-200">
                         <button
                           onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                          className="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-lg hover:bg-gray-900:bg-white hover:text-white:text-gray-900 transition-all"
+                          className="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-lg hover:bg-gray-900 hover:text-white transition-all"
                         >
                           <FiMinus className="w-4 h-4" />
                         </button>
@@ -198,7 +211,7 @@ export default function CartPage() {
 
                         <button
                           onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                          className="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-lg hover:bg-gray-900:bg-white hover:text-white:text-gray-900 transition-all"
+                          className="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-lg hover:bg-gray-900 hover:text-white transition-all"
                         >
                           <FiPlus className="w-4 h-4" />
                         </button>
@@ -250,7 +263,9 @@ export default function CartPage() {
                     <FiPackage className="w-4 h-4" />
                     Delivery:
                   </span>
-                  <span className="font-bold">Rs {deliveryCharges.toLocaleString()}</span>
+                  <span className="font-bold">
+                    {deliveryCharges === 0 ? 'FREE' : `Rs ${deliveryCharges.toLocaleString()}`}
+                  </span>
                 </div>
 
                 <div className="border-t-2 border-gray-200 pt-4">
@@ -265,14 +280,14 @@ export default function CartPage() {
 
               <button
                 onClick={() => router.push('/checkout')}
-                className="w-full bg-gray-900 text-white py-4 px-6 rounded-xl font-black text-lg hover:bg-black:bg-gray-100 hover:scale-105 hover:shadow-2xl transition-all active:scale-95 mb-4"
+                className="w-full bg-gray-900 text-white py-4 px-6 rounded-xl font-black text-lg hover:bg-gray-800 hover:scale-105 hover:shadow-2xl transition-all active:scale-95 mb-4"
               >
                 Proceed to Checkout
               </button>
 
               <Link
                 href="/"
-                className="block text-center text-gray-600 hover:text-gray-900:text-white font-bold transition-colors"
+                className="block text-center text-gray-600 hover:text-gray-900 font-bold transition-colors"
               >
                 ← Continue Shopping
               </Link>
