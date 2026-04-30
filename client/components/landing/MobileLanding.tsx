@@ -25,6 +25,10 @@ export default function MobileLanding() {
     { category: 'stitch-your-own', image_url: '/placeholder.jpg', title: 'Stitch Your Own Suit', link: '/stitch-your-own' },
     { category: 'fabric', image_url: '/placeholder.jpg', title: 'Fabric', link: '/fabric' },
   ])
+  const [newCollectionImages, setNewCollectionImages] = useState<LandingImage[]>([])
+  const [currentNewCollectionIndex, setCurrentNewCollectionIndex] = useState(0)
+  const [newCollectionTouchStart, setNewCollectionTouchStart] = useState(0)
+  const [newCollectionTouchEnd, setNewCollectionTouchEnd] = useState(0)
   const [currentIndex, setCurrentIndex] = useState(0)
   const [currentHeroIndex, setCurrentHeroIndex] = useState(0)
   const [heroTouchStart, setHeroTouchStart] = useState(0)
@@ -43,7 +47,7 @@ export default function MobileLanding() {
   }, [scrollContainerRef])
 
   useEffect(() => {
-    const totalSections = (heroImages.length > 0 ? 1 : 0) + sectionImages.length + 1
+    const totalSections = (heroImages.length > 0 ? 1 : 0) + 1 + sectionImages.length + 1
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'ArrowDown') {
         e.preventDefault()
@@ -59,6 +63,7 @@ export default function MobileLanding() {
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [currentIndex, heroImages.length, sectionImages.length, scrollContainerRef])
 
+  // Hero auto-play
   useEffect(() => {
     if (heroImages.length <= 1 || currentIndex !== 0) return
     const interval = setInterval(() => {
@@ -66,6 +71,15 @@ export default function MobileLanding() {
     }, 5000)
     return () => clearInterval(interval)
   }, [heroImages.length, currentIndex])
+
+  // New Collection auto-play
+  useEffect(() => {
+    if (newCollectionImages.length <= 1 || currentIndex !== 1) return
+    const interval = setInterval(() => {
+      setCurrentNewCollectionIndex((prev) => (prev + 1) % newCollectionImages.length)
+    }, 4000)
+    return () => clearInterval(interval)
+  }, [newCollectionImages.length, currentIndex])
 
   const handleHeroTouchStart = (e: React.TouchEvent) => setHeroTouchStart(e.targetTouches[0].clientX)
   const handleHeroTouchMove = (e: React.TouchEvent) => setHeroTouchEnd(e.targetTouches[0].clientX)
@@ -78,17 +92,30 @@ export default function MobileLanding() {
     setHeroTouchEnd(0)
   }
 
+  const handleNewCollectionTouchStart = (e: React.TouchEvent) => setNewCollectionTouchStart(e.targetTouches[0].clientX)
+  const handleNewCollectionTouchMove = (e: React.TouchEvent) => setNewCollectionTouchEnd(e.targetTouches[0].clientX)
+  const handleNewCollectionTouchEnd = () => {
+    if (!newCollectionTouchStart || !newCollectionTouchEnd) return
+    const distance = newCollectionTouchStart - newCollectionTouchEnd
+    if (distance > 50) setCurrentNewCollectionIndex((prev) => (prev === newCollectionImages.length - 1 ? 0 : prev + 1))
+    else if (distance < -50) setCurrentNewCollectionIndex((prev) => (prev === 0 ? newCollectionImages.length - 1 : prev - 1))
+    setNewCollectionTouchStart(0)
+    setNewCollectionTouchEnd(0)
+  }
+
   const fetchLandingImages = async () => {
     try {
       const response = await apiClient.getLandingImages()
       if (response.data && response.data.length > 0) {
         const heroes = response.data.filter((img: LandingImage) => img.category === 'hero')
-        const otherImages = response.data.filter((img: LandingImage) => img.category !== 'hero')
+        const newCollection = response.data.filter((img: LandingImage) => img.category === 'new-collection')
+        const otherImages = response.data.filter((img: LandingImage) => img.category !== 'hero' && img.category !== 'new-collection')
         const orderedSections = ['ready-made', 'stitch-your-own', 'fabric']
         const sortedOthers = orderedSections
           .map(cat => otherImages.find((img: LandingImage) => img.category === cat))
           .filter(Boolean) as LandingImage[]
         if (heroes.length > 0) setHeroImages(heroes)
+        if (newCollection.length > 0) setNewCollectionImages(newCollection)
         if (sortedOthers.length > 0) setSectionImages(sortedOthers)
       }
     } catch (error) {
@@ -97,7 +124,7 @@ export default function MobileLanding() {
   }
 
   const scrollToNext = () => {
-    const totalSections = (heroImages.length > 0 ? 1 : 0) + sectionImages.length + 1
+    const totalSections = (heroImages.length > 0 ? 1 : 0) + 1 + sectionImages.length + 1
     if (currentIndex < totalSections - 1)
       scrollContainerRef.current?.scrollTo({ top: (currentIndex + 1) * window.innerHeight, behavior: 'smooth' })
   }
@@ -110,7 +137,7 @@ export default function MobileLanding() {
     >
       <style jsx>{`div::-webkit-scrollbar { display: none; }`}</style>
 
-      {/* Hero */}
+      {/* Slide 1: Hero */}
       {heroImages.length > 0 && (
         <div
           className="h-screen w-full snap-start snap-always relative"
@@ -153,7 +180,72 @@ export default function MobileLanding() {
         </div>
       )}
 
-      {/* Categories */}
+      {/* Slide 2: New Collection */}
+      <Link
+        href="/new-collection"
+        className="h-screen w-full snap-start snap-always block relative"
+        onTouchStart={handleNewCollectionTouchStart}
+        onTouchMove={handleNewCollectionTouchMove}
+        onTouchEnd={handleNewCollectionTouchEnd}
+      >
+        {newCollectionImages.length > 0 ? (
+          newCollectionImages.map((img, index) => {
+            const imageUrl = img.portrait_image_url || img.image_url
+            return (
+              <div
+                key={`new-collection-${img.id || index}`}
+                className={`absolute inset-0 transition-opacity duration-1000 ${index === currentNewCollectionIndex ? 'opacity-100 z-0' : 'opacity-0 z-0'}`}
+              >
+                <div className="absolute inset-0" style={{ backgroundColor: '#1a1a1a' }}>
+                  <div className="relative h-full w-full">
+                    <Image src={getImageUrl(imageUrl)} alt={img.title || 'New Collection'} fill sizes="100vw" priority className="object-cover" unoptimized />
+                  </div>
+                </div>
+              </div>
+            )
+          })
+        ) : (
+          <div className="absolute inset-0" style={{ backgroundColor: '#111111' }} />
+        )}
+
+        <div className="absolute inset-0 bg-black bg-opacity-30 z-10" />
+
+        {/* New Collection Label */}
+        <div className="absolute inset-0 flex flex-col items-center justify-center z-20 pointer-events-none">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.2 }}
+            viewport={{ once: false, amount: 0.5 }}
+            className="text-center px-6"
+          >
+            <p className="text-white text-xs tracking-[0.4em] uppercase font-light mb-3 opacity-80">
+              Explore
+            </p>
+            <h2 className="text-white text-5xl font-bold tracking-[0.1em] uppercase">
+              New Collection
+            </h2>
+            <div className="mt-5 w-12 h-px bg-white mx-auto opacity-60" />
+            <p className="mt-5 text-white text-sm tracking-[0.25em] uppercase font-light opacity-70">
+              Shop Now
+            </p>
+          </motion.div>
+        </div>
+
+        {/* Slide indicators for new collection (if multiple images) */}
+        {newCollectionImages.length > 1 && (
+          <div className="absolute top-8 left-1/2 -translate-x-1/2 flex gap-2 z-30">
+            {newCollectionImages.map((_, i) => (
+              <div
+                key={i}
+                className={`h-1.5 rounded-full transition-all ${currentNewCollectionIndex === i ? 'bg-white w-6' : 'bg-white bg-opacity-40 w-1.5'}`}
+              />
+            ))}
+          </div>
+        )}
+      </Link>
+
+      {/* Slides 3–5: Categories */}
       {sectionImages.map((item, index) => {
         const imageUrl = item.portrait_image_url || item.image_url
         return (
@@ -168,7 +260,7 @@ export default function MobileLanding() {
         )
       })}
 
-      {/* Slide 5: Footer */}
+      {/* Slide 6: Footer */}
       <div className="h-screen w-full snap-start snap-always bg-white flex items-center justify-center">
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
@@ -246,7 +338,7 @@ export default function MobileLanding() {
 
       {/* Nav Dots */}
       <div className="fixed bottom-6 left-1/2 -translate-x-1/2 flex gap-3 z-30">
-        {[0, 1, 2, 3, 4].map((i) => (
+        {[0, 1, 2, 3, 4, 5].map((i) => (
           <div key={i} className={`h-2 rounded-full transition-all duration-300 ${currentIndex === i ? 'bg-white w-8' : 'bg-white bg-opacity-40 w-2'}`} />
         ))}
       </div>

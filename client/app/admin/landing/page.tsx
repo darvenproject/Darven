@@ -20,6 +20,7 @@ export default function AdminLandingPage() {
   const [uploadingCategory, setUploadingCategory] = useState<string | null>(null)
   const [landingImages, setLandingImages] = useState<LandingImage[]>([])
   const [heroImages, setHeroImages] = useState<LandingImage[]>([])
+  const [newCollectionImages, setNewCollectionImages] = useState<LandingImage[]>([])
   const [sectionImages, setSectionImages] = useState<LandingImage[]>([])
 
   useEffect(() => {
@@ -39,11 +40,15 @@ export default function AdminLandingPage() {
     try {
       const response = await apiClient.getLandingImages()
       setLandingImages(response.data)
-      
+
       const heroes = response.data.filter((img: LandingImage) => img.category === 'hero')
-      const sections = response.data.filter((img: LandingImage) => img.category !== 'hero')
-      
+      const newCollection = response.data.filter((img: LandingImage) => img.category === 'new-collection')
+      const sections = response.data.filter(
+        (img: LandingImage) => img.category !== 'hero' && img.category !== 'new-collection'
+      )
+
       setHeroImages(heroes)
+      setNewCollectionImages(newCollection)
       setSectionImages(sections)
     } catch (error) {
       console.error('Error fetching landing images:', error)
@@ -53,11 +58,9 @@ export default function AdminLandingPage() {
   const handleFileUpload = async (category: string, file: File) => {
     setUploadingCategory(category)
     setLoading(true)
-
     try {
       const formData = new FormData()
       formData.append('file', file)
-
       await apiClient.updateLandingImage(category, formData)
       alert(`Landing image uploaded successfully!`)
       await fetchLandingImages()
@@ -72,11 +75,9 @@ export default function AdminLandingPage() {
 
   const handlePortraitUpload = async (category: string, imageId: number, file: File) => {
     setLoading(true)
-
     try {
       const formData = new FormData()
       formData.append('file', file)
-
       await apiClient.updateLandingPortraitImage(category, imageId, formData)
       alert(`Portrait image uploaded successfully!`)
       fetchLandingImages()
@@ -90,7 +91,6 @@ export default function AdminLandingPage() {
 
   const handleDeleteImage = async (imageId: number) => {
     if (!confirm('Are you sure you want to delete this image?')) return
-
     try {
       await apiClient.deleteLandingImage(imageId)
       alert('Image deleted successfully!')
@@ -107,89 +107,86 @@ export default function AdminLandingPage() {
     { id: 'fabric', title: 'Fabric' },
   ]
 
-  return (
-    <div className="min-h-screen bg-gray-100">
-      <header className="bg-white shadow-md sticky top-0 z-10">
-        <div className="container mx-auto px-4 py-4 flex items-center gap-4">
-          <Link href="/admin/dashboard" className="p-2 hover:bg-gray-100:bg-dark-bg rounded-lg">
-            <FiArrowLeft className="w-6 h-6 text-gray-900" />
-          </Link>
-          <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
-            Landing Images
-          </h1>
-        </div>
-      </header>
+  // Reusable slideshow manager (used for both Hero and New Collection)
+  const SlideshowSection = ({
+    title,
+    description,
+    category,
+    images,
+    allowPortrait = true,
+  }: {
+    title: string
+    description: string
+    category: string
+    images: LandingImage[]
+    allowPortrait?: boolean
+  }) => (
+    <div className="mb-6 sm:mb-8">
+      <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-4">{title}</h2>
+      <p className="text-sm text-gray-600 mb-4">{description}</p>
 
-      <div className="container mx-auto px-4 py-4 sm:py-8">
-        {/* Hero Section Slideshow */}
-        <div className="mb-6 sm:mb-8">
-          <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-4">
-            Hero Section Slideshow
-          </h2>
-          <p className="text-sm text-gray-600 mb-4">
-            Add multiple hero images for automatic slideshow (changes every 5 seconds)
-          </p>
-          
-          {/* Upload New Hero Image Buttons */}
-          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-4 sm:mb-6">
-            {/* Landscape Upload */}
-            <label className="flex-1">
-              <input
-                type="file"
-                accept="image/*"
-                onChange={(e) => {
-                  const file = e.target.files?.[0]
-                  if (file) handleFileUpload('hero', file)
-                }}
-                className="hidden"
-                disabled={loading}
-              />
-              <div className="flex items-center justify-center gap-2 px-4 sm:px-6 py-3 sm:py-4 bg-blue-600 text-white rounded-lg cursor-pointer hover:bg-blue-700 transition-colors text-sm sm:text-base">
-                <FiUpload className="w-4 h-4 sm:w-5 sm:h-5" />
-                <span className="text-center">{uploadingCategory === 'hero' ? 'Uploading...' : 'Add Hero Image (Landscape)'}</span>
-              </div>
-            </label>
-
-            {/* Portrait Upload - Note */}
-            <div className="flex-1 flex items-center justify-center px-4 sm:px-6 py-3 sm:py-4 bg-gray-200 text-gray-600 rounded-lg border-2 border-dashed border-gray-400">
-              <p className="text-xs sm:text-sm text-center">
-                Upload landscape first, then add portrait version below
-              </p>
-            </div>
+      {/* Upload Button Row */}
+      <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-4 sm:mb-6">
+        <label className="flex-1">
+          <input
+            type="file"
+            accept="image/*"
+            onChange={(e) => {
+              const file = e.target.files?.[0]
+              if (file) handleFileUpload(category, file)
+            }}
+            className="hidden"
+            disabled={loading}
+          />
+          <div className="flex items-center justify-center gap-2 px-4 sm:px-6 py-3 sm:py-4 bg-blue-600 text-white rounded-lg cursor-pointer hover:bg-blue-700 transition-colors text-sm sm:text-base">
+            <FiUpload className="w-4 h-4 sm:w-5 sm:h-5" />
+            <span className="text-center">
+              {uploadingCategory === category ? 'Uploading...' : `Add ${title} Image (Landscape)`}
+            </span>
           </div>
+        </label>
 
-          {/* Hero Images List */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {heroImages.map((image, index) => (
-              <div key={image.id} className="bg-white rounded-lg shadow-md p-4">
-                <div className="flex items-center justify-between mb-3">
-                  <h3 className="text-base sm:text-lg font-semibold text-gray-900">
-                    Hero Image {index + 1}
-                  </h3>
-                  <button
-                    onClick={() => handleDeleteImage(image.id)}
-                    className="p-2 text-red-600 hover:bg-red-50:bg-red-900/20 rounded-lg transition-colors"
-                    title="Delete image"
-                  >
-                    <FiTrash2 className="w-5 h-5" />
-                  </button>
-                </div>
+        {allowPortrait && (
+          <div className="flex-1 flex items-center justify-center px-4 sm:px-6 py-3 sm:py-4 bg-gray-200 text-gray-600 rounded-lg border-2 border-dashed border-gray-400">
+            <p className="text-xs sm:text-sm text-center">
+              Upload landscape first, then add portrait version below
+            </p>
+          </div>
+        )}
+      </div>
 
-                {/* Landscape Preview */}
-                <div className="mb-3">
-                  <p className="text-xs text-gray-600 mb-1">Desktop (Landscape)</p>
-                  <div className="relative w-full h-32 sm:h-40 bg-gray-200 rounded-lg overflow-hidden">
-                    <img
-                      src={getImageUrl(image.image_url)}
-                      alt={`Hero ${index + 1}`}
-                      className="w-full h-full object-cover"
-                      onError={(e) => {
-                        e.currentTarget.src = '/placeholder.jpg'
-                      }}
-                    />
-                  </div>
-                </div>
+      {/* Images Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {images.map((image, index) => (
+          <div key={image.id} className="bg-white rounded-lg shadow-md p-4">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-base sm:text-lg font-semibold text-gray-900">
+                {title} Image {index + 1}
+              </h3>
+              <button
+                onClick={() => handleDeleteImage(image.id)}
+                className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                title="Delete image"
+              >
+                <FiTrash2 className="w-5 h-5" />
+              </button>
+            </div>
 
+            {/* Landscape Preview */}
+            <div className="mb-3">
+              <p className="text-xs text-gray-600 mb-1">Desktop (Landscape)</p>
+              <div className="relative w-full h-32 sm:h-40 bg-gray-200 rounded-lg overflow-hidden">
+                <img
+                  src={getImageUrl(image.image_url)}
+                  alt={`${title} ${index + 1}`}
+                  className="w-full h-full object-cover"
+                  onError={(e) => { e.currentTarget.src = '/placeholder.jpg' }}
+                />
+              </div>
+            </div>
+
+            {allowPortrait && (
+              <>
                 {/* Portrait Preview */}
                 <div className="mb-3">
                   <p className="text-xs text-gray-600 mb-1">Mobile (Portrait)</p>
@@ -197,11 +194,9 @@ export default function AdminLandingPage() {
                     {image.portrait_image_url ? (
                       <img
                         src={getImageUrl(image.portrait_image_url)}
-                        alt={`Hero ${index + 1} Portrait`}
+                        alt={`${title} ${index + 1} Portrait`}
                         className="w-full h-full object-cover"
-                        onError={(e) => {
-                          e.currentTarget.src = '/placeholder.jpg'
-                        }}
+                        onError={(e) => { e.currentTarget.src = '/placeholder.jpg' }}
                       />
                     ) : (
                       <div className="flex items-center justify-center h-full">
@@ -211,14 +206,14 @@ export default function AdminLandingPage() {
                   </div>
                 </div>
 
-                {/* Upload Portrait Button */}
+                {/* Portrait Upload */}
                 <label className="block">
                   <input
                     type="file"
                     accept="image/*"
                     onChange={(e) => {
                       const file = e.target.files?.[0]
-                      if (file) handlePortraitUpload('hero', image.id, file)
+                      if (file) handlePortraitUpload(category, image.id, file)
                     }}
                     className="hidden"
                     disabled={loading}
@@ -228,22 +223,60 @@ export default function AdminLandingPage() {
                     {image.portrait_image_url ? 'Change Portrait' : 'Add Portrait'}
                   </div>
                 </label>
-              </div>
-            ))}
+              </>
+            )}
           </div>
+        ))}
+      </div>
 
-          {heroImages.length === 0 && (
-            <p className="text-gray-600 text-center py-6 sm:py-8 text-sm sm:text-base">
-              No hero images yet. Upload your first hero image above.
-            </p>
-          )}
+      {images.length === 0 && (
+        <p className="text-gray-600 text-center py-6 sm:py-8 text-sm sm:text-base">
+          No images yet. Upload your first {title.toLowerCase()} image above.
+        </p>
+      )}
+    </div>
+  )
+
+  return (
+    <div className="min-h-screen bg-gray-100">
+      <header className="bg-white shadow-md sticky top-0 z-10">
+        <div className="container mx-auto px-4 py-4 flex items-center gap-4">
+          <Link href="/admin/dashboard" className="p-2 hover:bg-gray-100 rounded-lg">
+            <FiArrowLeft className="w-6 h-6 text-gray-900" />
+          </Link>
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Landing Images</h1>
         </div>
+      </header>
+
+      <div className="container mx-auto px-4 py-4 sm:py-8">
+
+        {/* Hero Slideshow */}
+        <SlideshowSection
+          title="Hero"
+          description="Add multiple hero images for automatic slideshow (changes every 5 seconds)"
+          category="hero"
+          images={heroImages}
+          allowPortrait={true}
+        />
+
+        {/* Divider */}
+        <div className="border-t border-gray-300 my-6 sm:my-8" />
+
+        {/* New Collection Slideshow */}
+        <SlideshowSection
+          title="New Collection"
+          description="Add images for the New Collection slide shown after the hero banner (links to /new-collection)"
+          category="new-collection"
+          images={newCollectionImages}
+          allowPortrait={true}
+        />
+
+        {/* Divider */}
+        <div className="border-t border-gray-300 my-6 sm:my-8" />
 
         {/* Section Images */}
         <div>
-          <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-4">
-            Section Images
-          </h2>
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-4">Section Images</h2>
           <p className="text-sm text-gray-600 mb-4">
             Upload images for Ready Made, Stitch Your Own, and Fabric sections
           </p>
@@ -251,13 +284,11 @@ export default function AdminLandingPage() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
             {sectionCategories.map((category) => {
               const existingImage = sectionImages.find(img => img.category === category.id)
-              
+
               return (
                 <div key={category.id} className="bg-white rounded-lg shadow-md p-4 sm:p-6">
-                  <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-4">
-                    {category.title}
-                  </h3>
-                  
+                  <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-4">{category.title}</h3>
+
                   {/* Landscape Preview */}
                   <div className="mb-3">
                     <p className="text-xs text-gray-600 mb-1">Desktop (Landscape)</p>
@@ -267,9 +298,7 @@ export default function AdminLandingPage() {
                           src={getImageUrl(existingImage.image_url)}
                           alt={category.title}
                           className="w-full h-full object-cover"
-                          onError={(e) => {
-                            e.currentTarget.src = '/placeholder.jpg'
-                          }}
+                          onError={(e) => { e.currentTarget.src = '/placeholder.jpg' }}
                         />
                       </div>
                     ) : (
@@ -279,7 +308,7 @@ export default function AdminLandingPage() {
                     )}
                   </div>
 
-                  {/* Landscape Upload Button */}
+                  {/* Landscape Upload */}
                   <label className="block mb-4">
                     <input
                       type="file"
@@ -297,9 +326,9 @@ export default function AdminLandingPage() {
                     </div>
                   </label>
 
-                  {/* Portrait Preview */}
                   {existingImage && (
                     <>
+                      {/* Portrait Preview */}
                       <div className="mb-3">
                         <p className="text-xs text-gray-600 mb-1">Mobile (Portrait)</p>
                         <div className="relative w-full h-40 sm:h-48 bg-gray-200 rounded-lg overflow-hidden">
@@ -308,9 +337,7 @@ export default function AdminLandingPage() {
                               src={getImageUrl(existingImage.portrait_image_url)}
                               alt={`${category.title} Portrait`}
                               className="w-full h-full object-cover"
-                              onError={(e) => {
-                                e.currentTarget.src = '/placeholder.jpg'
-                              }}
+                              onError={(e) => { e.currentTarget.src = '/placeholder.jpg' }}
                             />
                           ) : (
                             <div className="flex items-center justify-center h-full">
@@ -320,7 +347,7 @@ export default function AdminLandingPage() {
                         </div>
                       </div>
 
-                      {/* Portrait Upload Button */}
+                      {/* Portrait Upload */}
                       <label className="block">
                         <input
                           type="file"

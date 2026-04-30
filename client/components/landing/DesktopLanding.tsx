@@ -27,9 +27,11 @@ export default function DesktopLanding() {
     { category: 'stitch-your-own', image_url: '/placeholder.jpg', title: 'Stitch Your Own Suit', link: '/stitch-your-own' },
     { category: 'fabric', image_url: '/placeholder.jpg', title: 'Fabric', link: '/fabric' },
   ])
+  const [newCollectionImages, setNewCollectionImages] = useState<LandingImage[]>([])
+  const [currentNewCollectionIndex, setCurrentNewCollectionIndex] = useState(0)
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0)
 
-  const totalSlides = 5
+  const totalSlides = 6
 
   useEffect(() => { fetchLandingImages() }, [])
 
@@ -41,6 +43,15 @@ export default function DesktopLanding() {
     }, 5000)
     return () => clearInterval(interval)
   }, [heroImages.length, currentSlideIndex])
+
+  // New Collection auto-play
+  useEffect(() => {
+    if (newCollectionImages.length <= 1 || currentSlideIndex !== 1) return
+    const interval = setInterval(() => {
+      setCurrentNewCollectionIndex((prev) => (prev + 1) % newCollectionImages.length)
+    }, 4000)
+    return () => clearInterval(interval)
+  }, [newCollectionImages.length, currentSlideIndex])
 
   // Track slide index from scroll container
   useEffect(() => {
@@ -68,12 +79,14 @@ export default function DesktopLanding() {
       const response = await apiClient.getLandingImages()
       if (response.data && response.data.length > 0) {
         const heroes = response.data.filter((img: LandingImage) => img.category === 'hero')
-        const others = response.data.filter((img: LandingImage) => img.category !== 'hero')
+        const newCollection = response.data.filter((img: LandingImage) => img.category === 'new-collection')
+        const others = response.data.filter((img: LandingImage) => img.category !== 'hero' && img.category !== 'new-collection')
         const orderedSections = ['ready-made', 'stitch-your-own', 'fabric']
         const sortedOthers = orderedSections
           .map(cat => others.find((img: LandingImage) => img.category === cat))
           .filter(Boolean) as LandingImage[]
         if (heroes.length > 0) setHeroImages(heroes)
+        if (newCollection.length > 0) setNewCollectionImages(newCollection)
         if (sortedOthers.length > 0) setSectionImages(sortedOthers)
       }
     } catch (error) {
@@ -132,7 +145,6 @@ export default function DesktopLanding() {
             <>
               <button
                 onClick={() => setCurrentHeroIndex((prev) => (prev === 0 ? heroImages.length - 1 : prev - 1))}
-                /* Changed bg-black to bg-white and text-white to text-black */
                 className="absolute left-4 top-1/2 -translate-y-1/2 p-3 bg-white bg-opacity-70 hover:bg-opacity-90 text-black rounded-full transition-all z-30 shadow-lg"
                 aria-label="Previous hero"
               >
@@ -143,7 +155,6 @@ export default function DesktopLanding() {
               
               <button
                 onClick={() => setCurrentHeroIndex((prev) => (prev === heroImages.length - 1 ? 0 : prev + 1))}
-                /* Changed bg-black to bg-white and text-white to text-black */
                 className="absolute right-4 top-1/2 -translate-y-1/2 p-3 bg-white bg-opacity-70 hover:bg-opacity-90 text-black rounded-full transition-all z-30 shadow-lg"
                 aria-label="Next hero"
               >
@@ -168,7 +179,85 @@ export default function DesktopLanding() {
         </div>
       )}
 
-      {/* Slides 2–4: Categories */}
+      {/* Slide 2: New Collection */}
+      <Link
+        href="/new-collection"
+        className="h-screen w-full snap-start snap-always block relative"
+      >
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          transition={{ duration: 0.6 }}
+          viewport={{ once: false, amount: 0.5 }}
+          className="h-full w-full relative group"
+        >
+          {newCollectionImages.length > 0 ? (
+            <>
+              {newCollectionImages.map((img, index) => (
+                <motion.div
+                  key={`new-collection-${img.id || index}`}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: index === currentNewCollectionIndex ? 1 : 0 }}
+                  transition={{ duration: 1 }}
+                  className="absolute inset-0"
+                  style={{ zIndex: index === currentNewCollectionIndex ? 1 : 0 }}
+                >
+                  <div className="absolute inset-0 bg-gray-300">
+                    <Image
+                      src={getImageUrl(img.image_url)}
+                      alt={img.title || 'New Collection'}
+                      fill sizes="100vw" priority unoptimized
+                      className="object-cover group-hover:scale-105 transition-transform duration-700"
+                    />
+                  </div>
+                </motion.div>
+              ))}
+            </>
+          ) : (
+            <div className="absolute inset-0 bg-gray-900" />
+          )}
+
+          <div className="absolute inset-0 bg-black bg-opacity-30 group-hover:bg-opacity-20 transition-all duration-300 z-10" />
+
+          {/* New Collection Label */}
+          <div className="absolute inset-0 flex flex-col items-center justify-center z-20 pointer-events-none">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 0.2 }}
+              viewport={{ once: false, amount: 0.5 }}
+              className="text-center"
+            >
+              <p className="text-white text-sm tracking-[0.4em] uppercase font-light mb-3 opacity-80">
+                Explore
+              </p>
+              <h2 className="text-white text-6xl md:text-7xl font-bold tracking-[0.15em] uppercase">
+                New Collection
+              </h2>
+              <div className="mt-6 w-16 h-px bg-white mx-auto opacity-60" />
+              <p className="mt-6 text-white text-base tracking-[0.25em] uppercase font-light opacity-70">
+                Shop Now
+              </p>
+            </motion.div>
+          </div>
+
+          {/* Slide indicators for new collection (if multiple images) */}
+          {newCollectionImages.length > 1 && (
+            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-2 z-20">
+              {newCollectionImages.map((_, i) => (
+                <div
+                  key={i}
+                  className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
+                    i === currentNewCollectionIndex ? 'bg-white scale-125' : 'bg-white bg-opacity-50'
+                  }`}
+                />
+              ))}
+            </div>
+          )}
+        </motion.div>
+      </Link>
+
+      {/* Slides 3–5: Categories */}
       {sectionImages.map((item, index) => (
         <Link
           key={`${item.category}-${index}`}
@@ -195,7 +284,7 @@ export default function DesktopLanding() {
         </Link>
       ))}
 
-                  {/* Slide 5: Footer */}
+      {/* Slide 6: Footer */}
       <div className="h-screen w-full snap-start snap-always bg-white flex items-center justify-center">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -271,7 +360,7 @@ export default function DesktopLanding() {
             </svg>
           </button>
         )}
-        {[0, 1, 2, 3, 4].map((i) => (
+        {[0, 1, 2, 3, 4, 5].map((i) => (
           <button
             key={i}
             onClick={() => scrollToSlide(i)}
