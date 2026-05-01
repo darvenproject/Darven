@@ -249,7 +249,7 @@ export default function NewCollectionDetailPage() {
             {/* Trust Badges */}
             <div className="grid grid-cols-3 gap-3 pt-2">
               <div className="flex flex-col items-center gap-1.5 p-3 bg-gray-50 rounded-xl border border-gray-200"><FiShield className="w-6 h-6 text-gray-700" /><span className="text-xs font-bold text-gray-700 text-center">Secure Checkout</span></div>
-              <div className="flex flex-col items-center gap-1.5 p-3 bg-gray-50 rounded-xl border border-gray-200"><FiRefreshCw className="w-6 h-6 text-gray-700" /><span className="text-xs font-bold text-gray-700 text-center">47-Day Returns</span></div>
+              <div className="flex flex-col items-center gap-1.5 p-3 bg-gray-50 rounded-xl border border-gray-200"><FiRefreshCw className="w-6 h-6 text-gray-700" /><span className="text-xs font-bold text-gray-700 text-center">7-Day Returns</span></div>
               <div className="flex flex-col items-center gap-1.5 p-3 bg-gray-50 rounded-xl border border-gray-200"><FiTruck className="w-6 h-6 text-gray-700" /><span className="text-xs font-bold text-gray-700 text-center">Fast Delivery</span></div>
             </div>
 
@@ -278,7 +278,7 @@ export default function NewCollectionDetailPage() {
             <div className="border-2 border-gray-200 rounded-2xl p-5">
               <p className="text-sm font-black text-gray-900 mb-3 flex items-center gap-2"><FiRefreshCw className="w-4 h-4" />Return & Exchange Policy</p>
               <ul className="space-y-2 text-sm text-gray-600">
-                <li className="flex items-start gap-2"><FiCheck className="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5" /><span>Returns accepted within <strong>47 days</strong> of receiving order</span></li>
+                <li className="flex items-start gap-2"><FiCheck className="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5" /><span>Returns accepted within <strong>7 days</strong> of receiving order</span></li>
                 <li className="flex items-start gap-2"><FiCheck className="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5" /><span>Item must be unworn, unwashed with original tags</span></li>
                 <li className="flex items-start gap-2"><FiCheck className="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5" /><span>Exchange fee of <strong>PKR 250</strong> applies</span></li>
                 <li className="flex items-start gap-2"><FiCheck className="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5" /><span>Refunds valid for orders up to <strong>Rs. 10,000</strong></span></li>
