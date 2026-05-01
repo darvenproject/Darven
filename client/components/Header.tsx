@@ -7,7 +7,6 @@ import { usePathname } from 'next/navigation'
 import { ShoppingCart, Menu, X } from 'lucide-react'
 import { useCartStore } from '@/store/cartStore'
 
-// ✅ BOTH LOGOS
 import logoTransparent from '@/assets/logo_transparent.png'
 import logoLight from '@/assets/logo_light.png'
 
@@ -15,11 +14,15 @@ export default function Header() {
   const pathname = usePathname()
   const isHomePage = pathname === '/'
 
+  // ✅ Hide header on admin and login pages
+  if (pathname?.startsWith('/admin') || pathname?.startsWith('/login')) {
+    return null
+  }
+
   const [scrollY, setScrollY] = useState(0)
   const [isPastFifthSection, setIsPastFifthSection] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
-  // ✅ FIXED TYPE
   const cleanupRef = useRef<(() => void) | null>(null)
 
   const items = useCartStore((state) => state.items)
@@ -77,19 +80,13 @@ export default function Header() {
   }, [isMobileMenuOpen])
 
   const isTransparent = isHomePage && !isPastFifthSection
-
-  // ✅ LOGO SWITCH
   const logoSrc = isTransparent ? logoTransparent : logoLight
 
-  // Navbar styles
   const headerBg = isTransparent ? 'rgba(255,255,255,0)' : 'rgba(255,255,255,0.92)'
   const headerBorder = isTransparent ? 'rgba(0,0,0,0)' : 'rgba(0,0,0,0.08)'
   const headerBlur = isTransparent ? 'none' : 'blur(20px)'
 
-  // Menu styles
-  const menuBg = isHomePage
-    ? 'rgba(255,255,255,0.15)'
-    : 'rgba(255,255,255,1)'
+  const menuBg = isHomePage ? 'rgba(255,255,255,0.15)' : 'rgba(255,255,255,1)'
   const menuBlur = isHomePage ? 'blur(24px)' : 'none'
   const menuBorder = isHomePage ? '1px solid rgba(255,255,255,0.2)' : '1px solid #e5e7eb'
   const menuTextColor = isHomePage ? '#ffffff' : '#000000'

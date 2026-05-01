@@ -2,8 +2,8 @@ import './globals.css'
 import type { Metadata } from 'next'
 import { Outfit } from 'next/font/google'
 import ClientLayout from '@/components/ClientLayout'
-import ModernHeader from '@/components/Header' // Added import for the new header
-import { ScrollProvider } from '@/context/ScrollContext' // Added import for ScrollProvider
+import ModernHeader from '@/components/Header'
+import { ScrollProvider } from '@/context/ScrollContext'
 
 const outfit = Outfit({ 
   subsets: ['latin'],
