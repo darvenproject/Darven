@@ -21,6 +21,7 @@ export default function Header() {
 
   const [scrollY, setScrollY] = useState(0)
   const [isPastFifthSection, setIsPastFifthSection] = useState(false)
+  const [isOnFooterSlide, setIsOnFooterSlide] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   const cleanupRef = useRef<(() => void) | null>(null)
@@ -31,6 +32,7 @@ export default function Header() {
   useEffect(() => {
     setScrollY(0)
     setIsPastFifthSection(false)
+    setIsOnFooterSlide(false)
 
     if (cleanupRef.current) {
       cleanupRef.current()
@@ -52,6 +54,7 @@ export default function Header() {
         const y = container.scrollTop
         setScrollY(y)
         setIsPastFifthSection(y >= container.clientHeight * 4 - 80)
+        setIsOnFooterSlide(y >= container.clientHeight * 5 - 80)
       }
 
       onScroll()
@@ -117,6 +120,9 @@ export default function Header() {
           transition: 'all 0.4s ease',
           paddingTop: '0.75rem',
           paddingBottom: '0.75rem',
+          // ✅ Fade out + disable interaction on footer slide
+          opacity: isHomePage && isOnFooterSlide ? 0 : 1,
+          pointerEvents: isHomePage && isOnFooterSlide ? 'none' : 'auto',
         }}
       >
         <div className="w-full px-8 lg:px-12 xl:px-16">
