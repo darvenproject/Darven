@@ -59,7 +59,7 @@ export default function ReturnExchangePolicy() {
               <div className="mb-4 sm:mb-6">
                 <h3 className="text-base sm:text-lg font-medium text-gray-800 mb-2">Return Timeframe</h3>
                 <p className="text-sm sm:text-base text-gray-700 font-light">
-                  Items must be returned within <strong>47 days</strong> of receiving your order (including transit time back to our warehouse).
+                  Items must be returned within <strong>7 days</strong> of receiving your order (including transit time back to our warehouse).
                 </p>
               </div>
 
