@@ -34,7 +34,7 @@ async def global_exception_handler(request: Request, exc: Exception):
     logger.error(f"Request URL: {request.url}")
     logger.error(f"Request method: {request.method}")
     logger.error(traceback.format_exc())
-    
+
     return JSONResponse(
         status_code=500,
         content={
@@ -49,13 +49,10 @@ async def global_exception_handler(request: Request, exc: Exception):
     )
 
 # CORS middleware
-# Default origins include localhost for development and production domains
 allowed_origins = os.getenv(
-    "ALLOWED_ORIGINS", 
+    "ALLOWED_ORIGINS",
     "http://localhost:3000,http://localhost:3001,http://127.0.0.1:3000,https://shopdarven.pages.dev,https://shopdarven.pk,https://www.shopdarven.pk"
 )
-
-# Parse origins and strip whitespace
 origins_list = [origin.strip() for origin in allowed_origins.split(",")]
 
 app.add_middleware(
@@ -65,26 +62,24 @@ app.add_middleware(
     allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allow_headers=["*"],
     expose_headers=["*"],
-    max_age=3600,  # Cache preflight requests for 1 hour
+    max_age=3600,
 )
 
-# Create uploads directory if it doesn't exist
-# Support both UPLOAD_DIR (production) and UPLOADS_DIR (local)
+# ── Upload directories ────────────────────────────────────────────────────────
 uploads_directory = os.getenv("UPLOAD_DIR") or os.getenv("UPLOADS_DIR", "uploads")
-os.makedirs(uploads_directory, exist_ok=True)
-os.makedirs(os.path.join(uploads_directory, "landing"), exist_ok=True)
-os.makedirs(os.path.join(uploads_directory, "ready-made"), exist_ok=True)
-os.makedirs(os.path.join(uploads_directory, "fabrics"), exist_ok=True)
-os.makedirs(os.path.join(uploads_directory, "custom-fabrics"), exist_ok=True)
+
+for subfolder in ("landing", "ready-made", "new-collection", "fabrics", "custom-fabrics"):
+    os.makedirs(os.path.join(uploads_directory, subfolder), exist_ok=True)
+
+logger.info(f"Upload directory: {uploads_directory}")
+# ─────────────────────────────────────────────────────────────────────────────
 
 # Mount static files
-# Mount at both /uploads and /static/uploads for compatibility
 app.mount("/uploads", StaticFiles(directory=uploads_directory), name="uploads")
-# Also mount at /static/uploads for production nginx setup
 try:
     app.mount("/static/uploads", StaticFiles(directory=uploads_directory), name="static_uploads")
 except Exception:
-    pass  # If already mounted, skip
+    pass
 
 # Include routers
 app.include_router(admin.router, prefix="/admin", tags=["admin"])
@@ -107,5 +102,4 @@ async def health():
 
 @app.options("/{full_path:path}")
 async def options_handler(full_path: str):
-    """Handle OPTIONS requests for CORS preflight"""
     return {"message": "OK"}

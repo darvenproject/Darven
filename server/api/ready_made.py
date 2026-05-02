@@ -9,7 +9,7 @@ from database import get_db
 from models import ReadyMadeProduct, Admin
 from schemas import ReadyMadeProductResponse
 from auth import get_current_admin
-from file_utils import upload_file_local, delete_multiple_files_local
+from file_utils import upload_file_local, delete_file_local, delete_multiple_files_local
 
 router = APIRouter()
 
@@ -39,23 +39,20 @@ async def create_ready_made_product(
     admin: Admin = Depends(get_current_admin),
     db: Session = Depends(get_db)
 ):
-    # Save images to local storage
     image_urls = []
     for file in files:
         file_extension = os.path.splitext(file.filename)[1]
         filename = f"{uuid4()}{file_extension}"
         image_url = await upload_file_local(file, "ready-made", filename)
         image_urls.append(image_url)
-    
-    # Parse colors JSON if provided
+
     colors_list = None
     if colors:
         try:
             colors_list = json.loads(colors)
         except json.JSONDecodeError:
             raise HTTPException(status_code=400, detail="Invalid colors JSON format")
-    
-    # Create product
+
     product = ReadyMadeProduct(
         name=name,
         description=description,
@@ -67,11 +64,10 @@ async def create_ready_made_product(
         stock=stock,
         images=image_urls
     )
-    
+
     db.add(product)
     db.commit()
     db.refresh(product)
-    
     return product
 
 @router.put("/{product_id}", response_model=ReadyMadeProductResponse)
@@ -86,14 +82,19 @@ async def update_ready_made_product(
     colors: Optional[str] = Form(None),
     stock: int = Form(None),
     files: List[UploadFile] = File(None),
+    # ── new image management params ──────────────────────────────────────────
+    image_mode: str = Form("add"),           # "add" | "replace"
+    images_to_delete: Optional[str] = Form(None),   # JSON array of URLs to delete
+    existing_images: Optional[str] = Form(None),    # JSON array of URLs to keep
+    # ─────────────────────────────────────────────────────────────────────────
     admin: Admin = Depends(get_current_admin),
     db: Session = Depends(get_db)
 ):
     product = db.query(ReadyMadeProduct).filter(ReadyMadeProduct.id == product_id).first()
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
-    
-    # Update fields
+
+    # ── update scalar fields ─────────────────────────────────────────────────
     if name is not None:
         product.name = name
     if description is not None:
@@ -108,32 +109,59 @@ async def update_ready_made_product(
         product.size = size
     if stock is not None:
         product.stock = stock
-    
-    # Update colors if provided
+
     if colors is not None:
         try:
             product.colors = json.loads(colors)
         except json.JSONDecodeError:
             raise HTTPException(status_code=400, detail="Invalid colors JSON format")
-    
-    # Update images if provided
+
+    # ── image management ─────────────────────────────────────────────────────
+    current_images: list = list(product.images or [])
+
+    if image_mode == "replace":
+        # Delete every existing image from disk, then save only the new uploads
+        delete_multiple_files_local(current_images)
+        current_images = []
+
+    else:
+        # "add" mode — delete only the images the admin explicitly marked for removal
+        if images_to_delete:
+            try:
+                to_delete: list = json.loads(images_to_delete)
+            except json.JSONDecodeError:
+                to_delete = []
+
+            for url in to_delete:
+                delete_file_local(url)
+                if url in current_images:
+                    current_images.remove(url)
+
+        # If the frontend also sent the ordered kept-list, honour that ordering
+        if existing_images:
+            try:
+                kept: list = json.loads(existing_images)
+                # Use the kept list as the base (preserves order / removals),
+                # but only trust URLs that are actually in current_images to
+                # prevent the client injecting arbitrary paths.
+                valid_current = set(current_images)
+                current_images = [u for u in kept if u in valid_current]
+            except json.JSONDecodeError:
+                pass  # fall back to current_images as-is
+
+    # Upload any new files and append (or set if replace mode)
     if files:
-        # Delete old images from local storage
-        delete_multiple_files_local(product.images)
-        
-        # Save new images to local storage
-        image_urls = []
         for file in files:
             file_extension = os.path.splitext(file.filename)[1]
             filename = f"{uuid4()}{file_extension}"
             image_url = await upload_file_local(file, "ready-made", filename)
-            image_urls.append(image_url)
-        
-        product.images = image_urls
-    
+            current_images.append(image_url)
+
+    product.images = current_images
+    # ─────────────────────────────────────────────────────────────────────────
+
     db.commit()
     db.refresh(product)
-    
     return product
 
 @router.delete("/{product_id}")
@@ -145,11 +173,8 @@ async def delete_ready_made_product(
     product = db.query(ReadyMadeProduct).filter(ReadyMadeProduct.id == product_id).first()
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
-    
-    # Delete images from local storage
+
     delete_multiple_files_local(product.images)
-    
     db.delete(product)
     db.commit()
-    
     return {"message": "Product deleted successfully"}

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { FiPlus, FiEdit2, FiTrash2, FiArrowLeft } from 'react-icons/fi'
+import { FiPlus, FiEdit2, FiTrash2, FiArrowLeft, FiX, FiImage } from 'react-icons/fi'
 import { apiClient, getImageUrl } from '@/lib/api'
 import Link from 'next/link'
 
@@ -39,8 +39,14 @@ export default function AdminProductsPage() {
   })
   const [colors, setColors] = useState<string[]>([])
   const [colorInput, setColorInput] = useState('')
-  const fabricCategories = ['Wash n Wear', 'Blended', 'Boski', 'Soft Cotton', 'Giza Moon Cotton']
+  const fabricCategories = ['Wash n Wear', 'Blended', 'Boski', 'Soft Cotton', 'Giza Moon Cotton', 'Banarsi']
   const [files, setFiles] = useState<FileList | null>(null)
+
+  // ─── NEW: existing image management ───────────────────────────────────────
+  const [existingImages, setExistingImages] = useState<string[]>([])
+  const [imagesToDelete, setImagesToDelete] = useState<string[]>([])
+  const [imageMode, setImageMode] = useState<'add' | 'replace'>('add')
+  // ──────────────────────────────────────────────────────────────────────────
 
   useEffect(() => {
     verifyAdmin()
@@ -89,6 +95,18 @@ export default function AdminProductsPage() {
       data.append('stock', formData.stock)
       data.append('colors', colors.length > 0 ? JSON.stringify(colors) : JSON.stringify([]))
 
+      // ─── NEW: send image management info ────────────────────────────────
+      if (editingProduct) {
+        data.append('image_mode', imageMode)
+        if (imagesToDelete.length > 0) {
+          data.append('images_to_delete', JSON.stringify(imagesToDelete))
+        }
+        // Send remaining existing images so backend knows what to keep
+        const remainingImages = existingImages.filter(img => !imagesToDelete.includes(img))
+        data.append('existing_images', JSON.stringify(remainingImages))
+      }
+      // ────────────────────────────────────────────────────────────────────
+
       if (files) {
         Array.from(files).forEach((file) => data.append('files', file))
       }
@@ -107,13 +125,7 @@ export default function AdminProductsPage() {
         }
       }
 
-      setShowForm(false)
-      setEditingProduct(null)
-      setIsNewCollection(false)
-      setFormData({ name: '', description: '', price: '', material: '', fabric_category: '', size: '', stock: '' })
-      setColors([])
-      setColorInput('')
-      setFiles(null)
+      resetForm()
       fetchProducts()
     } catch (error) {
       console.error('Error saving product:', error)
@@ -121,6 +133,19 @@ export default function AdminProductsPage() {
     } finally {
       setLoading(false)
     }
+  }
+
+  const resetForm = () => {
+    setShowForm(false)
+    setEditingProduct(null)
+    setIsNewCollection(false)
+    setFormData({ name: '', description: '', price: '', material: '', fabric_category: '', size: '', stock: '' })
+    setColors([])
+    setColorInput('')
+    setFiles(null)
+    setExistingImages([])
+    setImagesToDelete([])
+    setImageMode('add')
   }
 
   const handleEdit = (product: Product, fromNewCollection: boolean) => {
@@ -136,6 +161,12 @@ export default function AdminProductsPage() {
       stock: product.stock.toString()
     })
     setColors(product.colors || [])
+    // ─── NEW: load existing images ───────────────────────────────────────
+    setExistingImages(product.images || [])
+    setImagesToDelete([])
+    setImageMode('add')
+    // ────────────────────────────────────────────────────────────────────
+    setFiles(null)
     setShowForm(true)
   }
 
@@ -161,8 +192,19 @@ export default function AdminProductsPage() {
     setColors([])
     setColorInput('')
     setFiles(null)
+    setExistingImages([])
+    setImagesToDelete([])
+    setImageMode('add')
     setShowForm(true)
   }
+
+  // ─── NEW: toggle marking an existing image for deletion ─────────────────
+  const toggleImageDelete = (img: string) => {
+    setImagesToDelete(prev =>
+      prev.includes(img) ? prev.filter(i => i !== img) : [...prev, img]
+    )
+  }
+  // ──────────────────────────────────────────────────────────────────────────
 
   const displayedProducts = activeTab === 'new-collection' ? newCollectionProducts : products
 
@@ -185,7 +227,6 @@ export default function AdminProductsPage() {
             <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Manage Products</h1>
           </div>
 
-          {/* Add Product button — always visible, resets form if clicked while open */}
           <button
             onClick={handleAddNew}
             className="flex items-center gap-2 px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-700 transition-colors text-sm sm:text-base"
@@ -195,7 +236,6 @@ export default function AdminProductsPage() {
           </button>
         </div>
 
-        {/* Tabs — always visible */}
         <div className="container mx-auto px-4 pb-0 flex gap-0 border-t border-gray-100">
           <button
             onClick={() => { setActiveTab('ready-made'); setShowForm(false) }}
@@ -397,10 +437,96 @@ export default function AdminProductsPage() {
                 )}
               </div>
 
+              {/* ─── NEW: Image Management Section ──────────────────────────────── */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Product Images * {editingProduct && '(Leave empty to keep existing)'}
+                  Product Images {!editingProduct && '*'}
                 </label>
+
+                {/* When editing: show existing images */}
+                {editingProduct && existingImages.length > 0 && (
+                  <div className="mb-4">
+                    <p className="text-xs font-semibold text-gray-600 mb-2 uppercase tracking-wide">
+                      Current Images ({existingImages.length - imagesToDelete.length} kept
+                      {imagesToDelete.length > 0 && `, ${imagesToDelete.length} will be removed`})
+                    </p>
+                    <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+                      {existingImages.map((img, idx) => {
+                        const markedForDelete = imagesToDelete.includes(img)
+                        return (
+                          <div key={idx} className="relative group aspect-[3/4] rounded-lg overflow-hidden border-2 border-gray-200">
+                            <img
+                              src={getImageUrl(img)}
+                              alt={`Product image ${idx + 1}`}
+                              className={`w-full h-full object-cover transition-opacity ${markedForDelete ? 'opacity-30' : 'opacity-100'}`}
+                              onError={(e) => { e.currentTarget.src = '/placeholder.jpg' }}
+                            />
+                            {/* Delete / restore button */}
+                            <button
+                              type="button"
+                              onClick={() => toggleImageDelete(img)}
+                              className={`absolute top-1 right-1 w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold shadow transition-all ${
+                                markedForDelete
+                                  ? 'bg-green-500 hover:bg-green-600'
+                                  : 'bg-red-500 hover:bg-red-600 opacity-0 group-hover:opacity-100'
+                              }`}
+                              title={markedForDelete ? 'Keep this image' : 'Remove this image'}
+                            >
+                              {markedForDelete ? '↺' : <FiX className="w-3 h-3" />}
+                            </button>
+                            {markedForDelete && (
+                              <div className="absolute inset-0 flex items-center justify-center">
+                                <span className="bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded">Remove</span>
+                              </div>
+                            )}
+                            {idx === 0 && !markedForDelete && (
+                              <div className="absolute bottom-1 left-1 bg-gray-900 text-white text-xs px-1.5 py-0.5 rounded font-bold">
+                                Main
+                              </div>
+                            )}
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {/* When editing: mode selector */}
+                {editingProduct && (
+                  <div className="flex gap-2 mb-3">
+                    <button
+                      type="button"
+                      onClick={() => setImageMode('add')}
+                      className={`flex-1 py-2 px-3 rounded-lg border-2 text-sm font-semibold transition-colors ${
+                        imageMode === 'add'
+                          ? 'border-gray-900 bg-gray-900 text-white'
+                          : 'border-gray-300 text-gray-600 hover:border-gray-500'
+                      }`}
+                    >
+                      <FiPlus className="inline w-4 h-4 mr-1" />
+                      Add More Images
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setImageMode('replace')}
+                      className={`flex-1 py-2 px-3 rounded-lg border-2 text-sm font-semibold transition-colors ${
+                        imageMode === 'replace'
+                          ? 'border-red-600 bg-red-600 text-white'
+                          : 'border-gray-300 text-gray-600 hover:border-gray-500'
+                      }`}
+                    >
+                      <FiImage className="inline w-4 h-4 mr-1" />
+                      Replace All Images
+                    </button>
+                  </div>
+                )}
+
+                {imageMode === 'replace' && editingProduct && (
+                  <div className="mb-2 p-2 bg-red-50 border border-red-200 rounded-lg">
+                    <p className="text-xs text-red-700 font-semibold">⚠ All current images will be replaced with the new ones you upload.</p>
+                  </div>
+                )}
+
                 <input
                   type="file"
                   accept="image/*"
@@ -409,7 +535,21 @@ export default function AdminProductsPage() {
                   onChange={(e) => setFiles(e.target.files)}
                   className="w-full px-4 py-2 sm:py-3 rounded-lg border-2 border-gray-300 bg-white text-gray-900"
                 />
+
+                {files && files.length > 0 && (
+                  <p className="mt-1 text-xs text-green-700 font-semibold">
+                    ✓ {files.length} new image{files.length > 1 ? 's' : ''} selected
+                    {editingProduct && imageMode === 'add' ? ' (will be added to existing)' : ''}
+                  </p>
+                )}
+
+                {editingProduct && !files && imageMode === 'add' && (
+                  <p className="mt-1 text-xs text-gray-500">
+                    Leave empty to keep existing images as-is (minus any you marked for removal above).
+                  </p>
+                )}
               </div>
+              {/* ────────────────────────────────────────────────────────────────── */}
 
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-4">
                 <button
@@ -421,15 +561,7 @@ export default function AdminProductsPage() {
                 </button>
                 <button
                   type="button"
-                  onClick={() => {
-                    setShowForm(false)
-                    setEditingProduct(null)
-                    setIsNewCollection(false)
-                    setFormData({ name: '', description: '', price: '', material: '', fabric_category: '', size: '', stock: '' })
-                    setColors([])
-                    setColorInput('')
-                    setFiles(null)
-                  }}
+                  onClick={resetForm}
                   className="px-6 py-3 border-2 border-gray-300 text-gray-900 rounded-lg hover:bg-gray-100 transition-colors"
                 >
                   Cancel
