@@ -219,16 +219,6 @@ export default function MobileLanding() {
             viewport={{ once: false, amount: 0.5 }}
             className="text-center px-6"
           >
-            <p className="text-white text-xs tracking-[0.4em] uppercase font-light mb-3 opacity-80">
-              Explore
-            </p>
-            <h2 className="text-white text-5xl font-bold tracking-[0.1em] uppercase">
-              New Collection
-            </h2>
-            <div className="mt-5 w-12 h-px bg-white mx-auto opacity-60" />
-            <p className="mt-5 text-white text-sm tracking-[0.25em] uppercase font-light opacity-70">
-              Shop Now
-            </p>
           </motion.div>
         </div>
 
