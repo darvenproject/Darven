@@ -42,6 +42,7 @@ export default function Header() {
     if (!isHomePage) return
 
     const attach = () => {
+      // ✅ Now finds the container by id="snap-container" set in both landing components
       const container = document.getElementById('snap-container') as HTMLElement | null
 
       if (!container) {
@@ -54,12 +55,12 @@ export default function Header() {
         const y = container.scrollTop
         setScrollY(y)
         setIsPastFifthSection(y >= container.clientHeight * 4 - 80)
+        // ✅ Hide header when on the footer slide (slide 6 = index 5)
         setIsOnFooterSlide(y >= container.clientHeight * 5 - 80)
       }
 
       onScroll()
       container.addEventListener('scroll', onScroll, { passive: true })
-
       cleanupRef.current = () => container.removeEventListener('scroll', onScroll)
     }
 
@@ -117,12 +118,12 @@ export default function Header() {
           WebkitBackdropFilter: headerBlur,
           backgroundColor: headerBg,
           borderBottom: `1px solid ${headerBorder}`,
+          // ✅ Smooth fade out on footer slide, fade in when scrolling back
+          opacity: isHomePage && isOnFooterSlide ? 0 : 1,
+          pointerEvents: isHomePage && isOnFooterSlide ? 'none' : 'auto',
           transition: 'all 0.4s ease',
           paddingTop: '0.75rem',
           paddingBottom: '0.75rem',
-          // ✅ Fade out + disable interaction on footer slide
-          opacity: isHomePage && isOnFooterSlide ? 0 : 1,
-          pointerEvents: isHomePage && isOnFooterSlide ? 'none' : 'auto',
         }}
       >
         <div className="w-full px-8 lg:px-12 xl:px-16">

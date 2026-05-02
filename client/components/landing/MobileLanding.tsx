@@ -132,6 +132,7 @@ export default function MobileLanding() {
   return (
     <div
       ref={scrollContainerRef}
+      id="snap-container"
       className="h-screen overflow-y-scroll snap-y snap-mandatory"
       style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', WebkitOverflowScrolling: 'touch' }}
     >
@@ -252,7 +253,7 @@ export default function MobileLanding() {
 
       {/* Slide 6: Footer */}
       <div className="h-screen w-full snap-start snap-always bg-white flex items-center justify-center">
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
@@ -261,7 +262,7 @@ export default function MobileLanding() {
         >
           {/* Large Brand Title */}
           <h2 className="text-5xl font-bold mb-6 tracking-[0.15em] text-black">DARVEN</h2>
-          
+
           {/* Description / Tagline */}
           <p className="text-base font-light text-gray-500 leading-relaxed max-w-[300px] mb-12">
             Premium quality kurta pajama and shalwar kameez for the modern Pakistani gentleman.
@@ -269,7 +270,7 @@ export default function MobileLanding() {
 
           {/* Spread Content Grid */}
           <div className="grid grid-cols-2 gap-x-8 gap-y-10 mb-16 text-left w-full max-w-[360px]">
-            
+
             {/* Shop Column (Left Aligned) */}
             <div className="flex flex-col">
               <h3 className="text-lg font-bold tracking-widest text-black mb-5 uppercase border-b-2 border-black pb-1 w-fit">
@@ -300,7 +301,7 @@ export default function MobileLanding() {
                   </a>
                 </li>
               </ul>
-              
+
               {/* Social Icons - Aligned Right */}
               <div className="flex items-center gap-6 mt-auto">
                 <a href="https://www.instagram.com/shopdarven/" target="_blank" rel="noopener noreferrer" className="hover:scale-110 transition-transform">

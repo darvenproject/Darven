@@ -97,7 +97,6 @@ export default function DesktopLanding() {
   const scrollToSlide = (slideIndex: number) => {
     const container = scrollContainerRef.current
     if (!container) return
-
     container.scrollTo({
       top: slideIndex * window.innerHeight,
       behavior: 'smooth'
@@ -109,6 +108,7 @@ export default function DesktopLanding() {
   return (
     <div
       ref={scrollContainerRef}
+      id="snap-container"
       className="h-screen overflow-y-scroll snap-y snap-mandatory"
       style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', WebkitOverflowScrolling: 'touch' }}
     >
@@ -152,7 +152,7 @@ export default function DesktopLanding() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                 </svg>
               </button>
-              
+
               <button
                 onClick={() => setCurrentHeroIndex((prev) => (prev === heroImages.length - 1 ? 0 : prev + 1))}
                 className="absolute right-4 top-1/2 -translate-y-1/2 p-3 bg-white bg-opacity-70 hover:bg-opacity-90 text-black rounded-full transition-all z-30 shadow-lg"
@@ -288,7 +288,7 @@ export default function DesktopLanding() {
 
           {/* Spread Out Columns Container */}
           <div className="flex flex-row justify-between max-w-5xl mx-auto mb-24 text-left">
-            
+
             {/* Shop Column (Left) */}
             <div className="flex flex-col">
               <h3 className="text-2xl font-bold mb-8 uppercase tracking-widest border-b-2 border-black pb-2 w-fit">Shop</h3>
