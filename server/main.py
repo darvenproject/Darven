@@ -7,7 +7,7 @@ import os
 import logging
 import traceback
 
-from api import admin, landing, ready_made, fabrics, custom, orders, sizes, contact
+from api import admin, landing, ready_made, fabrics, custom, orders, sizes, contact, waist_coat
 from database import engine, Base
 
 # Configure logging
@@ -68,7 +68,7 @@ app.add_middleware(
 # ── Upload directories ────────────────────────────────────────────────────────
 uploads_directory = os.getenv("UPLOAD_DIR") or os.getenv("UPLOADS_DIR", "uploads")
 
-for subfolder in ("landing", "ready-made", "new-collection", "fabrics", "custom-fabrics"):
+for subfolder in ("landing", "ready-made", "new-collection", "waist-coat", "fabrics", "custom-fabrics"):
     os.makedirs(os.path.join(uploads_directory, subfolder), exist_ok=True)
 
 logger.info(f"Upload directory: {uploads_directory}")
@@ -91,6 +91,7 @@ app.include_router(orders.router, prefix="/orders", tags=["orders"])
 app.include_router(sizes.router, prefix="/sizes", tags=["sizes"])
 app.include_router(contact.router, tags=["contact"])
 app.include_router(new_collection.router, prefix="/new-collection", tags=["new-collection"])
+app.include_router(waist_coat.router, prefix="/waist-coat", tags=["waist-coat"])
 
 @app.get("/")
 async def root():

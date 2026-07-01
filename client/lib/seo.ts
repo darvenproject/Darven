@@ -23,7 +23,12 @@ export interface Fabric {
 }
 
 // Generate JSON-LD structured data for products
-export function generateProductSchema(product: Product, baseUrl: string = 'https://shopdarven.pk') {
+export function generateProductSchema(
+  product: Product,
+  baseUrl: string = 'https://shopdarven.pk',
+  productPath: string = 'ready-made',
+  category: string = 'Apparel > Men > Traditional Clothing'
+) {
   return {
     '@context': 'https://schema.org',
     '@type': 'Product',
@@ -43,7 +48,7 @@ export function generateProductSchema(product: Product, baseUrl: string = 'https
       availability: product.stock > 0 
         ? 'https://schema.org/InStock' 
         : 'https://schema.org/OutOfStock',
-      url: `${baseUrl}/ready-made/${product.id}`,
+      url: `${baseUrl}/${productPath}/${product.id}`,
       seller: {
         '@type': 'Organization',
         name: 'Darven'
@@ -52,7 +57,7 @@ export function generateProductSchema(product: Product, baseUrl: string = 'https
     material: product.material,
     color: product.color,
     size: product.size,
-    category: 'Apparel > Men > Traditional Clothing',
+    category,
     aggregateRating: {
       '@type': 'AggregateRating',
       ratingValue: '4.8',
@@ -130,6 +135,21 @@ export function generateWebsiteSchema(baseUrl: string = 'https://shopdarven.pk')
       },
       'query-input': 'required name=search_term_string'
     }
+  }
+}
+
+export function generateWaistCoatCollectionSchema(baseUrl: string = 'https://shopdarven.pk') {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: 'Waist Coat Collection | ShopDarven',
+    description: 'Premium traditional Pakistani waistcoats. Shop elegant waist coats to pair with kurta pajama and shalwar kameez.',
+    url: `${baseUrl}/waist-coat`,
+    isPartOf: {
+      '@type': 'WebSite',
+      name: 'ShopDarven',
+      url: baseUrl,
+    },
   }
 }
 

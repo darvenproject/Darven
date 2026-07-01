@@ -19,15 +19,18 @@ interface Product {
   stock: number
 }
 
+type ProductDestination = 'ready-made' | 'new-collection' | 'waist-coat'
+
 export default function AdminProductsPage() {
   const router = useRouter()
   const [products, setProducts] = useState<Product[]>([])
   const [newCollectionProducts, setNewCollectionProducts] = useState<Product[]>([])
+  const [waistCoatProducts, setWaistCoatProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
   const [editingProduct, setEditingProduct] = useState<Product | null>(null)
-  const [isNewCollection, setIsNewCollection] = useState(false)
-  const [activeTab, setActiveTab] = useState<'ready-made' | 'new-collection'>('ready-made')
+  const [productDestination, setProductDestination] = useState<ProductDestination>('ready-made')
+  const [activeTab, setActiveTab] = useState<ProductDestination>('ready-made')
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -67,17 +70,55 @@ export default function AdminProductsPage() {
 
   const fetchProducts = async () => {
     try {
-      const [readyMadeRes, newCollectionRes] = await Promise.all([
+      const [readyMadeRes, newCollectionRes, waistCoatRes] = await Promise.all([
         apiClient.getReadyMadeProducts(),
-        apiClient.getNewCollectionProducts()
+        apiClient.getNewCollectionProducts(),
+        apiClient.getWaistCoatProducts(),
       ])
       setProducts(readyMadeRes.data)
       setNewCollectionProducts(newCollectionRes.data)
+      setWaistCoatProducts(waistCoatRes.data)
     } catch (error) {
       console.error('Error fetching products:', error)
     } finally {
       setLoading(false)
     }
+  }
+
+  const createProduct = async (data: FormData) => {
+    if (productDestination === 'new-collection') {
+      await apiClient.createNewCollectionProduct(data)
+    } else if (productDestination === 'waist-coat') {
+      await apiClient.createWaistCoatProduct(data)
+    } else {
+      await apiClient.createReadyMadeProduct(data)
+    }
+  }
+
+  const updateProduct = async (id: string, data: FormData) => {
+    if (productDestination === 'new-collection') {
+      await apiClient.updateNewCollectionProduct(id, data)
+    } else if (productDestination === 'waist-coat') {
+      await apiClient.updateWaistCoatProduct(id, data)
+    } else {
+      await apiClient.updateReadyMadeProduct(id, data)
+    }
+  }
+
+  const deleteProduct = async (id: string, destination: ProductDestination) => {
+    if (destination === 'new-collection') {
+      await apiClient.deleteNewCollectionProduct(id)
+    } else if (destination === 'waist-coat') {
+      await apiClient.deleteWaistCoatProduct(id)
+    } else {
+      await apiClient.deleteReadyMadeProduct(id)
+    }
+  }
+
+  const destinationLabels: Record<ProductDestination, string> = {
+    'ready-made': 'Ready Made',
+    'new-collection': 'New Collection',
+    'waist-coat': 'Waist Coat',
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -112,17 +153,9 @@ export default function AdminProductsPage() {
       }
 
       if (editingProduct) {
-        if (isNewCollection) {
-          await apiClient.updateNewCollectionProduct(editingProduct.id.toString(), data)
-        } else {
-          await apiClient.updateReadyMadeProduct(editingProduct.id.toString(), data)
-        }
+        await updateProduct(editingProduct.id.toString(), data)
       } else {
-        if (isNewCollection) {
-          await apiClient.createNewCollectionProduct(data)
-        } else {
-          await apiClient.createReadyMadeProduct(data)
-        }
+        await createProduct(data)
       }
 
       resetForm()
@@ -138,7 +171,7 @@ export default function AdminProductsPage() {
   const resetForm = () => {
     setShowForm(false)
     setEditingProduct(null)
-    setIsNewCollection(false)
+    setProductDestination('ready-made')
     setFormData({ name: '', description: '', price: '', material: '', fabric_category: '', size: '', stock: '' })
     setColors([])
     setColorInput('')
@@ -148,9 +181,9 @@ export default function AdminProductsPage() {
     setImageMode('add')
   }
 
-  const handleEdit = (product: Product, fromNewCollection: boolean) => {
+  const handleEdit = (product: Product, destination: ProductDestination) => {
     setEditingProduct(product)
-    setIsNewCollection(fromNewCollection)
+    setProductDestination(destination)
     setFormData({
       name: product.name,
       description: product.description,
@@ -170,14 +203,10 @@ export default function AdminProductsPage() {
     setShowForm(true)
   }
 
-  const handleDelete = async (id: number, fromNewCollection: boolean) => {
+  const handleDelete = async (id: number, destination: ProductDestination) => {
     if (!confirm('Are you sure you want to delete this product?')) return
     try {
-      if (fromNewCollection) {
-        await apiClient.deleteNewCollectionProduct(id.toString())
-      } else {
-        await apiClient.deleteReadyMadeProduct(id.toString())
-      }
+      await deleteProduct(id.toString(), destination)
       fetchProducts()
     } catch (error) {
       console.error('Error deleting product:', error)
@@ -187,7 +216,7 @@ export default function AdminProductsPage() {
 
   const handleAddNew = () => {
     setEditingProduct(null)
-    setIsNewCollection(activeTab === 'new-collection')
+    setProductDestination(activeTab)
     setFormData({ name: '', description: '', price: '', material: '', fabric_category: '', size: '', stock: '' })
     setColors([])
     setColorInput('')
@@ -206,7 +235,12 @@ export default function AdminProductsPage() {
   }
   // ──────────────────────────────────────────────────────────────────────────
 
-  const displayedProducts = activeTab === 'new-collection' ? newCollectionProducts : products
+  const displayedProducts =
+    activeTab === 'new-collection'
+      ? newCollectionProducts
+      : activeTab === 'waist-coat'
+        ? waistCoatProducts
+        : products
 
   if (loading && !showForm) {
     return (
@@ -263,6 +297,19 @@ export default function AdminProductsPage() {
               {newCollectionProducts.length}
             </span>
           </button>
+          <button
+            onClick={() => { setActiveTab('waist-coat'); setShowForm(false) }}
+            className={`px-5 py-3 text-sm font-semibold border-b-2 transition-colors ${
+              activeTab === 'waist-coat'
+                ? 'border-gray-900 text-gray-900'
+                : 'border-transparent text-gray-400 hover:text-gray-600'
+            }`}
+          >
+            Waist Coat
+            <span className="ml-2 text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">
+              {waistCoatProducts.length}
+            </span>
+          </button>
         </div>
       </header>
 
@@ -273,29 +320,28 @@ export default function AdminProductsPage() {
               {editingProduct ? 'Edit Product' : 'Add New Product'}
             </h2>
 
-            {/* New Collection Toggle */}
-            <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg mb-6 border-2 border-gray-200">
-              <div>
-                <p className="text-sm font-semibold text-gray-900">Add to New Collection</p>
-                <p className="text-xs text-gray-500 mt-0.5">
-                  {isNewCollection
-                    ? 'This product will appear on the New Collection page'
-                    : 'This product will appear on the Ready Made page'}
-                </p>
+            {/* Product Destination */}
+            <div className="p-4 bg-gray-50 rounded-lg mb-6 border-2 border-gray-200">
+              <p className="text-sm font-semibold text-gray-900 mb-3">Publish to</p>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                {(['ready-made', 'new-collection', 'waist-coat'] as ProductDestination[]).map((destination) => (
+                  <button
+                    key={destination}
+                    type="button"
+                    onClick={() => setProductDestination(destination)}
+                    className={`py-3 px-4 rounded-lg border-2 text-sm font-semibold transition-colors ${
+                      productDestination === destination
+                        ? 'border-gray-900 bg-gray-900 text-white'
+                        : 'border-gray-300 text-gray-700 hover:border-gray-500'
+                    }`}
+                  >
+                    {destinationLabels[destination]}
+                  </button>
+                ))}
               </div>
-              <button
-                type="button"
-                onClick={() => setIsNewCollection(!isNewCollection)}
-                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${
-                  isNewCollection ? 'bg-gray-900' : 'bg-gray-300'
-                }`}
-              >
-                <span
-                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform shadow ${
-                    isNewCollection ? 'translate-x-6' : 'translate-x-1'
-                  }`}
-                />
-              </button>
+              <p className="text-xs text-gray-500 mt-2">
+                This product will appear on the {destinationLabels[productDestination]} page.
+              </p>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -557,7 +603,7 @@ export default function AdminProductsPage() {
                   disabled={loading}
                   className="flex-1 bg-gray-900 text-white py-3 px-4 rounded-lg font-bold hover:bg-gray-700 transition-colors disabled:opacity-50"
                 >
-                  {loading ? 'Saving...' : editingProduct ? 'Update Product' : `Add to ${isNewCollection ? 'New Collection' : 'Ready Made'}`}
+                  {loading ? 'Saving...' : editingProduct ? 'Update Product' : `Add to ${destinationLabels[productDestination]}`}
                 </button>
                 <button
                   type="button"
@@ -613,14 +659,14 @@ export default function AdminProductsPage() {
                     )}
                     <div className="flex gap-2">
                       <button
-                        onClick={() => handleEdit(product, activeTab === 'new-collection')}
+                        onClick={() => handleEdit(product, activeTab)}
                         className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
                       >
                         <FiEdit2 className="w-4 h-4" />
                         Edit
                       </button>
                       <button
-                        onClick={() => handleDelete(product.id, activeTab === 'new-collection')}
+                        onClick={() => handleDelete(product.id, activeTab)}
                         className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm"
                       >
                         <FiTrash2 className="w-4 h-4" />
@@ -635,7 +681,7 @@ export default function AdminProductsPage() {
             {displayedProducts.length === 0 && (
               <div className="text-center py-12 sm:py-20">
                 <p className="text-gray-600 text-lg sm:text-xl mb-4">
-                  No {activeTab === 'new-collection' ? 'new collection' : 'ready made'} products yet
+                  No {activeTab === 'new-collection' ? 'new collection' : activeTab === 'waist-coat' ? 'waist coat' : 'ready made'} products yet
                 </p>
                 <button
                   onClick={handleAddNew}

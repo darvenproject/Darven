@@ -29,9 +29,11 @@ export default function DesktopLanding() {
   ])
   const [newCollectionImages, setNewCollectionImages] = useState<LandingImage[]>([])
   const [currentNewCollectionIndex, setCurrentNewCollectionIndex] = useState(0)
+  const [waistCoatImages, setWaistCoatImages] = useState<LandingImage[]>([])
+  const [currentWaistCoatIndex, setCurrentWaistCoatIndex] = useState(0)
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0)
 
-  const totalSlides = 6
+  const totalSlides = 7
 
   useEffect(() => { fetchLandingImages() }, [])
 
@@ -52,6 +54,15 @@ export default function DesktopLanding() {
     }, 4000)
     return () => clearInterval(interval)
   }, [newCollectionImages.length, currentSlideIndex])
+
+  // Waist Coat auto-play
+  useEffect(() => {
+    if (waistCoatImages.length <= 1 || currentSlideIndex !== 2) return
+    const interval = setInterval(() => {
+      setCurrentWaistCoatIndex((prev) => (prev + 1) % waistCoatImages.length)
+    }, 4000)
+    return () => clearInterval(interval)
+  }, [waistCoatImages.length, currentSlideIndex])
 
   // Track slide index from scroll container
   useEffect(() => {
@@ -80,13 +91,15 @@ export default function DesktopLanding() {
       if (response.data && response.data.length > 0) {
         const heroes = response.data.filter((img: LandingImage) => img.category === 'hero')
         const newCollection = response.data.filter((img: LandingImage) => img.category === 'new-collection')
-        const others = response.data.filter((img: LandingImage) => img.category !== 'hero' && img.category !== 'new-collection')
+        const waistCoat = response.data.filter((img: LandingImage) => img.category === 'waist-coat')
+        const others = response.data.filter((img: LandingImage) => img.category !== 'hero' && img.category !== 'new-collection' && img.category !== 'waist-coat')
         const orderedSections = ['ready-made', 'stitch-your-own', 'fabric']
         const sortedOthers = orderedSections
           .map(cat => others.find((img: LandingImage) => img.category === cat))
           .filter(Boolean) as LandingImage[]
         if (heroes.length > 0) setHeroImages(heroes)
         if (newCollection.length > 0) setNewCollectionImages(newCollection)
+        if (waistCoat.length > 0) setWaistCoatImages(waistCoat)
         if (sortedOthers.length > 0) setSectionImages(sortedOthers)
       }
     } catch (error) {
@@ -247,7 +260,62 @@ export default function DesktopLanding() {
         </motion.div>
       </Link>
 
-      {/* Slides 3–5: Categories */}
+      {/* Slide 3: Waist Coat */}
+      <Link
+        href="/waist-coat"
+        className="h-screen w-full snap-start snap-always block relative"
+      >
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          transition={{ duration: 0.6 }}
+          viewport={{ once: false, amount: 0.5 }}
+          className="h-full w-full relative group"
+        >
+          {waistCoatImages.length > 0 ? (
+            <>
+              {waistCoatImages.map((img, index) => (
+                <motion.div
+                  key={`waist-coat-${img.id || index}`}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: index === currentWaistCoatIndex ? 1 : 0 }}
+                  transition={{ duration: 1 }}
+                  className="absolute inset-0"
+                  style={{ zIndex: index === currentWaistCoatIndex ? 1 : 0 }}
+                >
+                  <div className="absolute inset-0 bg-gray-300">
+                    <Image
+                      src={getImageUrl(img.image_url)}
+                      alt={img.title || 'Waist Coat'}
+                      fill sizes="100vw" priority unoptimized
+                      className="object-cover group-hover:scale-105 transition-transform duration-700"
+                    />
+                  </div>
+                </motion.div>
+              ))}
+            </>
+          ) : (
+            <div className="absolute inset-0 bg-gray-900" />
+          )}
+
+          <div className="absolute inset-0 bg-black bg-opacity-30 group-hover:bg-opacity-20 transition-all duration-300 z-10" />
+
+          {waistCoatImages.length > 1 && (
+            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-2 z-20">
+              {waistCoatImages.map((_, i) => (
+                <div
+                  key={i}
+                  className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
+                    i === currentWaistCoatIndex ? 'bg-white scale-125' : 'bg-white bg-opacity-50'
+                  }`}
+                />
+              ))}
+            </div>
+          )}
+        </motion.div>
+      </Link>
+
+      {/* Slides 4–6: Categories */}
       {sectionImages.map((item, index) => (
         <Link
           key={`${item.category}-${index}`}
@@ -274,7 +342,7 @@ export default function DesktopLanding() {
         </Link>
       ))}
 
-      {/* Slide 6: Footer */}
+      {/* Slide 7: Footer */}
       <div className="h-screen w-full snap-start snap-always bg-white flex items-center justify-center">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -350,7 +418,7 @@ export default function DesktopLanding() {
             </svg>
           </button>
         )}
-        {[0, 1, 2, 3, 4, 5].map((i) => (
+        {[0, 1, 2, 3, 4, 5, 6].map((i) => (
           <button
             key={i}
             onClick={() => scrollToSlide(i)}

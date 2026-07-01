@@ -112,6 +112,18 @@ export default function CartPage() {
                         </div>
                       )}
 
+                      {item.type === 'waist-coat' && (
+                        <div className="text-sm text-gray-600 space-y-1">
+                          <p className="flex items-center gap-2">
+                            <FiPackage className="w-4 h-4" />
+                            <span>Waist Coat</span>
+                          </p>
+                          <p>Material: {item.details?.material}</p>
+                          <p>Size: {item.details?.size}</p>
+                          {item.details?.color && <p>Color: {item.details.color}</p>}
+                        </div>
+                      )}
+
                       {item.type === 'fabric' && (
                         <div className="text-sm text-gray-600 space-y-1">
                           <p className="flex items-center gap-2">

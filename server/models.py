@@ -53,6 +53,22 @@ class NewCollectionProduct(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
+class WaistCoatProduct(Base):
+    __tablename__ = "waist_coat_products"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, index=True)
+    description = Column(Text)
+    price = Column(Float)
+    material = Column(String)
+    fabric_category = Column(String, nullable=True, index=True)
+    size = Column(String)
+    colors = Column(JSON, nullable=True)
+    images = Column(JSON)
+    stock = Column(Integer, default=0)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+
 class Fabric(Base):
     __tablename__ = "fabrics"
     

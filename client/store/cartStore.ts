@@ -3,7 +3,7 @@ import { persist } from 'zustand/middleware'
 
 export interface CartItem {
   id: string
-  type: 'ready-made' | 'custom' | 'fabric'
+  type: 'ready-made' | 'custom' | 'fabric' | 'waist-coat'
   name: string
   price: number
   quantity: number

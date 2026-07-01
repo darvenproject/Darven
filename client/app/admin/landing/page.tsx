@@ -21,6 +21,7 @@ export default function AdminLandingPage() {
   const [landingImages, setLandingImages] = useState<LandingImage[]>([])
   const [heroImages, setHeroImages] = useState<LandingImage[]>([])
   const [newCollectionImages, setNewCollectionImages] = useState<LandingImage[]>([])
+  const [waistCoatImages, setWaistCoatImages] = useState<LandingImage[]>([])
   const [sectionImages, setSectionImages] = useState<LandingImage[]>([])
 
   useEffect(() => {
@@ -43,12 +44,14 @@ export default function AdminLandingPage() {
 
       const heroes = response.data.filter((img: LandingImage) => img.category === 'hero')
       const newCollection = response.data.filter((img: LandingImage) => img.category === 'new-collection')
+      const waistCoat = response.data.filter((img: LandingImage) => img.category === 'waist-coat')
       const sections = response.data.filter(
-        (img: LandingImage) => img.category !== 'hero' && img.category !== 'new-collection'
+        (img: LandingImage) => img.category !== 'hero' && img.category !== 'new-collection' && img.category !== 'waist-coat'
       )
 
       setHeroImages(heroes)
       setNewCollectionImages(newCollection)
+      setWaistCoatImages(waistCoat)
       setSectionImages(sections)
     } catch (error) {
       console.error('Error fetching landing images:', error)
@@ -268,6 +271,18 @@ export default function AdminLandingPage() {
           description="Add images for the New Collection slide shown after the hero banner (links to /new-collection)"
           category="new-collection"
           images={newCollectionImages}
+          allowPortrait={true}
+        />
+
+        {/* Divider */}
+        <div className="border-t border-gray-300 my-6 sm:my-8" />
+
+        {/* Waist Coat Slideshow */}
+        <SlideshowSection
+          title="Waist Coat"
+          description="Add images for the Waist Coat slide shown after New Collection (links to /waist-coat)"
+          category="waist-coat"
+          images={waistCoatImages}
           allowPortrait={true}
         />
 

@@ -33,7 +33,10 @@ export const metadata: Metadata = {
     'ready made shalwar kameez',
     'fabric shop Pakistan',
     'shopdarven',
-    'online clothing Pakistan'
+    'online clothing Pakistan',
+    'waist coat Pakistan',
+    'traditional waistcoat',
+    'Pakistani waist coat'
   ],
   authors: [{ name: 'ShopDarven' }],
   creator: 'ShopDarven',

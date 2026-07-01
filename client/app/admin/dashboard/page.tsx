@@ -652,6 +652,14 @@ export default function AdminDashboard() {
                             <p>Size: {item.details.size}</p>
                           </div>
                         )}
+
+                        {item.details && item.type === 'waist-coat' && (
+                          <div className="mt-2 text-sm text-gray-600">
+                            <p>Material: {item.details.material}</p>
+                            <p>Size: {item.details.size}</p>
+                            {item.details.color && <p>Color: {item.details.color}</p>}
+                          </div>
+                        )}
                         
                         {item.details && item.type === 'fabric' && (
                           <div className="mt-2 text-sm text-gray-600">

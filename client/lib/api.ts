@@ -97,6 +97,19 @@ export const apiClient = {
     }),
   deleteNewCollectionProduct: (id: string) => api.delete(`/new-collection/${id}`),
 
+  // Waist Coat Products
+  getWaistCoatProducts: () => api.get('/waist-coat'),
+  getWaistCoatProduct: (id: string) => api.get(`/waist-coat/${id}`),
+  createWaistCoatProduct: (formData: FormData) =>
+    api.post('/waist-coat', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    }),
+  updateWaistCoatProduct: (id: string, formData: FormData) =>
+    api.put(`/waist-coat/${id}`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    }),
+  deleteWaistCoatProduct: (id: string) => api.delete(`/waist-coat/${id}`),
+
   // Fabrics
   getFabrics: () => api.get('/fabrics'),
   getFabric: (id: string) => api.get(`/fabrics/${id}`),

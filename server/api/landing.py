@@ -32,7 +32,7 @@ async def update_landing_image(
     admin: Admin = Depends(get_current_admin),
     db: Session = Depends(get_db)
 ):
-    valid_categories = ["hero", "ready-made", "stitch-your-own", "fabric", "new-collection"]
+    valid_categories = ["hero", "ready-made", "stitch-your-own", "fabric", "new-collection", "waist-coat"]
     if category not in valid_categories:
         raise HTTPException(status_code=400, detail="Invalid category")
 
@@ -46,17 +46,19 @@ async def update_landing_image(
         "stitch-your-own": "Stitch Your Own Suit",
         "fabric": "Fabric",
         "hero": "Hero Section",
-        "new-collection": "New Collection"
+        "new-collection": "New Collection",
+        "waist-coat": "Waist Coat"
     }
     link_map = {
         "ready-made": "/ready-made",
         "stitch-your-own": "/stitch-your-own",
         "fabric": "/fabric",
         "hero": None,
-        "new-collection": "/new-collection"
+        "new-collection": "/new-collection",
+        "waist-coat": "/waist-coat"
     }
 
-    if category in ["hero", "new-collection"]:
+    if category in ["hero", "new-collection", "waist-coat"]:
         # Multiple images allowed — always create new
         landing_image = LandingImage(
             category=category,
@@ -95,7 +97,7 @@ async def update_landing_portrait_image(
     db: Session = Depends(get_db),
     admin: Admin = Depends(get_current_admin)
 ):
-    valid_categories = ["hero", "ready-made", "stitch-your-own", "fabric", "new-collection"]
+    valid_categories = ["hero", "ready-made", "stitch-your-own", "fabric", "new-collection", "waist-coat"]
     if category not in valid_categories:
         raise HTTPException(status_code=400, detail="Invalid category for portrait image")
     

@@ -18,6 +18,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.9,
     },
     {
+      url: `${baseUrl}/new-collection`,
+      lastModified: new Date(),
+      changeFrequency: 'daily' as const,
+      priority: 0.9,
+    },
+    {
+      url: `${baseUrl}/waist-coat`,
+      lastModified: new Date(),
+      changeFrequency: 'daily' as const,
+      priority: 0.9,
+    },
+    {
       url: `${baseUrl}/fabric`,
       lastModified: new Date(),
       changeFrequency: 'daily' as const,
@@ -45,6 +57,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   // Fetch dynamic product pages
   let productPages: MetadataRoute.Sitemap = []
+  let newCollectionPages: MetadataRoute.Sitemap = []
+  let waistCoatPages: MetadataRoute.Sitemap = []
   let fabricPages: MetadataRoute.Sitemap = []
 
   try {
@@ -59,6 +73,34 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       const products = await productsRes.json()
       productPages = products.map((product: any) => ({
         url: `${baseUrl}/ready-made/${product.id}`,
+        lastModified: new Date(),
+        changeFrequency: 'weekly' as const,
+        priority: 0.7,
+      }))
+    }
+
+    const newCollectionRes = await fetch(`${apiUrl}/new-collection`, {
+      next: { revalidate: 3600 }
+    })
+
+    if (newCollectionRes.ok) {
+      const newCollectionProducts = await newCollectionRes.json()
+      newCollectionPages = newCollectionProducts.map((product: any) => ({
+        url: `${baseUrl}/new-collection/${product.id}`,
+        lastModified: new Date(),
+        changeFrequency: 'weekly' as const,
+        priority: 0.7,
+      }))
+    }
+
+    const waistCoatRes = await fetch(`${apiUrl}/waist-coat`, {
+      next: { revalidate: 3600 }
+    })
+
+    if (waistCoatRes.ok) {
+      const waistCoatProducts = await waistCoatRes.json()
+      waistCoatPages = waistCoatProducts.map((product: any) => ({
+        url: `${baseUrl}/waist-coat/${product.id}`,
         lastModified: new Date(),
         changeFrequency: 'weekly' as const,
         priority: 0.7,
@@ -83,5 +125,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     console.error('Error fetching dynamic pages for sitemap:', error)
   }
 
-  return [...staticPages, ...productPages, ...fabricPages]
+  return [...staticPages, ...productPages, ...newCollectionPages, ...waistCoatPages, ...fabricPages]
 }

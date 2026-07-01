@@ -29,6 +29,10 @@ export default function MobileLanding() {
   const [currentNewCollectionIndex, setCurrentNewCollectionIndex] = useState(0)
   const [newCollectionTouchStart, setNewCollectionTouchStart] = useState(0)
   const [newCollectionTouchEnd, setNewCollectionTouchEnd] = useState(0)
+  const [waistCoatImages, setWaistCoatImages] = useState<LandingImage[]>([])
+  const [currentWaistCoatIndex, setCurrentWaistCoatIndex] = useState(0)
+  const [waistCoatTouchStart, setWaistCoatTouchStart] = useState(0)
+  const [waistCoatTouchEnd, setWaistCoatTouchEnd] = useState(0)
   const [currentIndex, setCurrentIndex] = useState(0)
   const [currentHeroIndex, setCurrentHeroIndex] = useState(0)
   const [heroTouchStart, setHeroTouchStart] = useState(0)
@@ -47,7 +51,7 @@ export default function MobileLanding() {
   }, [scrollContainerRef])
 
   useEffect(() => {
-    const totalSections = (heroImages.length > 0 ? 1 : 0) + 1 + sectionImages.length + 1
+    const totalSections = (heroImages.length > 0 ? 1 : 0) + 2 + sectionImages.length + 1
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'ArrowDown') {
         e.preventDefault()
@@ -81,6 +85,15 @@ export default function MobileLanding() {
     return () => clearInterval(interval)
   }, [newCollectionImages.length, currentIndex])
 
+  // Waist Coat auto-play
+  useEffect(() => {
+    if (waistCoatImages.length <= 1 || currentIndex !== 2) return
+    const interval = setInterval(() => {
+      setCurrentWaistCoatIndex((prev) => (prev + 1) % waistCoatImages.length)
+    }, 4000)
+    return () => clearInterval(interval)
+  }, [waistCoatImages.length, currentIndex])
+
   const handleHeroTouchStart = (e: React.TouchEvent) => setHeroTouchStart(e.targetTouches[0].clientX)
   const handleHeroTouchMove = (e: React.TouchEvent) => setHeroTouchEnd(e.targetTouches[0].clientX)
   const handleHeroTouchEnd = () => {
@@ -103,19 +116,32 @@ export default function MobileLanding() {
     setNewCollectionTouchEnd(0)
   }
 
+  const handleWaistCoatTouchStart = (e: React.TouchEvent) => setWaistCoatTouchStart(e.targetTouches[0].clientX)
+  const handleWaistCoatTouchMove = (e: React.TouchEvent) => setWaistCoatTouchEnd(e.targetTouches[0].clientX)
+  const handleWaistCoatTouchEnd = () => {
+    if (!waistCoatTouchStart || !waistCoatTouchEnd) return
+    const distance = waistCoatTouchStart - waistCoatTouchEnd
+    if (distance > 50) setCurrentWaistCoatIndex((prev) => (prev === waistCoatImages.length - 1 ? 0 : prev + 1))
+    else if (distance < -50) setCurrentWaistCoatIndex((prev) => (prev === 0 ? waistCoatImages.length - 1 : prev - 1))
+    setWaistCoatTouchStart(0)
+    setWaistCoatTouchEnd(0)
+  }
+
   const fetchLandingImages = async () => {
     try {
       const response = await apiClient.getLandingImages()
       if (response.data && response.data.length > 0) {
         const heroes = response.data.filter((img: LandingImage) => img.category === 'hero')
         const newCollection = response.data.filter((img: LandingImage) => img.category === 'new-collection')
-        const otherImages = response.data.filter((img: LandingImage) => img.category !== 'hero' && img.category !== 'new-collection')
+        const waistCoat = response.data.filter((img: LandingImage) => img.category === 'waist-coat')
+        const otherImages = response.data.filter((img: LandingImage) => img.category !== 'hero' && img.category !== 'new-collection' && img.category !== 'waist-coat')
         const orderedSections = ['ready-made', 'stitch-your-own', 'fabric']
         const sortedOthers = orderedSections
           .map(cat => otherImages.find((img: LandingImage) => img.category === cat))
           .filter(Boolean) as LandingImage[]
         if (heroes.length > 0) setHeroImages(heroes)
         if (newCollection.length > 0) setNewCollectionImages(newCollection)
+        if (waistCoat.length > 0) setWaistCoatImages(waistCoat)
         if (sortedOthers.length > 0) setSectionImages(sortedOthers)
       }
     } catch (error) {
@@ -124,7 +150,7 @@ export default function MobileLanding() {
   }
 
   const scrollToNext = () => {
-    const totalSections = (heroImages.length > 0 ? 1 : 0) + 1 + sectionImages.length + 1
+    const totalSections = (heroImages.length > 0 ? 1 : 0) + 2 + sectionImages.length + 1
     if (currentIndex < totalSections - 1)
       scrollContainerRef.current?.scrollTo({ top: (currentIndex + 1) * window.innerHeight, behavior: 'smooth' })
   }
@@ -236,7 +262,49 @@ export default function MobileLanding() {
         )}
       </Link>
 
-      {/* Slides 3–5: Categories */}
+      {/* Slide 3: Waist Coat */}
+      <Link
+        href="/waist-coat"
+        className="h-screen w-full snap-start snap-always block relative"
+        onTouchStart={handleWaistCoatTouchStart}
+        onTouchMove={handleWaistCoatTouchMove}
+        onTouchEnd={handleWaistCoatTouchEnd}
+      >
+        {waistCoatImages.length > 0 ? (
+          waistCoatImages.map((img, index) => {
+            const imageUrl = img.portrait_image_url || img.image_url
+            return (
+              <div
+                key={`waist-coat-${img.id || index}`}
+                className={`absolute inset-0 transition-opacity duration-1000 ${index === currentWaistCoatIndex ? 'opacity-100 z-0' : 'opacity-0 z-0'}`}
+              >
+                <div className="absolute inset-0" style={{ backgroundColor: '#1a1a1a' }}>
+                  <div className="relative h-full w-full">
+                    <Image src={getImageUrl(imageUrl)} alt={img.title || 'Waist Coat'} fill sizes="100vw" priority className="object-cover" unoptimized />
+                  </div>
+                </div>
+              </div>
+            )
+          })
+        ) : (
+          <div className="absolute inset-0" style={{ backgroundColor: '#111111' }} />
+        )}
+
+        <div className="absolute inset-0 bg-black bg-opacity-30 z-10" />
+
+        {waistCoatImages.length > 1 && (
+          <div className="absolute top-8 left-1/2 -translate-x-1/2 flex gap-2 z-30">
+            {waistCoatImages.map((_, i) => (
+              <div
+                key={i}
+                className={`h-1.5 rounded-full transition-all ${currentWaistCoatIndex === i ? 'bg-white w-6' : 'bg-white bg-opacity-40 w-1.5'}`}
+              />
+            ))}
+          </div>
+        )}
+      </Link>
+
+      {/* Slides 4–6: Categories */}
       {sectionImages.map((item, index) => {
         const imageUrl = item.portrait_image_url || item.image_url
         return (
@@ -251,7 +319,7 @@ export default function MobileLanding() {
         )
       })}
 
-      {/* Slide 6: Footer */}
+      {/* Slide 7: Footer */}
       <div className="h-screen w-full snap-start snap-always bg-white flex items-center justify-center">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -329,7 +397,7 @@ export default function MobileLanding() {
 
       {/* Nav Dots */}
       <div className="fixed bottom-6 left-1/2 -translate-x-1/2 flex gap-3 z-30">
-        {[0, 1, 2, 3, 4, 5].map((i) => (
+        {[0, 1, 2, 3, 4, 5, 6].map((i) => (
           <div key={i} className={`h-2 rounded-full transition-all duration-300 ${currentIndex === i ? 'bg-white w-8' : 'bg-white bg-opacity-40 w-2'}`} />
         ))}
       </div>
