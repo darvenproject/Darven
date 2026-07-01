@@ -69,21 +69,36 @@ export default function AdminProductsPage() {
   }
 
   const fetchProducts = async () => {
-    try {
-      const [readyMadeRes, newCollectionRes, waistCoatRes] = await Promise.all([
-        apiClient.getReadyMadeProducts(),
-        apiClient.getNewCollectionProducts(),
-        apiClient.getWaistCoatProducts(),
-      ])
-      setProducts(readyMadeRes.data)
-      setNewCollectionProducts(newCollectionRes.data)
-      setWaistCoatProducts(waistCoatRes.data)
-    } catch (error) {
-      console.error('Error fetching products:', error)
-    } finally {
-      setLoading(false)
+  try {
+    const [readyMadeRes, newCollectionRes, waistCoatRes] = await Promise.allSettled([
+      apiClient.getReadyMadeProducts(),
+      apiClient.getNewCollectionProducts(),
+      apiClient.getWaistCoatProducts(),
+    ])
+
+    if (readyMadeRes.status === 'fulfilled') {
+      setProducts(readyMadeRes.value.data)
+    } else {
+      console.error('Error fetching ready-made products:', readyMadeRes.reason)
     }
+
+    if (newCollectionRes.status === 'fulfilled') {
+      setNewCollectionProducts(newCollectionRes.value.data)
+    } else {
+      console.error('Error fetching new-collection products:', newCollectionRes.reason)
+    }
+
+    if (waistCoatRes.status === 'fulfilled') {
+      setWaistCoatProducts(waistCoatRes.value.data)
+    } else {
+      console.error('Error fetching waist-coat products:', waistCoatRes.reason)
+    }
+  } catch (error) {
+    console.error('Error fetching products:', error)
+  } finally {
+    setLoading(false)
   }
+}
 
   const createProduct = async (data: FormData) => {
     if (productDestination === 'new-collection') {
