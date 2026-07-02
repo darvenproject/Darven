@@ -20,7 +20,6 @@ export default function Header() {
   }
 
   const [scrollY, setScrollY] = useState(0)
-  const [isPastFifthSection, setIsPastFifthSection] = useState(false)
   const [isOnFooterSlide, setIsOnFooterSlide] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
@@ -31,7 +30,6 @@ export default function Header() {
 
   useEffect(() => {
     setScrollY(0)
-    setIsPastFifthSection(false)
     setIsOnFooterSlide(false)
 
     if (cleanupRef.current) {
@@ -50,52 +48,18 @@ export default function Header() {
         return
       }
 
-      // Measure actual slide boundaries instead of assuming uniform
-      // clientHeight per slide. This avoids mismatches on mobile where
-      // viewport height changes (address bar show/hide) or a slide's
-      // real content height differs from the container height.
-      const getSlideOffsets = () => {
-        const slides = Array.from(container.children) as HTMLElement[]
-        return slides.map((el) => el.offsetTop)
-      }
-
-      let slideOffsets = getSlideOffsets()
-
-      const recalcOffsets = () => {
-        slideOffsets = getSlideOffsets()
-      }
-
       const onScroll = () => {
         const y = container.scrollTop
         setScrollY(y)
-
-        // Find which slide index we're currently on/entering
-        let currentIndex = 0
-        for (let i = 0; i < slideOffsets.length; i++) {
-          if (y >= slideOffsets[i] - 80) {
-            currentIndex = i
-          }
-        }
-
-        // Slide index 4 = 5th slide ("Stitch Your Own Suit")
-        setIsPastFifthSection(currentIndex >= 4)
-        // Slide index 5 = 6th slide (footer)
-        setIsOnFooterSlide(currentIndex >= 5)
+        // Header stays transparent through all content slides, including
+        // "Stitch Your Own Suit" (5th slide). It only hides on the footer
+        // slide (6th slide = index 5).
+        setIsOnFooterSlide(y >= container.clientHeight * 5 - 80)
       }
 
       onScroll()
       container.addEventListener('scroll', onScroll, { passive: true })
-
-      // Recalculate slide positions on resize/orientation change,
-      // since mobile viewport height shifts during scroll (address bar)
-      window.addEventListener('resize', recalcOffsets)
-      window.addEventListener('orientationchange', recalcOffsets)
-
-      cleanupRef.current = () => {
-        container.removeEventListener('scroll', onScroll)
-        window.removeEventListener('resize', recalcOffsets)
-        window.removeEventListener('orientationchange', recalcOffsets)
-      }
+      cleanupRef.current = () => container.removeEventListener('scroll', onScroll)
     }
 
     const t = setTimeout(attach, 50)
@@ -117,7 +81,8 @@ export default function Header() {
     }
   }, [isMobileMenuOpen])
 
-  const isTransparent = isHomePage && !isPastFifthSection
+  // Transparent for the entire homepage scroll, until the footer slide
+  const isTransparent = isHomePage && !isOnFooterSlide
   const logoSrc = isTransparent ? logoTransparent : logoLight
 
   const headerBg = isTransparent ? 'rgba(255,255,255,0)' : 'rgba(255,255,255,0.92)'
@@ -134,8 +99,8 @@ export default function Header() {
   const navLinks = [
     { href: '/', label: 'Home' },
     { href: '/new-collection', label: 'New Collection' },
-    { href: '/ready-made', label: 'Ready-Made' },
     { href: '/waist-coat', label: 'Waist Coat' },
+    { href: '/ready-made', label: 'Ready-Made' },
     { href: '/fabric', label: 'Fabric' },
     { href: '/stitch-your-own', label: 'Stitch Your Own Suit' },
     { href: '/about', label: 'About' },
