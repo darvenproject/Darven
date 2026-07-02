@@ -14,7 +14,7 @@ export default function Header() {
   const pathname = usePathname()
   const isHomePage = pathname === '/'
 
-  // ✅ Hide header on admin and login pages
+  // Hide header on admin and login pages
   if (pathname?.startsWith('/admin') || pathname?.startsWith('/login')) {
     return null
   }
@@ -42,7 +42,6 @@ export default function Header() {
     if (!isHomePage) return
 
     const attach = () => {
-      // ✅ Now finds the container by id="snap-container" set in both landing components
       const container = document.getElementById('snap-container') as HTMLElement | null
 
       if (!container) {
@@ -51,17 +50,52 @@ export default function Header() {
         return
       }
 
+      // Measure actual slide boundaries instead of assuming uniform
+      // clientHeight per slide. This avoids mismatches on mobile where
+      // viewport height changes (address bar show/hide) or a slide's
+      // real content height differs from the container height.
+      const getSlideOffsets = () => {
+        const slides = Array.from(container.children) as HTMLElement[]
+        return slides.map((el) => el.offsetTop)
+      }
+
+      let slideOffsets = getSlideOffsets()
+
+      const recalcOffsets = () => {
+        slideOffsets = getSlideOffsets()
+      }
+
       const onScroll = () => {
         const y = container.scrollTop
         setScrollY(y)
-        setIsPastFifthSection(y >= container.clientHeight * 4 - 80)
-        // ✅ Hide header when on the footer slide (slide 6 = index 5)
-        setIsOnFooterSlide(y >= container.clientHeight * 5 - 80)
+
+        // Find which slide index we're currently on/entering
+        let currentIndex = 0
+        for (let i = 0; i < slideOffsets.length; i++) {
+          if (y >= slideOffsets[i] - 80) {
+            currentIndex = i
+          }
+        }
+
+        // Slide index 4 = 5th slide ("Stitch Your Own Suit")
+        setIsPastFifthSection(currentIndex >= 4)
+        // Slide index 5 = 6th slide (footer)
+        setIsOnFooterSlide(currentIndex >= 5)
       }
 
       onScroll()
       container.addEventListener('scroll', onScroll, { passive: true })
-      cleanupRef.current = () => container.removeEventListener('scroll', onScroll)
+
+      // Recalculate slide positions on resize/orientation change,
+      // since mobile viewport height shifts during scroll (address bar)
+      window.addEventListener('resize', recalcOffsets)
+      window.addEventListener('orientationchange', recalcOffsets)
+
+      cleanupRef.current = () => {
+        container.removeEventListener('scroll', onScroll)
+        window.removeEventListener('resize', recalcOffsets)
+        window.removeEventListener('orientationchange', recalcOffsets)
+      }
     }
 
     const t = setTimeout(attach, 50)
@@ -99,7 +133,9 @@ export default function Header() {
 
   const navLinks = [
     { href: '/', label: 'Home' },
+    { href: '/new-collection', label: 'New Collection' },
     { href: '/ready-made', label: 'Ready-Made' },
+    { href: '/waist-coat', label: 'Waist Coat' },
     { href: '/fabric', label: 'Fabric' },
     { href: '/stitch-your-own', label: 'Stitch Your Own Suit' },
     { href: '/about', label: 'About' },
@@ -118,7 +154,6 @@ export default function Header() {
           WebkitBackdropFilter: headerBlur,
           backgroundColor: headerBg,
           borderBottom: `1px solid ${headerBorder}`,
-          // ✅ Smooth fade out on footer slide, fade in when scrolling back
           opacity: isHomePage && isOnFooterSlide ? 0 : 1,
           pointerEvents: isHomePage && isOnFooterSlide ? 'none' : 'auto',
           transition: 'all 0.4s ease',
@@ -129,7 +164,6 @@ export default function Header() {
         <div className="w-full px-8 lg:px-12 xl:px-16">
           <div className="flex items-center justify-between h-16">
 
-            {/* Hamburger */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               aria-label="Toggle menu"
@@ -153,7 +187,6 @@ export default function Header() {
               }
             </button>
 
-            {/* Logo */}
             <div style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)' }}>
               <Link href="/" className="block hover:opacity-80 transition-opacity duration-300">
                 <div style={{ background: 'transparent', lineHeight: 0 }}>
@@ -174,7 +207,6 @@ export default function Header() {
               </Link>
             </div>
 
-            {/* Cart */}
             <Link
               href="/cart"
               aria-label="Shopping cart"
@@ -217,7 +249,6 @@ export default function Header() {
         </div>
       </header>
 
-      {/* Backdrop */}
       <div
         onClick={() => setIsMobileMenuOpen(false)}
         style={{
@@ -231,7 +262,6 @@ export default function Header() {
         }}
       />
 
-      {/* Menu */}
       <div
         style={{
           position: 'fixed',
