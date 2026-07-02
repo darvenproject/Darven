@@ -20,7 +20,7 @@ export default function Header() {
   }
 
   const [scrollY, setScrollY] = useState(0)
-  const [isOnFooterSlide, setIsOnFooterSlide] = useState(false)
+  const [isOnFinalSlide, setIsOnFinalSlide] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   const cleanupRef = useRef<(() => void) | null>(null)
@@ -30,7 +30,7 @@ export default function Header() {
 
   useEffect(() => {
     setScrollY(0)
-    setIsOnFooterSlide(false)
+    setIsOnFinalSlide(false)
 
     if (cleanupRef.current) {
       cleanupRef.current()
@@ -51,10 +51,9 @@ export default function Header() {
       const onScroll = () => {
         const y = container.scrollTop
         setScrollY(y)
-        // Header stays transparent through all content slides, including
-        // "Stitch Your Own Suit" (5th slide). It only hides on the footer
-        // slide (6th slide = index 5).
-        setIsOnFooterSlide(y >= container.clientHeight * 5 - 80)
+        // Transparent + blur through slides 1-6.
+        // Slide 7 (index 6, the final/footer slide) gets a solid white bg.
+        setIsOnFinalSlide(y >= container.clientHeight * 6 - 80)
       }
 
       onScroll()
@@ -81,8 +80,8 @@ export default function Header() {
     }
   }, [isMobileMenuOpen])
 
-  // Transparent for the entire homepage scroll, until the footer slide
-  const isTransparent = isHomePage && !isOnFooterSlide
+  // Transparent for slides 1-6 on the homepage; solid white on the final slide (7)
+  const isTransparent = isHomePage && !isOnFinalSlide
   const logoSrc = isTransparent ? logoTransparent : logoLight
 
   const headerBg = isTransparent ? 'rgba(255,255,255,0)' : 'rgba(255,255,255,0.92)'
@@ -99,8 +98,8 @@ export default function Header() {
   const navLinks = [
     { href: '/', label: 'Home' },
     { href: '/new-collection', label: 'New Collection' },
-    { href: '/waist-coat', label: 'Waist Coat' },
     { href: '/ready-made', label: 'Ready-Made' },
+    { href: '/waist-coat', label: 'Waist Coat' },
     { href: '/fabric', label: 'Fabric' },
     { href: '/stitch-your-own', label: 'Stitch Your Own Suit' },
     { href: '/about', label: 'About' },
@@ -119,8 +118,6 @@ export default function Header() {
           WebkitBackdropFilter: headerBlur,
           backgroundColor: headerBg,
           borderBottom: `1px solid ${headerBorder}`,
-          opacity: isHomePage && isOnFooterSlide ? 0 : 1,
-          pointerEvents: isHomePage && isOnFooterSlide ? 'none' : 'auto',
           transition: 'all 0.4s ease',
           paddingTop: '0.75rem',
           paddingBottom: '0.75rem',
